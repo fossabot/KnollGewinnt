@@ -1,3 +1,4 @@
+
 /*MainFrame for use with KnollGewinnt
 *(c)2018
 */
@@ -11,16 +12,25 @@ import javax.swing.JFrame;
 public class MainFrame extends JFrame {
 
 	public static void main(String[] args) {
+		consoleIntro();
 		new MainFrame();
 	}
-	
-	public MainFrame()  {
+
+	public MainFrame() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
-		this.getContentPane().add(new BaseP(6, 6), BorderLayout.CENTER);
+		this.getContentPane().add(new BaseP(7, 6), BorderLayout.CENTER);
 
-		this.getContentPane().add(new JButton("Test"), BorderLayout.EAST);
 		pack();
 		this.setVisible(true);
+	}
+
+	static void consoleIntro() {
+		System.out.println("***********************************************");
+		System.out.println("*          KNOLL GEWINNT VER. 0.1             *");
+		System.out.println("*                   by...                     *");
+		System.out.println("*                                             *");
+		System.out.println("*                initialCommitDate 29.05.2018 *");
+		System.out.println("***********************************************");
 	}
 }
