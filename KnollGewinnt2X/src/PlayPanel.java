@@ -10,8 +10,8 @@ import javax.swing.JPanel;
 public class PlayPanel extends JPanel {
 
 	boolean isFilled;
-	PlayPanel n, o, s, w, no, so, sw, nw;
-	int owner;
+	public PlayPanel n, o, s, w, no, so, sw, nw;
+	public int owner;
 	
 	public PlayPanel() {
 		super();
@@ -29,18 +29,45 @@ public class PlayPanel extends JPanel {
 		this.so=so;
 		this.sw=sw;
 		this.nw=nw;
+		System.out.println("Neighbours added: " + n + o + s + w+ no + so + sw + nw);
+		
 	}
 	
-	public void fill() {
+	public PlayPanel getNeighbour(String direction) {
+		switch (direction) {
+		case "n":
+			return n;
+		case "o":
+			return o;
+		case "s":
+			return s;
+		case "w":
+			return w;
+		case "no":
+			return no;
+		case "so":
+			return so;
+		case "sw":
+			return sw;
+		case "nw":
+			return nw;
+		default:
+			return null;
+		}
+	}
+	public void fill(int player) {
+		this.owner=player;
 		switch (owner) {
 		case -1:
 			this.setBackground(Color.WHITE);
 			break;
 		case 1:
 			this.setBackground(Color.BLUE);
+			isFilled=true;
 			break;
 		case 2:
 			this.setBackground(Color.GREEN);
+			isFilled=true;
 			break;
 		}
 	}
