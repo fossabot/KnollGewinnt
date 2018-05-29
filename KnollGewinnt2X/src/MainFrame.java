@@ -1,3 +1,6 @@
+/*MainFrame for use with KnollGewinnt
+*(c)2018
+*/
 import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
