@@ -65,12 +65,12 @@ public class MainFrame extends JFrame {
 				case KeyEvent.KEY_RELEASED:
 					System.out.println(((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()));
 
-					if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("Links")) {
+					if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("Links") || ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("←")) {
 						tog.changePointer(1);
 
-					} else if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("Rechts")) {
+					} else if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("Rechts") ||((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("→")) {
 						tog.changePointer(2);
-					} else if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("Leertaste")&&won==false) {
+					} else if ((((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("Leertaste")&&won==false )||(((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("␣")&&won==false )) {
 						tog.throwCoin(player);
 						if(tog.evaluateRows()==true) {
 							won=true;
