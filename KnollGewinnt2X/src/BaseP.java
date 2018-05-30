@@ -97,7 +97,7 @@ public class BaseP extends JPanel {
 									&& struktur[i][j].getNeighbour(string).getNeighbour(string)
 											.getNeighbour(string).owner != -1) {
 								System.out.println("WINNER");
-								return true;
+			 					return true;
 							}
 						}
 
