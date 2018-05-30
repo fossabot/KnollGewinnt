@@ -1,6 +1,6 @@
 
 /*BasePanel for use with KnollGewinnt
-*(c)2018
+*(c)2018.
 */
 import java.awt.Color;
 import java.awt.GridLayout;
