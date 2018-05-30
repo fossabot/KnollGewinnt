@@ -21,22 +21,37 @@ public class MainFrame extends JFrame {
 
 	BaseP tog;
 	int player=1;
-	JButton newGame;
+	ConfigPanel panel;
 	JTextComponent statusGame;
 	Boolean won=false;
+	private ActionListener newGameAction;
 	public static void main(String[] args) {
 		consoleIntro();
 		new MainFrame();
 	}
 
 	public MainFrame() {
+		init();
+	}
+
+	/**
+	 * 
+	 */
+	private void init() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
 		tog = new BaseP(7, 6);
 		this.getContentPane().add(tog, BorderLayout.CENTER);
-		newGame=new JButton("New Game");
-		this.getContentPane().add(newGame, BorderLayout.EAST);
-
+		newGameAction = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resetFrame();
+				
+			}
+		};
+		panel = new ConfigPanel(newGameAction);
+		this.getContentPane().add(panel, BorderLayout.EAST);
 		statusGame=new JTextArea("");
 		this.getContentPane().add(statusGame, BorderLayout.SOUTH);
 		
@@ -45,6 +60,8 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		eventListener();
 	}
+
+
 
 	static void consoleIntro() {
 		System.out.println("***********************************************");
@@ -113,10 +130,8 @@ public class MainFrame extends JFrame {
 	}
 	
 	private void resetFrame() {
-		tog = new BaseP(7, 6);
-		statusGame=new JTextArea("************************************");
-		
-		
+			dispose();
+			main(null);
 	}
 
 }

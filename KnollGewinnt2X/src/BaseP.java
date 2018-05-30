@@ -163,4 +163,8 @@ public class BaseP extends JPanel {
 	public void changePlayer() {
 		control[getActiveGroundPanel()].setPointer(true, player);
 	}
+	
+	public void newGame() {
+		
+	}
 }
