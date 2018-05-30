@@ -7,15 +7,23 @@ import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
 import java.awt.event.AWTEventListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.text.JTextComponent;
 
 public class MainFrame extends JFrame {
 
 	BaseP tog;
 	int player=1;
+	JButton newGame;
+	JTextComponent statusGame;
+	Boolean won=false;
 	public static void main(String[] args) {
 		consoleIntro();
 		new MainFrame();
@@ -26,6 +34,12 @@ public class MainFrame extends JFrame {
 		this.setLayout(new BorderLayout());
 		tog = new BaseP(7, 6);
 		this.getContentPane().add(tog, BorderLayout.CENTER);
+		newGame=new JButton("New Game");
+		this.getContentPane().add(newGame, BorderLayout.EAST);
+
+		statusGame=new JTextArea("************************************");
+		this.getContentPane().add(statusGame, BorderLayout.SOUTH);
+		
 
 		pack();
 		this.setVisible(true);
@@ -56,9 +70,13 @@ public class MainFrame extends JFrame {
 
 					} else if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("Rechts")) {
 						tog.changePointer(2);
-					} else if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("Leertaste")) {
+					} else if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("Leertaste")&&won==false) {
 						tog.throwCoin(player);
-						tog.evaluateRows();
+						if(tog.evaluateRows()==true) {
+							won=true;
+							displayWinner(player);
+					
+						};
 						switchPlayer();
 						
 					}
@@ -66,6 +84,13 @@ public class MainFrame extends JFrame {
 				}
 
 			}
+
+			private void displayWinner(int player) {
+				statusGame.setText("WINNER_WINNNER_WINNER_WINNER_" + player);
+				
+			}
+
+
 		}, AWTEvent.KEY_EVENT_MASK);
 
 	}
@@ -81,6 +106,13 @@ public class MainFrame extends JFrame {
 			break;
 		}
 			
+	}
+	
+	private void resetFrame() {
+		tog = new BaseP(7, 6);
+		statusGame=new JTextArea("************************************");
+		
+		
 	}
 
 }

@@ -80,7 +80,7 @@ public class BaseP extends JPanel {
 
 	}
 
-	public void evaluateRows() {
+	public boolean evaluateRows() {
 		String[] posb = { "n", "o", "s", "w", "no", "so", "sw", "nw" };
 		for (int i = 0; i < struktur.length; i++) {
 			for (int j = 0; j < struktur[i].length; j++) {
@@ -96,6 +96,7 @@ public class BaseP extends JPanel {
 									&& struktur[i][j].getNeighbour(string).getNeighbour(string)
 											.getNeighbour(string).owner != -1) {
 								System.out.println("WINNER");
+								return true;
 							}
 						}
 
@@ -104,6 +105,7 @@ public class BaseP extends JPanel {
 
 			}
 		}
+		return false;
 
 	}
 
