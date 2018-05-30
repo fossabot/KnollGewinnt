@@ -33,6 +33,7 @@ public class ConfigPanel extends JPanel {
 
 		playerChoice.add(singlePlayer);
 		playerChoice.add(multiPlayer);
+		singlePlayer.setSelected(true);
 		this.add(singlePlayer);
 		this.add(multiPlayer);
 

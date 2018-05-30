@@ -10,6 +10,7 @@ import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.EventListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,6 +26,7 @@ public class MainFrame extends JFrame {
 	JTextComponent statusGame;
 	Boolean won=false;
 	private ActionListener newGameAction;
+	private AWTEventListener awt;
 	public static void main(String[] args) {
 		consoleIntro();
 		new MainFrame();
@@ -73,9 +75,8 @@ public class MainFrame extends JFrame {
 	}
 
 	private void eventListener() {
-		this.getToolkit().addAWTEventListener(new AWTEventListener() {
-
-
+		awt = new AWTEventListener() {
+			
 			@Override
 			public void eventDispatched(AWTEvent event) {
 				switch (event.getID()) {
@@ -106,9 +107,12 @@ public class MainFrame extends JFrame {
 				statusGame.setText("WINNER_WINNNER_WINNER_WINNER_" + player);
 				
 			}
-
-
-		}, AWTEvent.KEY_EVENT_MASK);
+				
+			
+		};
+		this.getToolkit().addAWTEventListener(awt, AWTEvent.KEY_EVENT_MASK);
+		
+		
 
 	}
 	private void switchPlayer() {
@@ -130,8 +134,14 @@ public class MainFrame extends JFrame {
 	}
 	
 	private void resetFrame() {
-			dispose();
-			main(null);
+			this.remove(tog);
+			tog=new BaseP(7, 6);
+			this.getContentPane().add(tog, BorderLayout.CENTER);
+			pack();
+			this.setVisible(true);
+			this.getToolkit().removeAWTEventListener(awt);
+			eventListener();
+			
 	}
 
 }
