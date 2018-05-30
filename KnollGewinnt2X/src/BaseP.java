@@ -2,7 +2,7 @@
 /*BasePanel for use with KnollGewinnt
 *(c)2018
 */
-  import java.awt.Color;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 
@@ -12,6 +12,7 @@ public class BaseP extends JPanel {
 
 	private PlayPanel[][] struktur;
 	private GroundPanel[] control;
+	public int player = 1;
 
 	public BaseP(int x, int y) {
 		super();
@@ -30,7 +31,7 @@ public class BaseP extends JPanel {
 			control[i].activateBorder(Color.BLACK);
 			this.add(control[i]);
 		}
-		control[control.length - 1].setPointer(true);
+		control[control.length - 1].setPointer(true, player);
 		provideNeighbours();
 
 	}
@@ -110,33 +111,25 @@ public class BaseP extends JPanel {
 	}
 
 	public void changePointer(int direction) {
+		int i = getActiveGroundPanel();
 		switch (direction) {
+		// 1 steht für links und 2 steht für rechts.
 		case 1:
-			for (int i = 0; i < control.length; i++) {
-				if (control[i].pointer == true) {
-					System.out.println("ja");
-					if (i > 0 && i < (control.length)) {
-						control[i].setPointer(false);
-						control[i - 1].setPointer(true);
-					}
-					return;
 
-				}
+			if (i > 0 && i < (control.length)) {
+				control[i].setPointer(false, player);
+				control[i - 1].setPointer(true, player);
 			}
-			break;
+			return;
+
 		case 2:
-			for (int i = 0; i < control.length; i++) {
-				if (control[i].pointer == true) {
-					System.out.println("ja");
-					if (i >= 0 && i < (control.length) - 1) {
-						control[i].setPointer(false);
-						control[i + 1].setPointer(true);
-					}
-					return;
 
-				}
+			if (i >= 0 && i < (control.length) - 1) {
+				control[i].setPointer(false, player);
+				control[i + 1].setPointer(true, player);
 			}
-			break;
+			return;
+
 		default:
 			break;
 		}
@@ -156,5 +149,18 @@ public class BaseP extends JPanel {
 			}
 		}
 
+	}
+
+	private int getActiveGroundPanel() {
+		for (int i = 0; i < control.length; i++) {
+			if (control[i].pointer == true) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public void changePlayer() {
+		control[getActiveGroundPanel()].setPointer(true, player);
 	}
 }

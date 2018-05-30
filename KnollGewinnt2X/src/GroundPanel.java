@@ -11,11 +11,19 @@ public class GroundPanel extends JPanel {
 
 	boolean pointer=false;
 	
-	public void setPointer(boolean pointer) {
+	public void setPointer(boolean pointer, int player) {
 		
 		this.pointer = pointer;
 		if(pointer==true) {
-			this.setBackground(Color.RED);
+			switch (player) {
+			case 1:
+				this.setBackground(Color.yellow);
+				break;
+
+			case 2:
+				this.setBackground(Color.red);
+				break;
+			}
 		}else {
 			this.setBackground(Color.GRAY);
 		}
@@ -32,4 +40,6 @@ public class GroundPanel extends JPanel {
 		this.pointer=false;
 		
 	}
+	
+
 }

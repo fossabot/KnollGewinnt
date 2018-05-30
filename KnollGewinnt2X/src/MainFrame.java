@@ -37,7 +37,7 @@ public class MainFrame extends JFrame {
 		newGame=new JButton("New Game");
 		this.getContentPane().add(newGame, BorderLayout.EAST);
 
-		statusGame=new JTextArea("************************************");
+		statusGame=new JTextArea("");
 		this.getContentPane().add(statusGame, BorderLayout.SOUTH);
 		
 
@@ -98,10 +98,14 @@ public class MainFrame extends JFrame {
 		switch (player) {
 		case 1:
 			player=2;
+			tog.player=2;
+			tog.changePlayer();
 			System.out.println("Turn of Player: " + player);
 			break;
 		case 2:
 			player=1;
+			tog.player=1 ;
+			tog.changePlayer();
 			System.out.println("Turn of Player: " + player);
 			break;
 		}
