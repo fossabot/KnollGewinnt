@@ -1,6 +1,6 @@
 /** 
  * KNOLL GEWINNT powered by javax.swing
- * CLASS: stockPanel
+ * CLASS: StockPanel
  * @since 29.05.2018
  * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert
  * @version 0.1

@@ -9,25 +9,25 @@
  */
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 import javax.swing.*;
 import javax.swing.text.*;
 
 public class MainFrame extends JFrame {
 
-	BasePanel tog;
-	int player = 1;
-	ConfigPanel panel;
-	JTextComponent statusGame;
-	Boolean won = false;
+	private BasePanel tog;
+	private int currentPlayer = 1;
+	private ConfigPanel panel;
+	private Boolean won = false;
 	private ActionListener newGameAction;
 	private AWTEventListener awt;
 	private JLabel manualGame;
-	int selectedMode; // '1' entspricht singlePlayer '2' steht für den multiPlayer Modus
+	private int selectedMode; // '1' entspricht singlePlayer '2' steht für den multiPlayer Modus
 
-	public static void main(String[] args) {
-		consoleIntro();
-		new MainFrame();
-	}
 
 	public MainFrame() {
 		init();
@@ -38,7 +38,7 @@ public class MainFrame extends JFrame {
 	 * 
 	 */
 	private void init() {
-
+		consoleIntro();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Knoll Gewinnt Ver.0.1");
 		this.setLayout(new BorderLayout());
@@ -72,6 +72,7 @@ public class MainFrame extends JFrame {
 	}
 
 	static void consoleIntro() {
+	
 		System.out.println("***********************************************");
 		System.out.println("*          KNOLL GEWINNT VER. 0.1             *");
 		System.out.println("*                   by...                     *");
@@ -87,7 +88,7 @@ public class MainFrame extends JFrame {
 			public void eventDispatched(AWTEvent event) {
 				switch (event.getID()) {
 				case KeyEvent.KEY_RELEASED:
-					System.out.println(((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()));
+					System.out.println(System.currentTimeMillis()+": "+((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()));
 
 					if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("a")
 							|| ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("A")) {
@@ -100,10 +101,10 @@ public class MainFrame extends JFrame {
 							&& won == false)
 							|| (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
 									&& won == false)) {
-						tog.throwCoin(player);
+						tog.throwCoin(currentPlayer);
 						if (tog.evaluateRows() == true) {
 							won = true;
-							displayWinner(player);
+							displayWinner(currentPlayer);
 
 						}
 
@@ -126,18 +127,18 @@ public class MainFrame extends JFrame {
 	}
 
 	private void switchPlayer() {
-		switch (player) {
+		switch (currentPlayer) {
 		case 1:
-			player = 2;
+			currentPlayer = 2;
 			tog.player = 2;
 			tog.changePlayer();
-			System.out.println("Turn of Player: " + player);
+			System.out.println(System.currentTimeMillis()+": Turn of Player: " + currentPlayer);
 			break;
 		case 2:
-			player = 1;
+			currentPlayer = 1;
 			tog.player = 1;
 			tog.changePlayer();
-			System.out.println("Turn of Player: " + player);
+			System.out.println(System.currentTimeMillis()+": Turn of Player: " + currentPlayer);
 			break;
 		}
 

@@ -33,7 +33,7 @@ public class PlayPanel extends JPanel {
 		this.filled = false;
 		this.owner = -1;
 		this.activateBorder(Color.black);
-		System.out.println("**PLAY PANEL CREATED**");
+		System.out.println(System.currentTimeMillis()+ ": PLAYPANEL CREATED");
 
 	}
 

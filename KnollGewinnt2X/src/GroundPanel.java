@@ -23,7 +23,7 @@ public class GroundPanel extends JPanel {
 	
 	public GroundPanel() {
 		super();
-		System.out.println("**GROUND PANEL CREATED**");
+		System.out.println(System.currentTimeMillis() + ": GROUNDPANEL CREATED");
 		this.setBackground(Color.GRAY);
 		this.activateBorder(Color.black);
 		this.pointer=false;
