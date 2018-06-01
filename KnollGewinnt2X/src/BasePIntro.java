@@ -1,3 +1,11 @@
+/** 
+ * KNOLL GEWINNT powered by javax.swing
+ * CLASS: BasePIntro
+ * @since 29.05.2018
+ * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert
+ * @version 0.1
+ * (c) 2018
+ */
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;

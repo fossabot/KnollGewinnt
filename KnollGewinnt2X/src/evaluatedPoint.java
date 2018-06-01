@@ -1,3 +1,11 @@
+/** 
+ * KNOLL GEWINNT powered by javax.swing
+ * CLASS: evaluatedPoint
+ * @since 29.05.2018
+ * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert
+ * @version 0.1
+ * (c) 2018
+ */
 import java.awt.Dimension;
 
 public class evaluatedPoint {

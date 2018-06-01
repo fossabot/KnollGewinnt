@@ -1,27 +1,16 @@
 
-/*MainFrame for use with KnollGewinnt
-*(c)2018
-*/
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GraphicsConfiguration;
-import java.awt.HeadlessException;
-import java.awt.event.AWTEventListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.EventListener;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.text.JTextComponent;
+/** 
+ * KNOLL GEWINNT powered by javax.swing
+ * CLASS: MainFrame
+ * @since 29.05.2018
+ * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert
+ * @version 0.1
+ * (c) 2018
+ */
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.text.*;
 
 public class MainFrame extends JFrame {
 
@@ -33,7 +22,7 @@ public class MainFrame extends JFrame {
 	private ActionListener newGameAction;
 	private AWTEventListener awt;
 	private JLabel manualGame;
-	int selectedMode; //'1' entspricht singlePlayer '2' steht für den multiPlayer Modus
+	int selectedMode; // '1' entspricht singlePlayer '2' steht für den multiPlayer Modus
 
 	public static void main(String[] args) {
 		consoleIntro();
@@ -42,12 +31,14 @@ public class MainFrame extends JFrame {
 
 	public MainFrame() {
 		init();
+
 	}
 
 	/**
 	 * 
 	 */
 	private void init() {
+
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Knoll Gewinnt Ver.0.1");
 		this.setLayout(new BorderLayout());
@@ -57,19 +48,19 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource()==panel.newGame) {
-					
+				if (e.getSource() == panel.newGame) {
+
 					resetFrame(panel.selectedMode());
-				}else if (e.getSource()==panel.save) {
-					
+				} else if (e.getSource() == panel.save) {
+
 				}
-				
 
 			}
 		};
 		panel = new ConfigPanel(newGameAction);
 		this.getContentPane().add(panel, BorderLayout.EAST);
-		manualGame = new JLabel("<html><br><br><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>Press 'A' to move pointer left. Press 'D' to move pointer right. Press 'S' to throw coin. <html>");
+		manualGame = new JLabel(
+				"<html><br><br><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>Press 'A' to move pointer left. Press 'D' to move pointer right. Press 'S' to throw coin. <html>");
 		manualGame.setFont(new Font("Calibri", Font.PLAIN, 20));
 		this.getContentPane().add(manualGame, BorderLayout.SOUTH);
 
