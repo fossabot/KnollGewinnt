@@ -17,11 +17,11 @@ public class GroundPanel extends JPanel {
 		if(pointer==true) {
 			switch (player) {
 			case 1:
-				this.setBackground(Color.yellow);
+				this.setBackground(Color.blue);
 				break;
 
 			case 2:
-				this.setBackground(Color.red);
+				this.setBackground(Color.green);
 				break;
 			}
 		}else {

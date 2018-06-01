@@ -15,6 +15,7 @@ public class ConfigPanel extends JPanel {
 	JLabel status;
 	JButton save;
 	String[] arg = { "1 Player", "2 Player" };
+	JLabel gameInfo;
 
 	public ConfigPanel(ActionListener e) {
 		super();
@@ -39,8 +40,26 @@ public class ConfigPanel extends JPanel {
 
 		save = new JButton("Save current Game");
 		this.add(save);
-		
-		
+		gameInfo = new JLabel("<html> Game currently running<html>");
+		this.add(gameInfo);
+
+	}
+
+	public void setWin(int player) {
+		if (player == -1) {
+			this.gameInfo.setText("Game currently running");
+		} else {
+			this.gameInfo.setText("WINNER: " + player);
+		}
+
+	}
+
+	public int selectedMode() {
+		if (singlePlayer.isSelected() == true)
+			return 1;
+		else if (multiPlayer.isSelected() == true)
+			return 2;
+		return 0;
 	}
 
 }
