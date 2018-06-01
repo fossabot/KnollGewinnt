@@ -14,29 +14,12 @@ import javax.swing.JPanel;
 
 public class GroundPanel extends JPanel {
 
-	boolean pointer=false;
+	private boolean pointer=false;
 	
-	public void setPointer(boolean pointer, int player) {
-		
-		this.pointer = pointer;
-		if(pointer==true) {
-			switch (player) {
-			case 1:
-				this.setBackground(Color.blue);
-				break;
-
-			case 2:
-				this.setBackground(Color.green);
-				break;
-			}
-		}else {
-			this.setBackground(Color.GRAY);
-		}
-	}
-	
-	public void activateBorder(Color bg) {
-		this.setBorder(BorderFactory.createLineBorder(bg));
-	}
+	/**
+	 * Constructor of Class GroundPanel. A groundPanel is a controlPanel which is displayed below the playBoard.
+	 * @param pointer - bolean value that shows if this groundPanel is selected or not. 
+	 */
 	
 	public GroundPanel() {
 		super();
@@ -46,6 +29,51 @@ public class GroundPanel extends JPanel {
 		this.pointer=false;
 		
 	}
+	
+	/**
+	 * Sets this pointer to selected (true) or unselected (false). The current player defines the color of the pointer. 
+	 * @param pointer - boolean value that shows if this groundPanel is selected or not. 
+	 * @param player - number that defines the current player
+	 */
+	public void setPointer(boolean pointer, int player) {
+		
+		this.pointer = pointer;
+		if(pointer==true) {
+			switch (player) {
+			// ---player 1---
+			case 1:
+				this.setBackground(Color.blue);
+				break;
+			// ---player 2---
+			case 2:
+				this.setBackground(Color.green);
+				break;
+			}
+		}else {
+			// ---inactive pointer---
+			this.setBackground(Color.GRAY);
+		}
+	}
+	
+	/**
+	 * Activates the border of this groundPanel to make it visible. 
+	 * @param color - defines the color which is used
+	 */
+	
+	public void activateBorder(Color color) {
+		this.setBorder(BorderFactory.createLineBorder(color));
+	}
+
+	/**
+	 * @return - returns the current value of the boolean pointer 
+	 */
+	public boolean getPointer() {
+		return pointer;
+	}
+	
+	
+	
+
 	
 
 }

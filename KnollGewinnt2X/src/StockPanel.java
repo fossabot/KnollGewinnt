@@ -32,8 +32,8 @@ public class StockPanel {
 	 */
 	public void evaluate() {
 
-		if (first.owner == second.owner && second.owner == third.owner && third.owner == fourth.owner
-				&& first.owner != -1 && first.owner != -2) {
+		if (first.getOwner() == second.getOwner() && second.getOwner() == third.getOwner() && third.getOwner() == fourth.getOwner()
+				&& first.getOwner() != -1 && first.getOwner() != -2) {
 			this.filledCompletely = true;
 		}
 	}

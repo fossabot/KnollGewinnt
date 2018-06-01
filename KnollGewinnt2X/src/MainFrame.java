@@ -14,7 +14,7 @@ import javax.swing.text.*;
 
 public class MainFrame extends JFrame {
 
-	BaseP tog;
+	BasePanel tog;
 	int player = 1;
 	ConfigPanel panel;
 	JTextComponent statusGame;
@@ -42,7 +42,7 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Knoll Gewinnt Ver.0.1");
 		this.setLayout(new BorderLayout());
-		tog = new BaseP(7, 6);
+		tog = new BasePanel(7, 6);
 		this.getContentPane().add(tog, BorderLayout.CENTER);
 		newGameAction = new ActionListener() {
 
@@ -147,7 +147,7 @@ public class MainFrame extends JFrame {
 		this.selectedMode = selectedModeInt;
 		won = false;
 		this.remove(tog);
-		tog = new BaseP(7, 6);
+		tog = new BasePanel(7, 6);
 		this.getContentPane().add(tog, BorderLayout.CENTER);
 		pack();
 		this.setVisible(true);

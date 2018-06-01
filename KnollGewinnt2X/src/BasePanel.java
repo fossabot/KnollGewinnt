@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-public class BaseP extends JPanel {
+public class BasePanel extends JPanel {
 
 	private static final int left = 1;
 	private static final int right = 2;
@@ -24,14 +24,14 @@ public class BaseP extends JPanel {
 	public int player = 1;
 
 	/**
-	 * Constructor of Class BaseP. A BaseP has the size of the dimension (x, y).
+	 * Constructor of Class BasePanel. A BasePanel has the size of the dimension (x, y).
 	 * 
 	 * @param x
 	 *            - Dimension size of allPanels
 	 * @param y
 	 *            - Dimension size of allPanels
 	 */
-	public BaseP(int x, int y) {
+	public BasePanel(int x, int y) {
 		super();
 		this.setLayout(new GridLayout(y, x));
 		initializePanels(x, y);
@@ -136,7 +136,7 @@ public class BaseP extends JPanel {
 		for (int j = playBoard.length - 1; j >= 0; j--) {
 
 			// ---fill next free playPanel starting from the bottom
-			if (playBoard[j][getActiveGroundPanel()].isFilled == false) {
+			if (playBoard[j][getActiveGroundPanel()].isFilled() == false) {
 				playBoard[j][getActiveGroundPanel()].fill(player);
 				return;
 			}
@@ -152,7 +152,7 @@ public class BaseP extends JPanel {
 	 */
 	private int getActiveGroundPanel() {
 		for (int i = 0; i < control.length; i++) {
-			if (control[i].pointer == true) {
+			if (control[i].getPointer() == true) {
 				return i;
 			}
 		}
@@ -160,15 +160,19 @@ public class BaseP extends JPanel {
 	}
 
 	/**
-	 * changes the pointer to the current player (calls setPointer who changes the color)
+	 * changes the pointer to the current player (calls setPointer who changes the
+	 * color)
 	 */
 	public void changePlayer() {
 		control[getActiveGroundPanel()].setPointer(true, player);
 	}
 
 	/**
-	 * analyzes the current playBoard and generates forms of 4 playpanels (1 stockpanel contains 4 playpanels).
-	 * @param stocks - contains a list of all possible combinations of 4 playpanels
+	 * analyzes the current playBoard and generates forms of 4 playpanels (1
+	 * stockpanel contains 4 playpanels).
+	 * 
+	 * @param stocks
+	 *            - contains a list of all possible combinations of 4 playpanels
 	 */
 	public void generateStocks() {
 		stocks = new ArrayList<StockPanel>();
