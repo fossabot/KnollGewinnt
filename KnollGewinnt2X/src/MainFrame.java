@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
 		this.setLayout(new BorderLayout());
 
 		tog = new BasePanel(7, 6);
-		panel = new ConfigPanel(newGameAction);
+		
 		manualGame = new JLabel(
 				"<html><br><br><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>Press 'A' to move pointer left. Press 'D' to move pointer right. Press 'S' to throw coin. <html>");
 		manualGame.setFont(new Font("Calibri", Font.PLAIN, 20));
@@ -72,6 +72,7 @@ public class MainFrame extends JFrame {
 
 			}
 		};
+		panel = new ConfigPanel(newGameAction);
 		this.getContentPane().add(tog, BorderLayout.CENTER);
 		this.getContentPane().add(panel, BorderLayout.EAST);
 		this.getContentPane().add(manualGame, BorderLayout.SOUTH);
