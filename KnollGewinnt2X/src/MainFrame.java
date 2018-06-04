@@ -19,6 +19,8 @@ import javax.swing.text.*;
 
 public class MainFrame extends JFrame {
 
+	private static final int left = 1;
+	private static final int right = 2;
 	private BasePanel tog;
 	private int currentPlayer = 1;
 	private ConfigPanel panel;
@@ -26,8 +28,7 @@ public class MainFrame extends JFrame {
 	private ActionListener newGameAction;
 	private AWTEventListener awt;
 	private JLabel manualGame;
-	private int selectedMode; // '1' entspricht singlePlayer '2' steht für den multiPlayer Modus
-
+	private int selectedMode; // '1'  singlePlayer '2'  multiPlayer 
 
 	public MainFrame() {
 		init();
@@ -35,15 +36,29 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
+	 * Initializes the MainFrame.
 	 * 
+	 * @param tog
+	 *            - BasePanel which includes the GroundPanels and Playpanels to
+	 *            display the field.
+	 * @param newGameAction
+	 *            - ActionListener for the Buttons of the ConfigPanel
+	 * @param panel
+	 *            - ConfigPanel which includes the Buttons
+	 * @param manualGame
+	 *            - JLabel with instructions how to play
 	 */
 	private void init() {
 		consoleIntro();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Knoll Gewinnt Ver.0.1");
 		this.setLayout(new BorderLayout());
+
 		tog = new BasePanel(7, 6);
-		this.getContentPane().add(tog, BorderLayout.CENTER);
+		panel = new ConfigPanel(newGameAction);
+		manualGame = new JLabel(
+				"<html><br><br><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>Press 'A' to move pointer left. Press 'D' to move pointer right. Press 'S' to throw coin. <html>");
+		manualGame.setFont(new Font("Calibri", Font.PLAIN, 20));
 		newGameAction = new ActionListener() {
 
 			@Override
@@ -57,22 +72,22 @@ public class MainFrame extends JFrame {
 
 			}
 		};
-		panel = new ConfigPanel(newGameAction);
+		this.getContentPane().add(tog, BorderLayout.CENTER);
 		this.getContentPane().add(panel, BorderLayout.EAST);
-		manualGame = new JLabel(
-				"<html><br><br><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>Press 'A' to move pointer left. Press 'D' to move pointer right. Press 'S' to throw coin. <html>");
-		manualGame.setFont(new Font("Calibri", Font.PLAIN, 20));
 		this.getContentPane().add(manualGame, BorderLayout.SOUTH);
-
-		pack();
 		this.setLocationByPlatform(true);
 		this.setMinimumSize(new Dimension(800, 400));
 		this.setVisible(true);
+		pack();
 		eventListener();
 	}
 
+
+	/**
+	 * consoleIntro
+	 */
 	static void consoleIntro() {
-	
+
 		System.out.println("***********************************************");
 		System.out.println("*          KNOLL GEWINNT VER. 0.1             *");
 		System.out.println("*                   by...                     *");
@@ -81,6 +96,11 @@ public class MainFrame extends JFrame {
 		System.out.println("***********************************************");
 	}
 
+	
+	/**
+	 * Generates an eventListener to recognize pressed Keys.
+	 * @param awt - AWTEventListener to process the KeyEvents.
+	 */
 	private void eventListener() {
 		awt = new AWTEventListener() {
 
@@ -88,15 +108,16 @@ public class MainFrame extends JFrame {
 			public void eventDispatched(AWTEvent event) {
 				switch (event.getID()) {
 				case KeyEvent.KEY_RELEASED:
-					System.out.println(System.currentTimeMillis()+": "+((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()));
+					System.out.println(System.currentTimeMillis() + ": "
+							+ ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()));
 
 					if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("a")
 							|| ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("A")) {
-						tog.changePointer(1);
+						tog.changePointer(left);
 
 					} else if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("d")
 							|| ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("D")) {
-						tog.changePointer(2);
+						tog.changePointer(right);
 					} else if ((((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("s")
 							&& won == false)
 							|| (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
@@ -126,24 +147,33 @@ public class MainFrame extends JFrame {
 
 	}
 
+	/**
+	 * Switches the Player depending on the current value of Player.
+	 */
+	
 	private void switchPlayer() {
 		switch (currentPlayer) {
 		case 1:
 			currentPlayer = 2;
 			tog.player = 2;
 			tog.changePlayer();
-			System.out.println(System.currentTimeMillis()+": Turn of Player: " + currentPlayer);
+			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;
 		case 2:
 			currentPlayer = 1;
 			tog.player = 1;
 			tog.changePlayer();
-			System.out.println(System.currentTimeMillis()+": Turn of Player: " + currentPlayer);
+			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;
 		}
 
 	}
 
+	/**
+	 * Resets the Frame to start a new Game and recognize changement of the selected Mode
+	 * @param selectedModeInt - '1'  singlePlayer '2'  multiPlayer 
+	 */
+	
 	private void resetFrame(int selectedModeInt) {
 		this.selectedMode = selectedModeInt;
 		won = false;
