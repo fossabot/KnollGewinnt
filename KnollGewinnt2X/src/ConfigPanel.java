@@ -16,21 +16,33 @@ import javax.swing.*;
 public class ConfigPanel extends JPanel {
 
 	JButton newGame;
+	JButton save;
 	JRadioButton singlePlayer;
 	JRadioButton multiPlayer;
 	ButtonGroup playerChoice = new ButtonGroup();;
 	JLabel status;
-	JButton save;
-	String[] arg = { "1 Player", "2 Player" };
 	JLabel gameInfo;
+	String[] arg = { "1 Player", "2 Player" };
+	
 
+	/**
+	 * Constructor of Class ConfigPanel. 
+	 * @param e - Action Listener which is provided by the MainFrame. The ActionListener is used for the functionality of the included Buttons.
+	 */
+	
 	public ConfigPanel(ActionListener e) {
 		super();
 		init(e);
 
 	}
 
+	/**
+	 * Initializes the ConfigPanel.
+	 * @param e - ActionListener which is provided by the Constructor. The ActionListener is used for the functionality of the included Buttons.
+	 */
+	
 	private void init(ActionListener e) {
+		
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		newGame = new JButton("New Game");
 		this.add(newGame);
@@ -52,6 +64,11 @@ public class ConfigPanel extends JPanel {
 
 	}
 
+	/**
+	 * Sets the gameInfo Text to whats actually going on. 
+	 * @param player - Player Number
+	 */
+	
 	public void setWin(int player) {
 		if (player == -1) {
 			this.gameInfo.setText("Game currently running");
@@ -61,6 +78,10 @@ public class ConfigPanel extends JPanel {
 
 	}
 
+	/**
+	 * @return - Returns the number of the selected Mode depending on which radioButton is selected.
+	 */
+	
 	public int selectedMode() {
 		if (singlePlayer.isSelected() == true)
 			return 1;
