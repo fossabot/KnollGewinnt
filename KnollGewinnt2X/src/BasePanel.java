@@ -18,6 +18,7 @@ public class BasePanel extends JPanel {
 
 	private static final int left = 1;
 	private static final int right = 2;
+	private static final int noOwner = -1;
 	private PlayPanel[][] playBoard;
 	private GroundPanel[] control;
 	ArrayList<StockPanel> stocks;
@@ -165,6 +166,29 @@ public class BasePanel extends JPanel {
 	 */
 	public void changePlayer() {
 		control[getActiveGroundPanel()].setPointer(true, player);
+	}
+	
+	/**
+	 * Sets one playble PlayPanel per coloumn. 
+	 */
+	
+	public void evaluatePlayablePanels() {
+		
+		for (int i = 0; i < playBoard.length; i++) {
+			for (int j = 0; j < playBoard.length; j++) {
+				playBoard[i][j].setPlayable(false);
+			}
+		}
+		
+		
+		for (int i = 0; i < playBoard[0].length; i++) {
+			for (int j = playBoard.length-1; j >= 0; j--) {
+				if (playBoard[i][j].getOwner()==noOwner) {
+					playBoard[i][j].setPlayable(true);
+					return;
+				}
+			}
+		}
 	}
 
 	/**

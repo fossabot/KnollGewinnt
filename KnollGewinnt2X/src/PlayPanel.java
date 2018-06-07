@@ -16,7 +16,9 @@ import javax.swing.JPanel;
 public class PlayPanel extends JPanel {
 	private static final int noOwner = -1;
 	private boolean filled;
+	private boolean playable;
 	private int owner;
+	
 
 	/**
 	 * Constructor of Class PlayPanel. A PlayPanel is a panel which is displayed on
@@ -84,6 +86,15 @@ public class PlayPanel extends JPanel {
 	 */
 	public int getOwner() {
 		return owner;
+	}
+	
+	/**
+	 * Sets the actual status of the param playable. A PlayPanel is playable if all the lower PlayPanels in the same Coloumn are filled. 
+	 * @param playable
+	 */
+	
+	public void setPlayable(Boolean playable) {
+		this.playable=playable;
 	}
 
 }
