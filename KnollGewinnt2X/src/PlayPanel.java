@@ -61,6 +61,11 @@ public class PlayPanel extends JPanel {
 			this.setBackground(Color.GREEN);
 			filled = true;
 			break;
+		// ---Put red for Player 3 aka KI---
+		case 3:
+			this.setBackground(Color.RED);
+			filled = true;
+			break;
 		}
 	}
 
@@ -95,6 +100,12 @@ public class PlayPanel extends JPanel {
 	
 	public void setPlayable(Boolean playable) {
 		this.playable=playable;
+	}
+	/**
+	 * @return the boolean value playable
+	 */
+	public boolean isPlayable () {
+		return playable;
 	}
 
 }

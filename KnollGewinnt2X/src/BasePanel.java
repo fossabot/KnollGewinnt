@@ -25,7 +25,8 @@ public class BasePanel extends JPanel {
 	public int player = 1;
 
 	/**
-	 * Constructor of Class BasePanel. A BasePanel has the size of the dimension (x, y).
+	 * Constructor of Class BasePanel. A BasePanel has the size of the dimension (x,
+	 * y).
 	 * 
 	 * @param x
 	 *            - Dimension size of allPanels
@@ -134,17 +135,58 @@ public class BasePanel extends JPanel {
 	 */
 	public void throwCoin(int player) {
 
-		for (int j = playBoard.length - 1; j >= 0; j--) {
-
-			// ---fill next free playPanel starting from the bottom
-			if (playBoard[j][getActiveGroundPanel()].isFilled() == false) {
-				playBoard[j][getActiveGroundPanel()].fill(player);
-				return;
+		if (player == 3) {
+			int highestChanceKI = 0;
+			int highestChancePL = 0;
+			// ---highestChance KI---
+			for (int i = 0; i < stocks.size(); i++) {
+				if (stocks.get(i).calculateWinningChance(player) > highestChanceKI) {
+					highestChanceKI = stocks.get(i).calculateWinningChance(3);
+				}
+			}
+			// ---highestChance PL---
+			for (int i = 0; i < stocks.size(); i++) {
+				if (stocks.get(i).calculateWinningChance(player) > highestChancePL) {
+					highestChancePL = stocks.get(i).calculateWinningChance(1);
+				}
 			}
 
-		}
-		return;
+			if (highestChanceKI == 0 && highestChancePL <= 0 ) {
+				System.out.println("HighestChanceKI: "+ highestChanceKI);
+				System.out.println("HighestChancePL: "+ highestChancePL);
+				for (int j = playBoard.length - 1; j >= 0; j--) {
 
+					for (int i = 0; i < playBoard[0].length; i++) {
+						if (playBoard[j][i].isFilled() == false) {
+							playBoard[j][i].fill(player);
+							return;
+						}
+					}
+				}
+			} else if (highestChanceKI > 0) {
+				
+				
+				System.out.println("HighestChance: "+ highestChanceKI);
+				for (int i = 0; i < stocks.size(); i++) {
+					if (stocks.get(i).calculateWinningChance(3) == highestChanceKI) {
+						stocks.get(i).getPlayPanel(4 - highestChanceKI).fill(3);
+						return;
+					}
+				}
+			}
+
+		} else {
+			for (int j = playBoard.length - 1; j >= 0; j--) {
+
+				// ---fill next free playPanel starting from the bottom
+				if (playBoard[j][getActiveGroundPanel()].isFilled() == false) {
+					playBoard[j][getActiveGroundPanel()].fill(player);
+					return;
+				}
+
+			}
+			return;
+		}
 	}
 
 	/**
@@ -167,25 +209,25 @@ public class BasePanel extends JPanel {
 	public void changePlayer() {
 		control[getActiveGroundPanel()].setPointer(true, player);
 	}
-	
+
 	/**
-	 * Sets one playble PlayPanel per coloumn. 
+	 * Sets one playble PlayPanel per coloumn.
 	 */
-	
+
 	public void evaluatePlayablePanels() {
-		
+
 		for (int i = 0; i < playBoard.length; i++) {
 			for (int j = 0; j < playBoard.length; j++) {
 				playBoard[i][j].setPlayable(false);
 			}
 		}
-		
-		
+
 		for (int i = 0; i < playBoard[0].length; i++) {
-			for (int j = playBoard.length-1; j >= 0; j--) {
-				if (playBoard[i][j].getOwner()==noOwner) {
-					playBoard[i][j].setPlayable(true);
-					return;
+			for (int j = playBoard.length - 1; j >= 0; j--) {
+				if (playBoard[j][i].getOwner() == noOwner) {
+					playBoard[j][i].setPlayable(true);
+					System.out.println(System.currentTimeMillis()+" "+i+" "+j+" playable");
+					break;
 				}
 			}
 		}

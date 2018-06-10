@@ -28,7 +28,7 @@ public class MainFrame extends JFrame {
 	private ActionListener newGameAction;
 	private AWTEventListener awt;
 	private JLabel manualGame;
-	private int selectedMode; // '1'  singlePlayer '2'  multiPlayer 
+	private int selectedMode; // '1' singlePlayer '2' multiPlayer
 
 	public MainFrame() {
 		init();
@@ -53,9 +53,9 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Knoll Gewinnt Ver.0.1");
 		this.setLayout(new BorderLayout());
-
+		this.selectedMode=1;
 		tog = new BasePanel(7, 6);
-		
+
 		manualGame = new JLabel(
 				"<html><br><br><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>Press 'A' to move pointer left. Press 'D' to move pointer right. Press 'S' to throw coin. <html>");
 		manualGame.setFont(new Font("Calibri", Font.PLAIN, 20));
@@ -83,7 +83,6 @@ public class MainFrame extends JFrame {
 		eventListener();
 	}
 
-
 	/**
 	 * consoleIntro
 	 */
@@ -97,10 +96,11 @@ public class MainFrame extends JFrame {
 		System.out.println("***********************************************");
 	}
 
-	
 	/**
 	 * Generates an eventListener to recognize pressed Keys.
-	 * @param awt - AWTEventListener to process the KeyEvents.
+	 * 
+	 * @param awt
+	 *            - AWTEventListener to process the KeyEvents.
 	 */
 	private void eventListener() {
 		awt = new AWTEventListener() {
@@ -138,31 +138,57 @@ public class MainFrame extends JFrame {
 
 			}
 
-			private void displayWinner(int player) {
-				panel.setWin(player);
-
-			}
+	
 
 		};
 		this.getToolkit().addAWTEventListener(awt, AWTEvent.KEY_EVENT_MASK);
 
 	}
 
+	private void displayWinner(int player) {
+		panel.setWin(player);
+
+	}
+	
 	/**
 	 * Switches the Player depending on the current value of Player.
 	 */
-	
+
 	private void switchPlayer() {
 		switch (currentPlayer) {
 		case 1:
-			currentPlayer = 2;
-			tog.player = 2;
-			tog.changePlayer();
-			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
+			switch (this.selectedMode) {
+			case 1:
+				currentPlayer = 3;
+				tog.player = 3;
+				tog.evaluatePlayablePanels();
+				tog.changePlayer();
+				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
+				letKIPlay();
+				break;
+
+			case 2:
+				currentPlayer = 2;
+				tog.player = 2;
+				tog.evaluatePlayablePanels();
+				tog.changePlayer();
+				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
+				break;
+			}
 			break;
+			
 		case 2:
 			currentPlayer = 1;
 			tog.player = 1;
+			tog.evaluatePlayablePanels();
+			tog.changePlayer();
+			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
+			break;
+			
+		case 3:
+			currentPlayer = 1;
+			tog.player = 1;
+			tog.evaluatePlayablePanels();
 			tog.changePlayer();
 			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;
@@ -170,11 +196,28 @@ public class MainFrame extends JFrame {
 
 	}
 
+	private void letKIPlay() {
+		if(won==false) {
+			tog.throwCoin(currentPlayer);
+			if (tog.evaluateRows() == true) {
+				won = true;
+				displayWinner(currentPlayer);
+
+			}
+
+			switchPlayer();
+		}
+		
+	}
+
 	/**
-	 * Resets the Frame to start a new Game and recognize changement of the selected Mode
-	 * @param selectedModeInt - '1'  singlePlayer '2'  multiPlayer 
+	 * Resets the Frame to start a new Game and recognize changement of the selected
+	 * Mode
+	 * 
+	 * @param selectedModeInt
+	 *            - '1' singlePlayer '2' multiPlayer
 	 */
-	
+
 	private void resetFrame(int selectedModeInt) {
 		this.selectedMode = selectedModeInt;
 		won = false;
