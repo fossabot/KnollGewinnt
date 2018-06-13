@@ -123,14 +123,24 @@ public class MainFrame extends JFrame {
 							&& won == false)
 							|| (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
 									&& won == false)) {
-						tog.throwCoin(currentPlayer);
+						try {
+							tog.throwCoin(currentPlayer);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						if (tog.evaluateRows() == true) {
 							won = true;
 							displayWinner(currentPlayer);
 
 						}
 
-						switchPlayer();
+						try {
+							switchPlayer();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 
 					}
 					break;
@@ -152,9 +162,10 @@ public class MainFrame extends JFrame {
 	
 	/**
 	 * Switches the Player depending on the current value of Player.
+	 * @throws Exception 
 	 */
 
-	private void switchPlayer() {
+	private void switchPlayer() throws Exception {
 		switch (currentPlayer) {
 		case 1:
 			switch (this.selectedMode) {
@@ -196,7 +207,8 @@ public class MainFrame extends JFrame {
 
 	}
 
-	private void letKIPlay() {
+	private void letKIPlay() throws Exception {
+		tog.evaluatePlayablePanels();
 		if(won==false) {
 			tog.throwCoin(currentPlayer);
 			if (tog.evaluateRows() == true) {

@@ -43,30 +43,37 @@ public class PlayPanel extends JPanel {
 	 * Fills this PlayPanel with the specific color of the player
 	 * 
 	 * @param player
+	 * @throws Exception 
 	 */
-	public void fill(int player) {
-		this.owner = player;
-		switch (owner) {
-		// ---Put white for an empty PlayPanel with no owner---
-		case noOwner:
-			this.setBackground(Color.WHITE);
-			break;
-		// ---Put blue for Player 1---
-		case 1:
-			this.setBackground(Color.BLUE);
-			filled = true;
-			break;
-		// ---Put green for Player 2---
-		case 2:
-			this.setBackground(Color.GREEN);
-			filled = true;
-			break;
-		// ---Put red for Player 3 aka KI---
-		case 3:
-			this.setBackground(Color.RED);
-			filled = true;
-			break;
+	public void fill(int player) throws Exception {
+		if(this.getBackground().equals(Color.GREEN) || this.getBackground().equals(Color.BLUE) || this.getBackground().equals(Color.RED)) {
+			throw new Exception("PlayPanel is already filled!");
+		}else {
+			this.owner = player;
+			switch (owner) {
+			// ---Put white for an empty PlayPanel with no owner---
+			case noOwner:
+				this.setBackground(Color.WHITE);
+				break;
+			// ---Put blue for Player 1---
+			case 1:
+				this.setBackground(Color.BLUE);
+				filled = true;
+				break;
+			// ---Put green for Player 2---
+			case 2:
+				this.setBackground(Color.GREEN);
+				filled = true;
+				break;
+			// ---Put red for Player 3 aka KI---
+			case 3:
+				this.setBackground(Color.RED);
+				filled = true;
+				break;
+			}
 		}
+		
+	
 	}
 
 	/**
@@ -105,7 +112,7 @@ public class PlayPanel extends JPanel {
 	 * @return the boolean value playable
 	 */
 	public boolean isPlayable () {
-		return playable;
+		return this.playable;
 	}
 
 }
