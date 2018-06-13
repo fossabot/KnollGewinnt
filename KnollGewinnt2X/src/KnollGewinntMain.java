@@ -5,7 +5,7 @@ import java.io.IOException;
  * CLASS: KnollGewinntMain
  * @since 29.05.2018
  * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarzz
- * @version 0.2
+ * @version 0.2.1
  * (c) 2018
  */
 public class KnollGewinntMain {
