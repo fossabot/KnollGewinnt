@@ -171,7 +171,7 @@ public class BasePanel extends JPanel {
 				for (int i = 0; i < stocks.size(); i++) {
 					if (stocks.get(i).calculateWinningChance(3) == highestChanceKI) {
 						stocks.get(i).getPlayable().fill(3);
-						return;
+						 return;
 					}
 				}
 			}else if (highestChancePL > highestChanceKI && highestChancePL >0) {
