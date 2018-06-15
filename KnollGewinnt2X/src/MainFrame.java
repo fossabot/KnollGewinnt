@@ -133,6 +133,7 @@ public class MainFrame extends JFrame {
 						if (tog.evaluateRows() == true) {
 							won = true;
 							displayWinner(currentPlayer);
+							stopGame();
 
 						}
 
@@ -154,6 +155,10 @@ public class MainFrame extends JFrame {
 		};
 		this.getToolkit().addAWTEventListener(awt, AWTEvent.KEY_EVENT_MASK);
 
+	}
+
+	protected void stopGame() {
+		this.getToolkit().removeAWTEventListener(awt);
 	}
 
 	private void displayWinner(int player) {
