@@ -124,6 +124,7 @@ public class MainFrame extends JFrame {
 							|| (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
 									&& won == false)) {
 						try {
+							
 							tog.throwCoin(currentPlayer);
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
@@ -172,7 +173,7 @@ public class MainFrame extends JFrame {
 			case 1:
 				currentPlayer = 3;
 				tog.player = 3;
-				tog.evaluatePlayablePanels();
+				//tog.evaluatePlayablePanels();
 				tog.changePlayer();
 				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 				letKIPlay();
@@ -181,7 +182,7 @@ public class MainFrame extends JFrame {
 			case 2:
 				currentPlayer = 2;
 				tog.player = 2;
-				tog.evaluatePlayablePanels();
+				
 				tog.changePlayer();
 				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 				break;
@@ -191,7 +192,7 @@ public class MainFrame extends JFrame {
 		case 2:
 			currentPlayer = 1;
 			tog.player = 1;
-			tog.evaluatePlayablePanels();
+			
 			tog.changePlayer();
 			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;
@@ -199,7 +200,7 @@ public class MainFrame extends JFrame {
 		case 3:
 			currentPlayer = 1;
 			tog.player = 1;
-			tog.evaluatePlayablePanels();
+			
 			tog.changePlayer();
 			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;

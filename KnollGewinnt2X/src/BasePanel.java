@@ -132,7 +132,7 @@ public class BasePanel extends JPanel {
 	 * 
 	 * @param player
 	 *            - the player who throws the coin
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void throwCoin(int player) throws Exception {
 
@@ -145,7 +145,7 @@ public class BasePanel extends JPanel {
 					highestChanceKI = stocks.get(i).calculateWinningChance(3);
 				}
 			}
-			// ---highestChance PL--- 
+			// ---highestChance PL---
 			for (int i = 0; i < stocks.size(); i++) {
 				if (stocks.get(i).calculateWinningChance(1) > highestChancePL) {
 					highestChancePL = stocks.get(i).calculateWinningChance(1);
@@ -155,33 +155,39 @@ public class BasePanel extends JPanel {
 			System.out.println("HighestChancePL: " + highestChancePL);
 
 			if (highestChanceKI == 0 && highestChancePL <= 0) {
-			System.out.println("Random");
-				for (int j = playBoard.length - 1; j >= 0; j--) {
+				throwCoinRandomKI(player);
+				return;
+			} else if (highestChanceKI >= highestChancePL && highestChanceKI > 0) {
+				System.out.println("NotRandom");
+				for (int i = 0; i < stocks.size(); i++) {
+					if (stocks.get(i).calculateWinningChance(3) == highestChanceKI
+							&& stocks.get(i).isOnePlayable() == true) {
+						System.out.println("NotRandom");
+						if (stocks.get(i).getPlayable().isFilled()==false) {
+							stocks.get(i).getPlayable().fill(3);
+							System.out.println("NotRandom");
+							return;
+						}
+						
+						
+					}
 
-					for (int i = 0; i < playBoard[0].length; i++) {
-						if (playBoard[j][i].isFilled() == false) {
-							playBoard[j][i].fill(player);
+				}
+				throwCoinRandomKI(player);
+				return;
+			} else if (highestChancePL > highestChanceKI && highestChancePL > 0) {
+				System.out.println("NotRandomPL");
+				for (int i = 0; i < stocks.size(); i++) {
+					if (stocks.get(i).calculateWinningChance(1) == highestChancePL) {
+						if (stocks.get(i).getPlayable().isFilled()==false) {
+							stocks.get(i).getPlayable().fill(3);
+							System.out.println("NotRandomPL");
 							return;
 						}
 					}
 				}
-			} else if (highestChanceKI >= highestChancePL && highestChanceKI >0) {
-				System.out.println("NotRandom");
-				this.evaluatePlayablePanels();
-				for (int i = 0; i < stocks.size(); i++) {
-					if (stocks.get(i).calculateWinningChance(3) == highestChanceKI) {
-						stocks.get(i).getPlayable().fill(3);
-						 return;
-					}
-				}
-			}else if (highestChancePL > highestChanceKI && highestChancePL >0) {
-				System.out.println("NotRandomPL");
-				for (int i = 0; i < stocks.size(); i++) {
-					if (stocks.get(i).calculateWinningChance(1) == highestChancePL) {
-						stocks.get(i).getPlayable().fill(3);
-						return;
-					}
-				}
+				throwCoinRandomKI(player);
+				return;
 			}
 
 		} else {
@@ -195,6 +201,24 @@ public class BasePanel extends JPanel {
 
 			}
 			return;
+		}
+	}
+
+	/**
+	 * @param player
+	 * @throws Exception
+	 */
+	private void throwCoinRandomKI(int player) throws Exception {
+		System.out.println("Random");
+		for (int j = playBoard.length - 1; j >= 0; j--) {
+
+			for (int i = 0; i < playBoard[0].length; i++) {
+				if (playBoard[j][i].isFilled() == false) {
+					playBoard[j][i].fill(player);
+					playBoard[j][i].setPlayable(false);
+					return;
+				}
+			}
 		}
 	}
 
@@ -235,7 +259,8 @@ public class BasePanel extends JPanel {
 			for (int j = playBoard.length - 1; j >= 0; j--) {
 				if (playBoard[j][i].getOwner() == noOwner) {
 					playBoard[j][i].setPlayable(true);
-					System.out.println(System.currentTimeMillis() + " " + i + " " + j + " playable_obj_ID "+ playBoard[j][i].hashCode());
+					System.out.println(System.currentTimeMillis() + " " + i + " " + j + " playable_obj_ID "
+							+ playBoard[j][i].hashCode());
 					break;
 				}
 			}

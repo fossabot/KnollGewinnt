@@ -86,7 +86,7 @@ public class StockPanel {
 		return 0;
 	}
 
-	private boolean isOnePlayable() {
+	public boolean isOnePlayable() {
 		for (int i = 0; i < playPanels.length; i++) {
 			if (playPanels[i].isPlayable() == true)
 				return true;
