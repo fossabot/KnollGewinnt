@@ -233,6 +233,8 @@ public class MainFrame extends JFrame {
 
 	private void resetFrame(int selectedModeInt) {
 		this.selectedMode = selectedModeInt;
+		currentPlayer = 1;
+		tog.player = 1;
 		won = false;
 		this.remove(tog);
 		tog = new BasePanel(7, 6);
