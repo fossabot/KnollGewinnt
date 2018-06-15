@@ -294,9 +294,9 @@ public class BasePanel extends JPanel {
 							playBoard[i + 3][j + 3]));
 				}
 				// --diagonale Stocks #2---
-				if (j - 3 < playBoard[i].length && i - 3 < playBoard.length && j - 3 >= 0 && i - 3 >= 0) {
-					stocks.add(new StockPanel(playBoard[i][j], playBoard[i - 1][j - 1], playBoard[i - 2][j - 2],
-							playBoard[i - 3][j - 3]));
+				if (j + 3 < playBoard[i].length && i - 3 < playBoard.length && j + 3 >= 0 && i - 3 >= 0) {
+					stocks.add(new StockPanel(playBoard[i][j], playBoard[i - 1][j + 1], playBoard[i - 2][j + 2],
+							playBoard[i - 3][j + 3]));
 				}
 
 			}
