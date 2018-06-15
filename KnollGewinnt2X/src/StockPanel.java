@@ -96,7 +96,7 @@ public class StockPanel {
 	
 	public PlayPanel getPlayable() {
 		for (int i = 0; i < playPanels.length; i++) {
-			if (playPanels[i].isPlayable() == true)
+			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled()==false)
 				return playPanels[i];
 		}
 		return null; 

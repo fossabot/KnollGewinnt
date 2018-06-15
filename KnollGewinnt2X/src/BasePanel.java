@@ -163,7 +163,7 @@ public class BasePanel extends JPanel {
 					if (stocks.get(i).calculateWinningChance(3) == highestChanceKI
 							&& stocks.get(i).isOnePlayable() == true) {
 						System.out.println("NotRandom");
-						if (stocks.get(i).getPlayable().isFilled()==false) {
+						if (stocks.get(i).getPlayable()!=null) {
 							stocks.get(i).getPlayable().fill(3);
 							System.out.println("NotRandom");
 							return;
@@ -179,7 +179,7 @@ public class BasePanel extends JPanel {
 				System.out.println("NotRandomPL");
 				for (int i = 0; i < stocks.size(); i++) {
 					if (stocks.get(i).calculateWinningChance(1) == highestChancePL) {
-						if (stocks.get(i).getPlayable().isFilled()==false) {
+						if (stocks.get(i).getPlayable()!=null) {
 							stocks.get(i).getPlayable().fill(3);
 							System.out.println("NotRandomPL");
 							return;
@@ -257,7 +257,7 @@ public class BasePanel extends JPanel {
 
 		for (int i = 0; i < playBoard[0].length; i++) {
 			for (int j = playBoard.length - 1; j >= 0; j--) {
-				if (playBoard[j][i].getOwner() == noOwner) {
+				if (playBoard[j][i].getOwner() == noOwner &&playBoard[j][i].isFilled()==false) {
 					playBoard[j][i].setPlayable(true);
 					System.out.println(System.currentTimeMillis() + " " + i + " " + j + " playable_obj_ID "
 							+ playBoard[j][i].hashCode());

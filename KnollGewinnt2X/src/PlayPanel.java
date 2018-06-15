@@ -18,7 +18,6 @@ public class PlayPanel extends JPanel {
 	private boolean filled;
 	private boolean playable;
 	private int owner;
-	
 
 	/**
 	 * Constructor of Class PlayPanel. A PlayPanel is a panel which is displayed on
@@ -35,7 +34,7 @@ public class PlayPanel extends JPanel {
 		this.filled = false;
 		this.owner = -1;
 		this.activateBorder(Color.black);
-		System.out.println(System.currentTimeMillis()+ ": PLAYPANEL CREATED");
+		System.out.println(System.currentTimeMillis() + ": PLAYPANEL CREATED");
 
 	}
 
@@ -43,17 +42,19 @@ public class PlayPanel extends JPanel {
 	 * Fills this PlayPanel with the specific color of the player
 	 * 
 	 * @param player
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void fill(int player) throws Exception {
-		if(this.getBackground().equals(Color.GREEN) || this.getBackground().equals(Color.BLUE) || this.getBackground().equals(Color.RED)) {
+		if (this.getBackground().equals(Color.GREEN) || this.getBackground().equals(Color.BLUE)
+				|| this.getBackground().equals(Color.RED)) {
 			throw new Exception("PlayPanel is already filled!");
-		}else {
+		} else {
 			this.owner = player;
 			switch (owner) {
 			// ---Put white for an empty PlayPanel with no owner---
 			case noOwner:
 				this.setBackground(Color.WHITE);
+				filled = false;
 				break;
 			// ---Put blue for Player 1---
 			case 1:
@@ -72,8 +73,7 @@ public class PlayPanel extends JPanel {
 				break;
 			}
 		}
-		
-	
+
 	}
 
 	/**
@@ -99,19 +99,22 @@ public class PlayPanel extends JPanel {
 	public int getOwner() {
 		return owner;
 	}
-	
+
 	/**
-	 * Sets the actual status of the param playable. A PlayPanel is playable if all the lower PlayPanels in the same Coloumn are filled. 
+	 * Sets the actual status of the param playable. A PlayPanel is playable if all
+	 * the lower PlayPanels in the same Coloumn are filled.
+	 * 
 	 * @param playable
 	 */
-	
+
 	public void setPlayable(Boolean playable) {
-		this.playable=playable;
+		this.playable = playable;
 	}
+
 	/**
 	 * @return the boolean value playable
 	 */
-	public boolean isPlayable () {
+	public boolean isPlayable() {
 		return this.playable;
 	}
 
