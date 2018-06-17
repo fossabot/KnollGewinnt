@@ -1,3 +1,4 @@
+
 /** 
  * KNOLL GEWINNT powered by javax.swing
  * CLASS: ConfigPanel
@@ -7,6 +8,7 @@
  * (c) 2018
  */
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,13 +25,22 @@ public class ConfigPanel extends JPanel {
 	JLabel status;
 	JLabel gameInfo;
 	String[] arg = { "1 Player", "2 Player" };
-	
+	private JTextField yAxis;
+	private JTextField xAxis;
+	private JLabel yAxisLabel;
+	private JLabel xAxisLabel;
+	private JPanel yAxisPanel;
+	private JPanel xAxisPanel;
 
 	/**
-	 * Constructor of Class ConfigPanel. 
-	 * @param e - Action Listener which is provided by the MainFrame. The ActionListener is used for the functionality of the included Buttons.
+	 * Constructor of Class ConfigPanel.
+	 * 
+	 * @param e
+	 *            - Action Listener which is provided by the MainFrame. The
+	 *            ActionListener is used for the functionality of the included
+	 *            Buttons.
 	 */
-	
+
 	public ConfigPanel(ActionListener e) {
 		super();
 		init(e);
@@ -38,11 +49,15 @@ public class ConfigPanel extends JPanel {
 
 	/**
 	 * Initializes the ConfigPanel.
-	 * @param e - ActionListener which is provided by the Constructor. The ActionListener is used for the functionality of the included Buttons.
+	 * 
+	 * @param e
+	 *            - ActionListener which is provided by the Constructor. The
+	 *            ActionListener is used for the functionality of the included
+	 *            Buttons.
 	 */
-	
+
 	private void init(ActionListener e) {
-		
+
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		newGame = new JButton("New Game");
 		this.add(newGame);
@@ -65,10 +80,12 @@ public class ConfigPanel extends JPanel {
 	}
 
 	/**
-	 * Sets the gameInfo Text to whats actually going on. 
-	 * @param player - Player Number
+	 * Sets the gameInfo Text to whats actually going on.
+	 * 
+	 * @param player
+	 *            - Player Number
 	 */
-	
+
 	public void setWin(int player) {
 		if (player == -1) {
 			this.gameInfo.setText("Game currently running");
@@ -79,9 +96,10 @@ public class ConfigPanel extends JPanel {
 	}
 
 	/**
-	 * @return - Returns the number of the selected Mode depending on which radioButton is selected.
+	 * @return - Returns the number of the selected Mode depending on which
+	 *         radioButton is selected.
 	 */
-	
+
 	public int selectedMode() {
 		if (singlePlayer.isSelected() == true)
 			return 1;

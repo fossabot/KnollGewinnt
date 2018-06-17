@@ -8,9 +8,13 @@
  * (c) 2018
  */
 import java.awt.Color;
-import java.awt.LayoutManager;
+import java.awt.FlowLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class PlayPanel extends JPanel {
@@ -18,6 +22,7 @@ public class PlayPanel extends JPanel {
 	private boolean filled;
 	private boolean playable;
 	private int owner;
+	private JLabel a;
 
 	/**
 	 * Constructor of Class PlayPanel. A PlayPanel is a panel which is displayed on
@@ -35,7 +40,11 @@ public class PlayPanel extends JPanel {
 		this.owner = -1;
 		this.activateBorder(Color.black);
 		System.out.println(System.currentTimeMillis() + ": PLAYPANEL CREATED");
-
+		//Icon b = new ImageIcon(getClass().getResource("knolll.png"));
+		//a = new JLabel(b);
+		//this.add(a);
+		//this.setLayout(new FlowLayout());
+		//a.setVisible(false);
 	}
 
 	/**
@@ -69,6 +78,7 @@ public class PlayPanel extends JPanel {
 			// ---Put red for Player 3 aka KI---
 			case 3:
 				this.setBackground(Color.RED);
+				//a.setVisible(true);
 				filled = true;
 				break;
 			}
