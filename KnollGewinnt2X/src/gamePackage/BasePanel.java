@@ -1,3 +1,4 @@
+package gamePackage;
 
 /** 
  * KNOLL GEWINNT powered by javax.swing
@@ -43,6 +44,27 @@ public class BasePanel extends JPanel {
 		initializePanels(x, y);
 		generateStocks();
 
+	}
+
+	/**
+	 * @return the playBoard
+	 */
+	public PlayPanel[][] getPlayBoard() {
+		return playBoard;
+	}
+
+	/**
+	 * @return the control
+	 */
+	public GroundPanel[] getControl() {
+		return control;
+	}
+
+	/**
+	 * @return the stocks
+	 */
+	public ArrayList<StockPanel> getStocks() {
+		return stocks;
 	}
 
 	/**

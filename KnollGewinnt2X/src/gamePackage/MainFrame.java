@@ -1,3 +1,4 @@
+package gamePackage;
 
 /** 
  * KNOLL GEWINNT powered by javax.swing
