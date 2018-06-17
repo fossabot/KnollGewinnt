@@ -3,7 +3,7 @@
  * KNOLL GEWINNT powered by javax.swing
  * CLASS: BaseP
  * @since 29.05.2018
- * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert
+ * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz
  * @version 0.1
  * (c) 2018
  */
@@ -19,6 +19,10 @@ public class BasePanel extends JPanel {
 	private static final int left = 1;
 	private static final int right = 2;
 	private static final int noOwner = -1;
+
+	private static final int playerOne = 1;
+	private static final int playerTwo = 2;
+	private static final int playerKI = 3;
 	private PlayPanel[][] playBoard;
 	private GroundPanel[] control;
 	ArrayList<StockPanel> stocks;
@@ -137,57 +141,25 @@ public class BasePanel extends JPanel {
 	public void throwCoin(int player) throws Exception {
 
 		if (player == 3) {
-			int highestChanceKI = 0;
-			int highestChancePL = 0;
+
 			// ---highestChance KI---
-			for (int i = 0; i < stocks.size(); i++) {
-				if (stocks.get(i).calculateWinningChance(3) > highestChanceKI) {
-					highestChanceKI = stocks.get(i).calculateWinningChance(3);
-				}
-			}
+			int highestChanceKI = calculateHighestChance(3);
 			// ---highestChance PL---
-			for (int i = 0; i < stocks.size(); i++) {
-				if (stocks.get(i).calculateWinningChance(1) > highestChancePL) {
-					highestChancePL = stocks.get(i).calculateWinningChance(1);
-				}
-			}
-			System.out.println("HighestChanceKI: " + highestChanceKI);
-			System.out.println("HighestChancePL: " + highestChancePL);
+			int highestChancePL = calculateHighestChance(1);
+
+			System.out.println(System.currentTimeMillis() + " " + "HighestChanceKI: " + highestChanceKI);
+			System.out.println(System.currentTimeMillis() + " " + "HighestChancePL: " + highestChancePL);
 
 			if (highestChanceKI == 0 && highestChancePL <= 0) {
 				throwCoinRandomKI(player);
 				return;
 			} else if (highestChanceKI >= highestChancePL && highestChanceKI > 0) {
-				System.out.println("NotRandom");
-				for (int i = 0; i < stocks.size(); i++) {
-					if (stocks.get(i).calculateWinningChance(3) == highestChanceKI
-							&& stocks.get(i).isOnePlayable() == true) {
-						System.out.println("NotRandom");
-						if (stocks.get(i).getPlayable()!=null) {
-							stocks.get(i).getPlayable().fill(3);
-							System.out.println("NotRandom");
-							return;
-						}
-						
-						
-					}
 
-				}
-				throwCoinRandomKI(player);
-				return;
+				throwCalculatedCoin(3, highestChanceKI);
+
 			} else if (highestChancePL > highestChanceKI && highestChancePL > 0) {
-				System.out.println("NotRandomPL");
-				for (int i = 0; i < stocks.size(); i++) {
-					if (stocks.get(i).calculateWinningChance(1) == highestChancePL) {
-						if (stocks.get(i).getPlayable()!=null) {
-							stocks.get(i).getPlayable().fill(3);
-							System.out.println("NotRandomPL");
-							return;
-						}
-					}
-				}
-				throwCoinRandomKI(player);
-				return;
+
+				throwCalculatedCoin(1, highestChancePL);
 			}
 
 		} else {
@@ -202,6 +174,30 @@ public class BasePanel extends JPanel {
 			}
 			return;
 		}
+	}
+
+	private void throwCalculatedCoin(int greaterPlayer, int highestChance) throws Exception {
+		for (int i = 0; i < stocks.size(); i++) {
+			if (stocks.get(i).calculateWinningChance(greaterPlayer) == highestChance) {
+				stocks.get(i).getPlayable().fill(playerKI);
+				return;
+			}
+		}
+		throwCoinRandomKI(player);
+		return;
+	}
+
+	/**
+	 * @return the highestChance for the Player after iterating over all 4er Stocks
+	 */
+	private int calculateHighestChance(int player) {
+		int highestChance = 0;
+		for (int i = 0; i < stocks.size(); i++) {
+			if (stocks.get(i).calculateWinningChance(player) > highestChance) {
+				highestChance = stocks.get(i).calculateWinningChance(1);
+			}
+		}
+		return highestChance;
 	}
 
 	/**
@@ -257,7 +253,7 @@ public class BasePanel extends JPanel {
 
 		for (int i = 0; i < playBoard[0].length; i++) {
 			for (int j = playBoard.length - 1; j >= 0; j--) {
-				if (playBoard[j][i].getOwner() == noOwner &&playBoard[j][i].isFilled()==false) {
+				if (playBoard[j][i].getOwner() == noOwner && playBoard[j][i].isFilled() == false) {
 					playBoard[j][i].setPlayable(true);
 					System.out.println(System.currentTimeMillis() + " " + i + " " + j + " playable_obj_ID "
 							+ playBoard[j][i].hashCode());

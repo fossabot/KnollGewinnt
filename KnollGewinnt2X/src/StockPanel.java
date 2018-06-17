@@ -2,7 +2,7 @@
  * KNOLL GEWINNT powered by javax.swing CLASS: StockPanel
  * 
  * @since 29.05.2018
- * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert
+ * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz
  * @version 0.1 (c) 2018
  */
 public class StockPanel {
@@ -88,16 +88,19 @@ public class StockPanel {
 
 	public boolean isOnePlayable() {
 		for (int i = 0; i < playPanels.length; i++) {
-			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled()==false)
+			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled()==false) {
 				return true;
+			}
+				
 		}
 		return false;
 	}
 	
 	public PlayPanel getPlayable() {
 		for (int i = 0; i < playPanels.length; i++) {
-			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled()==false)
+			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled()==false) {
 				return playPanels[i];
+			}	
 		}
 		return null; 
 	}
