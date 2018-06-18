@@ -88,6 +88,7 @@ public class MainFrame extends JFrame {
 		this.getContentPane().add(manualGame, BorderLayout.SOUTH);
 		this.setLocationByPlatform(true);
 		this.setMinimumSize(new Dimension(800, 400));
+		this.setResizable(false);
 		this.setVisible(true);
 		pack();
 		eventListener();
@@ -363,7 +364,7 @@ public class MainFrame extends JFrame {
 		tog.player = 1;
 		won = false;
 		this.remove(tog);
-		tog = new BasePanel(7, 6);
+		tog = new BasePanel(7, 7);
 		this.getContentPane().add(tog, BorderLayout.CENTER);
 		pack();
 		this.setVisible(true);
