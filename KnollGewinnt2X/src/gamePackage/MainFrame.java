@@ -73,6 +73,11 @@ public class MainFrame extends JFrame {
 						saveGame();
 					} catch (IOException e1) {
 					}
+				} else if (e.getSource() == panel.load) {
+					try {
+						loadGame();
+					} catch (IOException e1) {
+					}
 				}
 
 			}
@@ -86,6 +91,21 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		pack();
 		eventListener();
+	}
+
+	protected void loadGame() throws IOException {
+	    FileReader fr = new FileReader("save.kg");
+	    BufferedReader br = new BufferedReader(fr);
+
+	    String zeile1 = br.readLine();
+	    System.out.println(zeile1);
+	    String zeile2 = br.readLine();
+	    System.out.println(zeile2);
+	    String zeile3 = br.readLine();
+	    System.out.println(zeile3);
+
+	    br.close();
+	    JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
 	}
 
 	protected void saveGame() throws IOException {

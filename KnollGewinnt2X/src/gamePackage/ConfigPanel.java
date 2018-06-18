@@ -20,6 +20,7 @@ public class ConfigPanel extends JPanel {
 
 	JButton newGame;
 	JButton save;
+	JButton load;
 	JRadioButton singlePlayer;
 	JRadioButton multiPlayer;
 	ButtonGroup playerChoice = new ButtonGroup();;
@@ -32,6 +33,7 @@ public class ConfigPanel extends JPanel {
 	private JLabel xAxisLabel;
 	private JPanel yAxisPanel;
 	private JPanel xAxisPanel;
+	
 
 	/**
 	 * Constructor of Class ConfigPanel.
@@ -76,6 +78,9 @@ public class ConfigPanel extends JPanel {
 		save = new JButton("Save current Game");
 		this.add(save);
 		save.addActionListener(e);
+		load = new JButton("Load saved Game");
+		this.add(load);
+		load.addActionListener(e);
 		gameInfo = new JLabel("<html> Game currently running<html>");
 		this.add(gameInfo);
 
