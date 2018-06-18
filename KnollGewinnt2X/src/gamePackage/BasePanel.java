@@ -189,7 +189,7 @@ public class BasePanel extends JPanel {
 
 				// ---fill next free playPanel starting from the bottom
 				if (playBoard[j][getActiveGroundPanel()].isFilled() == false) {
-					playBoard[j][getActiveGroundPanel()].fill(player);
+					playBoard[j][getActiveGroundPanel()].fill(player, true);
 					return;
 				}
 
@@ -201,7 +201,7 @@ public class BasePanel extends JPanel {
 	private void throwCalculatedCoin(int greaterPlayer, int highestChance) throws Exception {
 		for (int i = 0; i < stocks.size(); i++) {
 			if (stocks.get(i).calculateWinningChance(greaterPlayer) == highestChance) {
-				stocks.get(i).getPlayable().fill(playerKI);
+				stocks.get(i).getPlayable().fill(playerKI, true);
 				return;
 			}
 		}
@@ -232,7 +232,7 @@ public class BasePanel extends JPanel {
 
 			for (int i = 0; i < playBoard[0].length; i++) {
 				if (playBoard[j][i].isFilled() == false) {
-					playBoard[j][i].fill(player);
+					playBoard[j][i].fill(player, true);
 					playBoard[j][i].setPlayable(false);
 					return;
 				}
@@ -320,4 +320,6 @@ public class BasePanel extends JPanel {
 			}
 		}
 	}
+
+	
 }

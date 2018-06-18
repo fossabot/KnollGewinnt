@@ -115,4 +115,19 @@ public class ConfigPanel extends JPanel {
 		return 0;
 	}
 
+	public void setMode(int readMode) {
+		switch (readMode) {
+		case 1:
+			singlePlayer.setSelected(true);
+			multiPlayer.setSelected(false);
+			break;
+
+		case 2:
+			singlePlayer.setSelected(false);
+			multiPlayer.setSelected(true);
+			break;
+		}
+		
+	}
+
 }

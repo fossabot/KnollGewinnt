@@ -52,11 +52,12 @@ public class PlayPanel extends JPanel {
 	 * Fills this PlayPanel with the specific color of the player
 	 * 
 	 * @param player
+	 * @param b 
 	 * @throws Exception
 	 */
-	public void fill(int player) throws Exception {
-		if (this.getBackground().equals(Color.GREEN) || this.getBackground().equals(Color.BLUE)
-				|| this.getBackground().equals(Color.RED)) {
+	public void fill(int player, boolean b) throws Exception {
+		if ((this.getBackground().equals(Color.GREEN) || this.getBackground().equals(Color.BLUE)
+				|| this.getBackground().equals(Color.RED))&&b==true) {
 			throw new Exception("PlayPanel is already filled!");
 		} else {
 			this.owner = player;

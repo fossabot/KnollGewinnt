@@ -97,14 +97,22 @@ public class MainFrame extends JFrame {
 	    FileReader fr = new FileReader("save.kg");
 	    BufferedReader br = new BufferedReader(fr);
 
-	    String zeile1 = br.readLine();
-	    System.out.println(zeile1);
-	    String zeile2 = br.readLine();
-	    System.out.println(zeile2);
-	    String zeile3 = br.readLine();
-	    System.out.println(zeile3);
-
+	    String [] rows = new String [tog.getPlayBoard().length];
+	    int readMode=1;
+	    if(br.readLine().equals("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>")) {
+	    	readMode = Integer.parseInt(br.readLine().split("'")[3]);
+	    	 for (int i = 0; i < rows.length; i++) {
+	 			rows[i]=br.readLine();
+	 		}
+	    }else {
+	    	throw new IOException("No valid savings File!");
+	    }
 	    br.close();
+	    try {
+			resumeGame(readMode, rows);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	    JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
 	}
 
@@ -114,15 +122,15 @@ public class MainFrame extends JFrame {
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>");
 		bw.newLine();
-		bw.write("<GAMEINFO> TIME: " + System.currentTimeMillis() + " MODE: " + this.selectedMode + "<GAMEINFO>");
+		bw.write("<GAMEINFO> TIME: '" + System.currentTimeMillis() + "' MODE: '" + this.selectedMode + "'<GAMEINFO>");
 		bw.newLine();
 
 		for (int i = 0; i < tog.getPlayBoard().length; i++) {
 			for (int j = 0; j < tog.getPlayBoard()[i].length; j++) {
 				if (tog.getPlayBoard()[i][j].isFilled() == true)
-					bw.write("1");
+					bw.write("1.");
 				if (tog.getPlayBoard()[i][j].isFilled() == false)
-					bw.write("0");
+					bw.write("0.");
 				if (tog.getPlayBoard()[i][j].getOwner() == -1)
 					bw.write("NO");
 				if (tog.getPlayBoard()[i][j].getOwner() == 1)
@@ -307,6 +315,40 @@ public class MainFrame extends JFrame {
 		panel.setWin(-1);
 		eventListener();
 
+	}
+	
+	public void resumeGame(int readMode, String[] rows) throws Exception {
+		String[] temp = new String[tog.getPlayBoard()[0].length];
+		for (int i = 0; i < tog.getPlayBoard().length; i++) {
+			temp = rows[i].split("-");
+			for (int j = 0; j < tog.getPlayBoard()[i].length; j++) {
+				String[] temp2=temp[j].split("\\.");
+				switch (temp2[0]) {
+				case "0":
+					tog.getPlayBoard()[i][j].fill(-1, false);
+					break;
+				case "1":
+					switch (temp[j].split("\\.")[1]) {
+					case "NO":
+						tog.getPlayBoard()[i][j].fill(-1, false);
+						break;
+					case "P1":
+						tog.getPlayBoard()[i][j].fill(1, false);
+						break;
+					case "P2":
+						tog.getPlayBoard()[i][j].fill(2, false);
+						break;
+					case "KI":
+						tog.getPlayBoard()[i][j].fill(3,false);
+						break;
+
+					}
+				}
+
+			}
+		}
+		this.selectedMode=readMode;
+		panel.setMode(readMode);
 	}
 
 }
