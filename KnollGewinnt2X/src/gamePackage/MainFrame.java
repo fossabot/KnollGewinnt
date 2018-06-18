@@ -94,26 +94,41 @@ public class MainFrame extends JFrame {
 	}
 
 	protected void loadGame() throws IOException {
-	    FileReader fr = new FileReader("save.kg");
-	    BufferedReader br = new BufferedReader(fr);
+		FileReader fr = new FileReader("save.kg");
+		BufferedReader br = new BufferedReader(fr);
 
-	    String [] rows = new String [tog.getPlayBoard().length];
-	    int readMode=1;
-	    if(br.readLine().equals("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>")) {
-	    	readMode = Integer.parseInt(br.readLine().split("'")[3]);
-	    	 for (int i = 0; i < rows.length; i++) {
-	 			rows[i]=br.readLine();
-	 		}
-	    }else {
-	    	throw new IOException("No valid savings File!");
-	    }
-	    br.close();
-	    try {
-			resumeGame(readMode, rows);
-		} catch (Exception e) {
-			e.printStackTrace();
+		String[] rows = new String[tog.getPlayBoard().length];
+		int readMode = 1;
+		if (br.readLine().equals("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>")) {
+			
+			try {
+				readMode = Integer.parseInt(br.readLine().split("'")[3]);
+			} catch (NumberFormatException e) {
+				gameCouldNotBeLoadedWarning(br);
+			}
+			for (int i = 0; i < rows.length; i++) {
+				rows[i] = br.readLine();
+			}
+		} else {
+			gameCouldNotBeLoadedWarning(br);
 		}
-	    JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
+		br.close();
+		try {
+			resumeGame(readMode, rows, br);
+		} catch (Exception e) {
+			gameCouldNotBeLoadedWarning(br);
+		}
+		JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
+	}
+
+	/**
+	 * @param br
+	 * @throws IOException
+	 */
+	private void gameCouldNotBeLoadedWarning(BufferedReader br) throws IOException {
+		JOptionPane.showMessageDialog(this, "Game could not be loaded.", "Warning", JOptionPane.WARNING_MESSAGE);
+		br.close();
+		throw new IOException("No valid savings File!");
 	}
 
 	protected void saveGame() throws IOException {
@@ -316,13 +331,13 @@ public class MainFrame extends JFrame {
 		eventListener();
 
 	}
-	
-	public void resumeGame(int readMode, String[] rows) throws Exception {
+
+	public void resumeGame(int readMode, String[] rows, BufferedReader br) throws Exception {
 		String[] temp = new String[tog.getPlayBoard()[0].length];
 		for (int i = 0; i < tog.getPlayBoard().length; i++) {
 			temp = rows[i].split("-");
 			for (int j = 0; j < tog.getPlayBoard()[i].length; j++) {
-				String[] temp2=temp[j].split("\\.");
+				String[] temp2 = temp[j].split("\\.");
 				switch (temp2[0]) {
 				case "0":
 					tog.getPlayBoard()[i][j].fill(-1, false);
@@ -339,15 +354,21 @@ public class MainFrame extends JFrame {
 						tog.getPlayBoard()[i][j].fill(2, false);
 						break;
 					case "KI":
-						tog.getPlayBoard()[i][j].fill(3,false);
+						tog.getPlayBoard()[i][j].fill(3, false);
+						break;
+					default:
+						gameCouldNotBeLoadedWarning(br);
 						break;
 
 					}
+				default:
+					gameCouldNotBeLoadedWarning(br);
+					break;
 				}
 
 			}
 		}
-		this.selectedMode=readMode;
+		this.selectedMode = readMode;
 		panel.setMode(readMode);
 	}
 
