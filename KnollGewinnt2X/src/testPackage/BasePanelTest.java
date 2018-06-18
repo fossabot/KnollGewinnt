@@ -25,7 +25,7 @@ public class BasePanelTest {
 
 	@Test
 	@DisplayName("Initializing BasePanel Test")
-	public void test() {
+	public void testInitiation() {
 		System.out.println("BasePanelTest");
 		for (int i = 1; i < 10; i++) {
 			for (int j = 1; j < 10; j++) {
@@ -62,7 +62,7 @@ public class BasePanelTest {
 
 	@Test
 	@DisplayName("Initializing StocksTest")
-	public void testStocks() {
+	public void testInitiationStocks() {
 		for (int k = 1; k < 10; k++) {
 			for (int l = 1; l < 10; l++) {
 				b = new BasePanel(k, l);
@@ -92,10 +92,10 @@ public class BasePanelTest {
 							stocks.add(new StockPanel(playBoard[i][j], playBoard[i - 1][j + 1], playBoard[i - 2][j + 2],
 									playBoard[i - 3][j + 3]));
 						}
-
+						
 					}
 				}
-				
+				System.out.println( stocks.size() + " x: "+k + " y: "+(l-1));
 				assertEquals(stocks.size(), b.getStocks().size());
 			}
 		}
