@@ -28,13 +28,13 @@ public class PlayPanelTest4 {
 		assertEquals(-1, p.getOwner());
 		assertEquals(Color.BLACK,((LineBorder)p.getBorder()).getLineColor());
 		try {
-			p.fill(1);
+			p.fill(1, true);
 		} catch (Exception e) {
 			fail("Expected no Exception because p wasnt filled.");
 		}
 
 		try {
-			p.fill(2);
+			p.fill(2, true);
 			fail("Expected an Exception because p was already filled.");
 		} catch (Exception e) {
 			assertEquals(Color.BLUE, p.getBackground());

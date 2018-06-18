@@ -100,7 +100,7 @@ public class MainFrame extends JFrame {
 		String[] rows = new String[tog.getPlayBoard().length];
 		int readMode = 1;
 		if (br.readLine().equals("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>")) {
-			
+
 			try {
 				readMode = Integer.parseInt(br.readLine().split("'")[3]);
 			} catch (NumberFormatException e) {
@@ -356,14 +356,8 @@ public class MainFrame extends JFrame {
 					case "KI":
 						tog.getPlayBoard()[i][j].fill(3, false);
 						break;
-					default:
-						gameCouldNotBeLoadedWarning(br);
-						break;
-
 					}
-				default:
-					gameCouldNotBeLoadedWarning(br);
-					break;
+
 				}
 
 			}
