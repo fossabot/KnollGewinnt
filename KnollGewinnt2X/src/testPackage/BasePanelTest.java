@@ -63,42 +63,11 @@ public class BasePanelTest {
 	@Test
 	@DisplayName("Initializing StocksTest")
 	public void testInitiationStocks() {
-		for (int k = 1; k < 10; k++) {
-			for (int l = 1; l < 10; l++) {
-				b = new BasePanel(k, l);
-				playBoard = b.getPlayBoard();
-				control = b.getControl();
-				stocks = new ArrayList<StockPanel>();
-				
-				for (int i = 0; i < playBoard.length; i++) {
-					for (int j = 0; j < playBoard[i].length; j++) {
-						// ---vertikale Stocks---aa
-						if (i + 3 < playBoard.length) {
-							stocks.add(new StockPanel(playBoard[i][j], playBoard[i + 1][j], playBoard[i + 2][j],
-									playBoard[i + 3][j]));
-						}
-						// --horizontale Stocks---
-						if (j + 3 < playBoard[i].length) {
-							stocks.add(new StockPanel(playBoard[i][j], playBoard[i][j + 1], playBoard[i][j + 2],
-									playBoard[i][j + 3]));
-						}
-						// --diagonale Stocks #1---
-						if (j + 3 < playBoard[i].length && i + 3 < playBoard.length) {
-							stocks.add(new StockPanel(playBoard[i][j], playBoard[i + 1][j + 1], playBoard[i + 2][j + 2],
-									playBoard[i + 3][j + 3]));
-						}
-						// --diagonale Stocks #2---
-						if (j + 3 < playBoard[i].length && i - 3 < playBoard.length && j + 3 >= 0 && i - 3 >= 0) {
-							stocks.add(new StockPanel(playBoard[i][j], playBoard[i - 1][j + 1], playBoard[i - 2][j + 2],
-									playBoard[i - 3][j + 3]));
-						}
-						
-					}
-				}
-				System.out.println( stocks.size() + " x: "+k + " y: "+(l-1));
-				assertEquals(stocks.size(), b.getStocks().size());
-			}
-		}
+
+		b = new BasePanel(7, 7);
+		playBoard = b.getPlayBoard();
+		control = b.getControl();
+		assertEquals(69, b.getStocks().size());
 	}
 
 }

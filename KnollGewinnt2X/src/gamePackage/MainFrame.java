@@ -11,8 +11,10 @@ package gamePackage;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.*;
@@ -54,8 +56,8 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Knoll Gewinnt Ver.0.1");
 		this.setLayout(new BorderLayout());
-		this.selectedMode=1;
-		tog = new BasePanel(7, 6);
+		this.selectedMode = 1;
+		tog = new BasePanel(7, 7);
 
 		manualGame = new JLabel(
 				"<html><br><br><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>Press 'A' to move pointer left. Press 'D' to move pointer right. Press 'S' to throw coin. <html>");
@@ -65,10 +67,12 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == panel.newGame) {
-
 					resetFrame(panel.selectedMode());
 				} else if (e.getSource() == panel.save) {
-
+					try {
+						saveGame();
+					} catch (IOException e1) {
+					}
 				}
 
 			}
@@ -82,6 +86,39 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		pack();
 		eventListener();
+	}
+
+	protected void saveGame() throws IOException {
+
+		FileWriter fw = new FileWriter("save.kg");
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>");
+		bw.newLine();
+		bw.write("<GAMEINFO> TIME: " + System.currentTimeMillis() + " MODE: " + this.selectedMode + "<GAMEINFO>");
+		bw.newLine();
+
+		for (int i = 0; i < tog.getPlayBoard().length; i++) {
+			for (int j = 0; j < tog.getPlayBoard()[i].length; j++) {
+				if (tog.getPlayBoard()[i][j].isFilled() == true)
+					bw.write("1");
+				if (tog.getPlayBoard()[i][j].isFilled() == false)
+					bw.write("0");
+				if (tog.getPlayBoard()[i][j].getOwner() == -1)
+					bw.write("NO");
+				if (tog.getPlayBoard()[i][j].getOwner() == 1)
+					bw.write("P1");
+				if (tog.getPlayBoard()[i][j].getOwner() == 2)
+					bw.write("P2");
+				if (tog.getPlayBoard()[i][j].getOwner() == 3)
+					bw.write("KI");
+				bw.write("-");
+			}
+			bw.newLine();
+		}
+
+		bw.close();
+		JOptionPane.showMessageDialog(this, "Game succesfully saved.");
+
 	}
 
 	/**
@@ -125,7 +162,7 @@ public class MainFrame extends JFrame {
 							|| (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
 									&& won == false)) {
 						try {
-							
+
 							tog.throwCoin(currentPlayer);
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
@@ -151,8 +188,6 @@ public class MainFrame extends JFrame {
 
 			}
 
-	
-
 		};
 		this.getToolkit().addAWTEventListener(awt, AWTEvent.KEY_EVENT_MASK);
 
@@ -166,10 +201,11 @@ public class MainFrame extends JFrame {
 		panel.setWin(player);
 
 	}
-	
+
 	/**
 	 * Switches the Player depending on the current value of Player.
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 
 	private void switchPlayer() throws Exception {
@@ -179,7 +215,7 @@ public class MainFrame extends JFrame {
 			case 1:
 				currentPlayer = 3;
 				tog.player = 3;
-				//tog.evaluatePlayablePanels();
+				// tog.evaluatePlayablePanels();
 				tog.changePlayer();
 				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 				letKIPlay();
@@ -188,25 +224,25 @@ public class MainFrame extends JFrame {
 			case 2:
 				currentPlayer = 2;
 				tog.player = 2;
-				
+
 				tog.changePlayer();
 				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 				break;
 			}
 			break;
-			
+
 		case 2:
 			currentPlayer = 1;
 			tog.player = 1;
-			
+
 			tog.changePlayer();
 			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;
-			
+
 		case 3:
 			currentPlayer = 1;
 			tog.player = 1;
-			
+
 			tog.changePlayer();
 			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;
@@ -216,7 +252,7 @@ public class MainFrame extends JFrame {
 
 	private void letKIPlay() throws Exception {
 		tog.evaluatePlayablePanels();
-		if(won==false) {
+		if (won == false) {
 			tog.throwCoin(currentPlayer);
 			if (tog.evaluateRows() == true) {
 				won = true;
@@ -226,7 +262,7 @@ public class MainFrame extends JFrame {
 
 			switchPlayer();
 		}
-		
+
 	}
 
 	/**

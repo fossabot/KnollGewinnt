@@ -75,6 +75,7 @@ public class ConfigPanel extends JPanel {
 
 		save = new JButton("Save current Game");
 		this.add(save);
+		save.addActionListener(e);
 		gameInfo = new JLabel("<html> Game currently running<html>");
 		this.add(gameInfo);
 
