@@ -58,9 +58,9 @@ public class MainFrame extends JFrame {
 		this.setLayout(new BorderLayout());
 		this.selectedMode = 1;
 		tog = new BasePanel(7, 7);
-
+		initMenuBar();
 		manualGame = new JLabel(
-				"<html><br><br><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>Press 'A' to move pointer left. Press 'D' to move pointer right. Press 'S' to throw coin. <html>");
+				"<html><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>SEE HELP FOR INSTRUCTIONS.<br> @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz<html>");
 		manualGame.setFont(new Font("Calibri", Font.PLAIN, 20));
 		newGameAction = new ActionListener() {
 
@@ -91,6 +91,47 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		pack();
 		eventListener();
+	}
+
+	private void initMenuBar() {
+		JMenuItem menuItemFileExit = new JMenuItem("Exit");
+
+		JMenuItem menueItemHelpAbout = new JMenuItem("About");
+		JMenuItem menueItemHelpHelp = new JMenuItem("Help");
+		ActionListener actionMenu = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == menuItemFileExit) {
+					System.exit(0);
+				}
+				if (e.getSource() == menueItemHelpAbout) {
+					JOptionPane.showMessageDialog(null, "<html>KNOLL GEWINNT VER.0.1 <br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>", "About", JOptionPane.INFORMATION_MESSAGE);
+				}
+				if (e.getSource() == menueItemHelpHelp) {
+					JOptionPane.showMessageDialog(null, "<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> <html>", "Help", JOptionPane.INFORMATION_MESSAGE);
+				}
+
+			}
+		};
+
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menuFile = new JMenu("File");
+		JMenu menuHelp = new JMenu("Help");
+		menuBar.add(menuFile);
+		menuBar.add(menuHelp);
+
+		menuFile.add(menuItemFileExit);
+		menuItemFileExit.addActionListener(actionMenu);
+
+		menuHelp.add(menueItemHelpAbout);
+		menueItemHelpAbout.addActionListener(actionMenu);
+
+		menuHelp.add(menueItemHelpHelp);
+		menueItemHelpHelp.addActionListener(actionMenu);
+
+		setJMenuBar(menuBar);
+
 	}
 
 	protected void loadGame() throws IOException {
