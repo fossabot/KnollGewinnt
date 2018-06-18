@@ -62,6 +62,11 @@ public class ConfigPanel extends JPanel {
 	private void init(ActionListener e) {
 
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		
+		Icon b = new ImageIcon(getClass().getResource("dhbw_grey_logo.png"));
+		JLabel a = new JLabel(b);
+		this.add(a);
+		
 		newGame = new JButton("New Game");
 		this.add(newGame);
 		newGame.addActionListener(e);
@@ -83,6 +88,7 @@ public class ConfigPanel extends JPanel {
 		load.addActionListener(e);
 		gameInfo = new JLabel("<html> Game currently running<html>");
 		this.add(gameInfo);
+		
 
 	}
 
