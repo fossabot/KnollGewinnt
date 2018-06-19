@@ -14,15 +14,15 @@ import java.awt.LayoutManager;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-public class GroundPanel extends JPanel {
+public class GroundPanel extends JPanel implements KnollPanel{
 
-	private boolean pointer = false;
+	private boolean filled = false;
 
 	/**
 	 * Constructor of Class GroundPanel. A groundPanel is a controlPanel which is
 	 * displayed below the playBoard.
 	 * 
-	 * @param pointer
+	 * @param filled
 	 *            - bolean value that shows if this groundPanel is selected or not.
 	 */
 
@@ -31,7 +31,7 @@ public class GroundPanel extends JPanel {
 		System.out.println(System.currentTimeMillis() + ": GROUNDPANEL CREATED");
 		this.setBackground(Color.GRAY);
 		this.activateBorder(Color.black);
-		this.pointer = false;
+		this.filled = false;
 
 	}
 
@@ -39,15 +39,15 @@ public class GroundPanel extends JPanel {
 	 * Sets this pointer to selected (true) or unselected (false). The current
 	 * player defines the color of the pointer.
 	 * 
-	 * @param pointer
+	 * @param b
 	 *            - boolean value that shows if this groundPanel is selected or not.
 	 * @param player
 	 *            - number that defines the current player
 	 */
-	public void setPointer(boolean pointer, int player) {
+	public void fill(int player, boolean b) {
 
-		this.pointer = pointer;
-		if (pointer == true) {
+		this.filled = b;
+		if (b == true) {
 			switch (player) {
 			// ---player 1---
 			case 1:
@@ -83,7 +83,7 @@ public class GroundPanel extends JPanel {
 	 * @return - returns the current value of the boolean pointer
 	 */
 	public boolean getPointer() {
-		return pointer;
+		return filled;
 	}
 
 }

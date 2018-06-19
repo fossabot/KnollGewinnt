@@ -200,7 +200,6 @@ public class MainFrame extends JFrame {
 			}
 			bw.newLine();
 		}
-
 		bw.close();
 		JOptionPane.showMessageDialog(this, "Game succesfully saved.");
 

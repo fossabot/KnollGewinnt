@@ -94,7 +94,7 @@ public class BasePanel extends JPanel {
 			this.add(control[i]);
 		}
 		// ---set first pointer position (shows the selected coloumn)
-		control[control.length - 1].setPointer(true, player);
+		control[control.length - 1].fill(player, true);
 	}
 
 	/**
@@ -131,9 +131,9 @@ public class BasePanel extends JPanel {
 
 			if (i > 0 && i < (control.length)) {
 				// ---deactivate current pointer---
-				control[i].setPointer(false, player);
+				control[i].fill(player, false);
 				// ---activate pointer to the left
-				control[i - 1].setPointer(true, player);
+				control[i - 1].fill(player, true);
 			}
 			return;
 
@@ -141,9 +141,9 @@ public class BasePanel extends JPanel {
 
 			if (i >= 0 && i < (control.length) - 1) {
 				// ---deactivate current pointer---
-				control[i].setPointer(false, player);
+				control[i].fill(player, false);
 				// ---activate pointer to the right
-				control[i + 1].setPointer(true, player);
+				control[i + 1].fill(player, true);
 			}
 			return;
 
@@ -258,7 +258,7 @@ public class BasePanel extends JPanel {
 	 * color)
 	 */
 	public void changePlayer() {
-		control[getActiveGroundPanel()].setPointer(true, player);
+		control[getActiveGroundPanel()].fill(player, true);
 	}
 
 	/**

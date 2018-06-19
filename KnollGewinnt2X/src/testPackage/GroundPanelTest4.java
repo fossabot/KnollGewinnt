@@ -31,23 +31,23 @@ public class GroundPanelTest4 {
 		
 		
 		for (int i = -1000; i < 1000; i++) {
-			g.setPointer(false, i);
+			g.fill(i, false);
 			assertEquals(Color.GRAY, g.getBackground());
 		}
 		
-		g.setPointer(true, 1);
+		g.fill(1, true);
 		assertEquals(Color.blue, g.getBackground());
 		
-		g.setPointer(true, 2);
+		g.fill(2, true);
 		assertEquals(Color.green, g.getBackground());
 		
 		for (int i = -1000; i < 1; i++) {
-			g.setPointer(true, i);
+			g.fill(i, true);
 			assertEquals(Color.GRAY, g.getBackground());
 		}
 		
 		for (int i = 3; i < 1000; i++) {
-			g.setPointer(true, i);
+			g.fill(i, true);
 			assertEquals(Color.GRAY, g.getBackground());
 		}
 	}

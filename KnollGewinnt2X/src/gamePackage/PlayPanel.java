@@ -18,7 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class PlayPanel extends JPanel {
+public class PlayPanel extends JPanel implements KnollPanel {
 	private static final int noOwner = -1;
 	private boolean filled;
 	private boolean playable;
