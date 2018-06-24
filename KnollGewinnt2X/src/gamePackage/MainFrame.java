@@ -185,7 +185,7 @@ public class MainFrame extends JFrame {
 						}
 
 						JTable table = new JTable(rows, cols);
-						JOptionPane.showMessageDialog(null, new JScrollPane(table));
+						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats", JOptionPane.INFORMATION_MESSAGE);
 					} catch (IOException e1) {
 						dataErrorMessage();
 					}
@@ -252,9 +252,11 @@ public class MainFrame extends JFrame {
 		int j = 0;
 		while (i.hasNext()) {
 			String next = i.next();
-			if (!(next.equals("KI")))
+			if (!(next.equals("KI"))) {
 				playersStringArray[j] = next;
-			j++;
+				j++;
+			}
+				
 		}
 
 		testPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION,
@@ -281,9 +283,10 @@ public class MainFrame extends JFrame {
 		int j = 0;
 		while (i.hasNext()) {
 			String next = i.next();
-			if (!(next.equals("KI")))
+			if (!(next.equals("KI"))) {
 				playersStringArray[j] = next;
-			j++;
+				j++;
+			}
 		}
 
 		testPane = new JOptionPane("Select your Player Profile", JOptionPane.QUESTION_MESSAGE,
@@ -559,7 +562,21 @@ public class MainFrame extends JFrame {
 	}
 
 	private void displayWinner(int player) {
-		panel.setWin(player);
+		switch (player) {
+		case 1:
+			panel.setWin(player1.getName());
+			break;
+
+		case 2:
+			panel.setWin(player2.getName());
+			break;
+			
+		case 3:
+			panel.setWin(player2.getName());
+			break;
+		}
+		
+		
 
 	}
 
@@ -654,7 +671,7 @@ public class MainFrame extends JFrame {
 		pack();
 		this.setVisible(true);
 		this.getToolkit().removeAWTEventListener(awt);
-		panel.setWin(-1);
+		panel.setWin(null);
 		eventListener();
 
 	}

@@ -87,16 +87,14 @@ public class ConfigPanel extends JPanel {
 	/**
 	 * Sets the gameInfo Text to whats actually going on.
 	 * 
-	 * @param player
+	 * @param string
 	 *            - Player Number
 	 */
 
-	public void setWin(int player) {
-		if (player == -1) {
-			this.gameInfo.setText("Game currently running");
-		} else {
-			this.gameInfo.setText("WINNER: " + player);
-		}
+	public void setWin(String string) {
+		if(string!=null)this.gameInfo.setText("WINNER: " + string);
+		if(string==null)this.gameInfo.setText("Game currently running.");
+		
 
 	}
 
@@ -108,11 +106,11 @@ public class ConfigPanel extends JPanel {
 	 */
 
 	public void setPlayers(KnollPlayer player1, KnollPlayer player2) {
-		if(player1!=null && player2!=null) {
+		if (player1 != null && player2 != null) {
 			this.players.setText(player1.getName() + " VS " + player2.getName());
 			players.setForeground(Color.black);
 		}
-		if(player1==null && player2 == null) {
+		if (player1 == null && player2 == null) {
 			this.players.setText("Please select Players");
 			players.setForeground(Color.red);
 		}
