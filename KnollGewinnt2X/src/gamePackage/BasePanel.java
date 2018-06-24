@@ -162,6 +162,8 @@ public class BasePanel extends JPanel {
 	 */
 	public void throwCoin(int player) throws Exception {
 
+		
+		
 		if (player == 3) {
 
 			// ---highestChance KI---

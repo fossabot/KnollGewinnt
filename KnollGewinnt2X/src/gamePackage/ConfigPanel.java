@@ -1,6 +1,8 @@
 package gamePackage;
 
+import java.awt.Color;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 
 import javax.swing.*;
 
@@ -17,7 +19,6 @@ public class ConfigPanel extends JPanel {
 	JLabel players;
 	String[] arg = { "1 Player", "2 Player" };
 
-
 	/**
 	 * Constructor of Class ConfigPanel.
 	 * 
@@ -25,6 +26,7 @@ public class ConfigPanel extends JPanel {
 	 *            - Action Listener which is provided by the MainFrame. The
 	 *            ActionListener is used for the functionality of the included
 	 *            Buttons.
+	 * @param g
 	 */
 
 	public ConfigPanel(ActionListener e) {
@@ -40,16 +42,17 @@ public class ConfigPanel extends JPanel {
 	 *            - ActionListener which is provided by the Constructor. The
 	 *            ActionListener is used for the functionality of the included
 	 *            Buttons.
+	 * @param g
 	 */
 
 	private void init(ActionListener e) {
 
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		
+
 		Icon b = new ImageIcon(getClass().getResource("dhbw_grey_logo.png"));
 		JLabel a = new JLabel(b);
 		this.add(a);
-		
+
 		newGame = new JButton("New Game");
 		this.add(newGame);
 		newGame.addActionListener(e);
@@ -71,12 +74,13 @@ public class ConfigPanel extends JPanel {
 		load.addActionListener(e);
 		gameInfo = new JLabel("<html> Game currently running<html>");
 		this.add(gameInfo);
-		
-		players = new JLabel("NULL" +" VS "+ "NULL");
+
+		players = new JLabel("Please select Players");
+		players.setForeground(Color.red);
 		this.add(players);
-		//Icon c = new ImageIcon(getClass().getResource("knollEins.jpg"));
-		//JLabel d = new JLabel(c);
-		//this.add(d);
+		// Icon c = new ImageIcon(getClass().getResource("knollEins.jpg"));
+		// JLabel d = new JLabel(c);
+		// this.add(d);
 
 	}
 
@@ -96,17 +100,24 @@ public class ConfigPanel extends JPanel {
 
 	}
 
-	
 	/**
 	 * Sets the players Text to the current Players
+	 * 
 	 * @param player1
 	 * @param player2
 	 */
-	
+
 	public void setPlayers(KnollPlayer player1, KnollPlayer player2) {
-		this.players.setText(player1.getName() + " VS " + player2.getName());;
+		if(player1!=null && player2!=null) {
+			this.players.setText(player1.getName() + " VS " + player2.getName());
+			players.setForeground(Color.black);
+		}
+		if(player1==null && player2 == null) {
+			this.players.setText("Please select Players");
+			players.setForeground(Color.red);
+		}
 	}
-	
+
 	/**
 	 * @return - Returns the number of the selected Mode depending on which
 	 *         radioButton is selected.
@@ -132,7 +143,12 @@ public class ConfigPanel extends JPanel {
 			multiPlayer.setSelected(true);
 			break;
 		}
-		
+
+	}
+
+	public void addChangeListener(ItemListener g) {
+		singlePlayer.addItemListener(g);
+		multiPlayer.addItemListener(g);
 	}
 
 }

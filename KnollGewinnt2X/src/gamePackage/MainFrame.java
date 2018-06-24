@@ -27,6 +27,8 @@ public class MainFrame extends JFrame {
 
 	private static final int left = 1;
 	private static final int right = 2;
+	private int player1Count = 0;
+	private int player2Count = 0;
 	private BasePanel tog;
 	private int currentPlayer = 1;
 	private ConfigPanel panel;
@@ -45,6 +47,7 @@ public class MainFrame extends JFrame {
 	private JDialog singlePlayerDialog;
 	private JButton selectMultiPlayer;
 	private JComboBox playersList2;
+	private ItemListener gameModeListener;
 
 	public MainFrame() {
 		init();
@@ -80,7 +83,7 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == panel.newGame) {
-					resetFrame(panel.selectedMode());
+					resetFrame(panel.selectedMode(), player1, player2);
 				} else if (e.getSource() == panel.save) {
 					try {
 						saveGame();
@@ -95,7 +98,19 @@ public class MainFrame extends JFrame {
 
 			}
 		};
+	
 		panel = new ConfigPanel(newGameAction);
+		gameModeListener = new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+
+				selectedMode = panel.selectedMode();
+				panel.setPlayers(null, null);
+				resetFrame(selectedMode, null, null);
+			}
+		};
+		panel.addChangeListener(gameModeListener);
 		this.getContentPane().add(tog, BorderLayout.CENTER);
 		this.getContentPane().add(panel, BorderLayout.EAST);
 		this.getContentPane().add(manualGame, BorderLayout.SOUTH);
@@ -105,7 +120,7 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		pack();
 		eventListener();
-		
+
 	}
 
 	private void initMenuBar() {
@@ -137,13 +152,13 @@ public class MainFrame extends JFrame {
 						try {
 							singlePlayerProfileChoice();
 						} catch (IOException e1) {
-							
+
 						}
 					if (selectedMode == 2)
 						try {
 							multiPlayerProfileChoice();
 						} catch (IOException e1) {
-							
+
 						}
 				}
 
@@ -174,23 +189,25 @@ public class MainFrame extends JFrame {
 
 	protected void multiPlayerProfileChoice() throws IOException {
 		refreshProfiles();
-		String[] playersStringArray = new String[playersMap.keySet().size()-1];
-		Iterator <String>i = playersMap.keySet().iterator();
+		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
+		Iterator<String> i = playersMap.keySet().iterator();
 		int j = 0;
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			String next = i.next();
-			if(!(next.equals("KI"))) playersStringArray[j]=next;
+			if (!(next.equals("KI")))
+				playersStringArray[j] = next;
 			j++;
 		}
 
-		testPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+		testPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION,
+				null, new Object[] {}, null);
 		testPane.add(new JLabel("Player 1: "));
 		playersList = new JComboBox(playersStringArray);
 		testPane.add(playersList);
 		testPane.add(new JLabel("Player 2: "));
 		playersList2 = new JComboBox(playersStringArray);
 		testPane.add(playersList2);
-		selectMultiPlayer = new JButton ("Select");
+		selectMultiPlayer = new JButton("Select");
 		testPane.add(selectMultiPlayer);
 		selectMultiPlayer.addActionListener(profileSelected);
 
@@ -201,19 +218,21 @@ public class MainFrame extends JFrame {
 
 	protected void singlePlayerProfileChoice() throws IOException {
 		refreshProfiles();
-		String[] playersStringArray = new String[playersMap.keySet().size()-1];
-		Iterator <String>i = playersMap.keySet().iterator();
+		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
+		Iterator<String> i = playersMap.keySet().iterator();
 		int j = 0;
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			String next = i.next();
-			if(!(next.equals("KI"))) playersStringArray[j]=next;
+			if (!(next.equals("KI")))
+				playersStringArray[j] = next;
 			j++;
 		}
 
-		testPane = new JOptionPane("Select your Player Profile", JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+		testPane = new JOptionPane("Select your Player Profile", JOptionPane.QUESTION_MESSAGE,
+				JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
 		playersList = new JComboBox(playersStringArray);
 		testPane.add(playersList);
-		select = new JButton ("Select");
+		select = new JButton("Select");
 		testPane.add(select);
 		select.addActionListener(profileSelected);
 
@@ -221,27 +240,28 @@ public class MainFrame extends JFrame {
 		singlePlayerDialog.setVisible(true);
 	}
 
-	private void refreshProfiles() throws IOException{
+	private void refreshProfiles() throws IOException {
 		FileReader fr = new FileReader("profiles.kg");
 		BufferedReader br = new BufferedReader(fr);
-		int amountOfRegisteredPlayers=0;
+		int amountOfRegisteredPlayers = 0;
 		ArrayList<KnollPlayer> players = new ArrayList<>();
-		
-		if(br.readLine().equals("<HEAD>KNOLLGEWINNT PROFILES<HEAD>")) {
+
+		if (br.readLine().equals("<HEAD>KNOLLGEWINNT PROFILES<HEAD>")) {
 			amountOfRegisteredPlayers = Integer.parseInt((br.readLine().split("'")[1]));
 			for (int i = 0; i < amountOfRegisteredPlayers; i++) {
 				String[] actualLine = br.readLine().split("\\.");
-				players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]), Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
+				players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]),
+						Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
 			}
 			br.close();
 			HashMap<String, KnollPlayer> playerObjects = new HashMap<>();
-			Iterator <KnollPlayer>i = players.iterator();
-			while(i.hasNext()) {
+			Iterator<KnollPlayer> i = players.iterator();
+			while (i.hasNext()) {
 				KnollPlayer p = i.next();
 				playerObjects.put(p.getName(), p);
 			}
-			this.playersMap=playerObjects;
-		}else {
+			this.playersMap = playerObjects;
+		} else {
 			dataError(br);
 		}
 	}
@@ -357,8 +377,10 @@ public class MainFrame extends JFrame {
 							|| (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
 									&& won == false)) {
 						try {
-
+							if(player1==null || player2==null)return;
 							tog.throwCoin(currentPlayer);
+							if(currentPlayer==1)player1Count++;
+							if(currentPlayer==2 || currentPlayer==3)player2Count++;
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -366,11 +388,22 @@ public class MainFrame extends JFrame {
 						if (tog.evaluateRows() == true) {
 							won = true;
 							displayWinner(currentPlayer);
+							switch (currentPlayer) {
+							case 1:
+								player1.setWin(player1Count);
+								break;
+							case 2:
+								player2.setWin(player2Count);
+								break;
+							case 3:
+								player2.setWin(player2Count);
+							}
 							stopGame();
 
 						}
 
 						try {
+							
 							switchPlayer();
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
@@ -387,27 +420,29 @@ public class MainFrame extends JFrame {
 		this.getToolkit().addAWTEventListener(awt, AWTEvent.KEY_EVENT_MASK);
 
 		profileSelected = new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(e.getSource()==select) {
-					player1=playersMap.get(playersList.getSelectedItem());
-					player2=playersMap.get(new String("KI"));
-					System.out.println(System.currentTimeMillis()+ ": PLAYER1: " +player1.getName());
-					System.out.println(System.currentTimeMillis()+ ": PLAYER2: " +player2.getName());
+				if (e.getSource() == select) {
+					player1 = playersMap.get(playersList.getSelectedItem());
+					player2 = playersMap.get(new String("KI"));
+					resetFrame(selectedMode, player1, player2);
+					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
+					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
 					singlePlayerDialog.dispose();
 				}
-				if(e.getSource()==selectMultiPlayer) {
-					player1=playersMap.get(playersList.getSelectedItem());
-					player2=playersMap.get(playersList2.getSelectedItem());
-					System.out.println(System.currentTimeMillis()+ ": PLAYER1: " +player1.getName());
-					System.out.println(System.currentTimeMillis()+ ": PLAYER2: " +player2.getName());
+				if (e.getSource() == selectMultiPlayer) {
+					player1 = playersMap.get(playersList.getSelectedItem());
+					player2 = playersMap.get(playersList2.getSelectedItem());
+					resetFrame(selectedMode, player1, player2);
+					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
+					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
 					singlePlayerDialog.dispose();
 				}
-				
+
 			}
 		};
-		
+
 	}
 
 	protected void stopGame() {
@@ -490,8 +525,11 @@ public class MainFrame extends JFrame {
 	 *            - '1' singlePlayer '2' multiPlayer
 	 */
 
-	private void resetFrame(int selectedModeInt) {
+	private void resetFrame(int selectedModeInt, KnollPlayer player1, KnollPlayer player2) {
 		this.selectedMode = selectedModeInt;
+		this.player1=player1;
+		this.player2=player2;
+		panel.setPlayers(player1, player2);
 		currentPlayer = 1;
 		tog.player = 1;
 		won = false;
