@@ -1,17 +1,5 @@
 package gamePackage;
 
-/** 
- * KNOLL GEWINNT powered by javax.swing
- * CLASS: ConfigPanel
- * @since 29.05.2018
- * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz
- * @version 0.1
- * (c) 2018
- */
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
@@ -26,14 +14,9 @@ public class ConfigPanel extends JPanel {
 	ButtonGroup playerChoice = new ButtonGroup();;
 	JLabel status;
 	JLabel gameInfo;
+	JLabel players;
 	String[] arg = { "1 Player", "2 Player" };
-	private JTextField yAxis;
-	private JTextField xAxis;
-	private JLabel yAxisLabel;
-	private JLabel xAxisLabel;
-	private JPanel yAxisPanel;
-	private JPanel xAxisPanel;
-	
+
 
 	/**
 	 * Constructor of Class ConfigPanel.
@@ -89,6 +72,11 @@ public class ConfigPanel extends JPanel {
 		gameInfo = new JLabel("<html> Game currently running<html>");
 		this.add(gameInfo);
 		
+		players = new JLabel("NULL" +" VS "+ "NULL");
+		this.add(players);
+		//Icon c = new ImageIcon(getClass().getResource("knollEins.jpg"));
+		//JLabel d = new JLabel(c);
+		//this.add(d);
 
 	}
 
@@ -108,6 +96,17 @@ public class ConfigPanel extends JPanel {
 
 	}
 
+	
+	/**
+	 * Sets the players Text to the current Players
+	 * @param player1
+	 * @param player2
+	 */
+	
+	public void setPlayers(KnollPlayer player1, KnollPlayer player2) {
+		this.players.setText(player1.getName() + " VS " + player2.getName());;
+	}
+	
 	/**
 	 * @return - Returns the number of the selected Mode depending on which
 	 *         radioButton is selected.

@@ -16,6 +16,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -29,9 +32,19 @@ public class MainFrame extends JFrame {
 	private ConfigPanel panel;
 	private Boolean won = false;
 	private ActionListener newGameAction;
+	private ActionListener profileSelected;
 	private AWTEventListener awt;
 	private JLabel manualGame;
 	private int selectedMode; // '1' singlePlayer '2' multiPlayer
+	private JButton select;
+	private JOptionPane testPane;
+	private JComboBox playersList;
+	private HashMap<String, KnollPlayer> playersMap;
+	private KnollPlayer player1;
+	private KnollPlayer player2;
+	private JDialog singlePlayerDialog;
+	private JButton selectMultiPlayer;
+	private JComboBox playersList2;
 
 	public MainFrame() {
 		init();
@@ -92,10 +105,12 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		pack();
 		eventListener();
+		
 	}
 
 	private void initMenuBar() {
 		JMenuItem menuItemFileExit = new JMenuItem("Exit");
+		JMenuItem menueItemFileProfiles = new JMenuItem("Profiles");
 
 		JMenuItem menueItemHelpAbout = new JMenuItem("About");
 		JMenuItem menueItemHelpHelp = new JMenuItem("Help");
@@ -107,10 +122,29 @@ public class MainFrame extends JFrame {
 					System.exit(0);
 				}
 				if (e.getSource() == menueItemHelpAbout) {
-					JOptionPane.showMessageDialog(null, "<html>KNOLL GEWINNT VER.0.1 <br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>", "About", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"<html>KNOLL GEWINNT VER.0.1 <br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
+							"About", JOptionPane.INFORMATION_MESSAGE);
 				}
 				if (e.getSource() == menueItemHelpHelp) {
-					JOptionPane.showMessageDialog(null, "<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> <html>", "Help", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> <html>",
+							"Help", JOptionPane.INFORMATION_MESSAGE);
+				}
+
+				if (e.getSource() == menueItemFileProfiles) {
+					if (selectedMode == 1)
+						try {
+							singlePlayerProfileChoice();
+						} catch (IOException e1) {
+							
+						}
+					if (selectedMode == 2)
+						try {
+							multiPlayerProfileChoice();
+						} catch (IOException e1) {
+							
+						}
 				}
 
 			}
@@ -121,6 +155,9 @@ public class MainFrame extends JFrame {
 		JMenu menuHelp = new JMenu("Help");
 		menuBar.add(menuFile);
 		menuBar.add(menuHelp);
+
+		menuFile.add(menueItemFileProfiles);
+		menueItemFileProfiles.addActionListener(actionMenu);
 
 		menuFile.add(menuItemFileExit);
 		menuItemFileExit.addActionListener(actionMenu);
@@ -135,6 +172,80 @@ public class MainFrame extends JFrame {
 
 	}
 
+	protected void multiPlayerProfileChoice() throws IOException {
+		refreshProfiles();
+		String[] playersStringArray = new String[playersMap.keySet().size()-1];
+		Iterator <String>i = playersMap.keySet().iterator();
+		int j = 0;
+		while(i.hasNext()) {
+			String next = i.next();
+			if(!(next.equals("KI"))) playersStringArray[j]=next;
+			j++;
+		}
+
+		testPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+		testPane.add(new JLabel("Player 1: "));
+		playersList = new JComboBox(playersStringArray);
+		testPane.add(playersList);
+		testPane.add(new JLabel("Player 2: "));
+		playersList2 = new JComboBox(playersStringArray);
+		testPane.add(playersList2);
+		selectMultiPlayer = new JButton ("Select");
+		testPane.add(selectMultiPlayer);
+		selectMultiPlayer.addActionListener(profileSelected);
+
+		singlePlayerDialog = testPane.createDialog(null, "MultiPlayer Profile Choice");
+		singlePlayerDialog.setVisible(true);
+
+	}
+
+	protected void singlePlayerProfileChoice() throws IOException {
+		refreshProfiles();
+		String[] playersStringArray = new String[playersMap.keySet().size()-1];
+		Iterator <String>i = playersMap.keySet().iterator();
+		int j = 0;
+		while(i.hasNext()) {
+			String next = i.next();
+			if(!(next.equals("KI"))) playersStringArray[j]=next;
+			j++;
+		}
+
+		testPane = new JOptionPane("Select your Player Profile", JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+		playersList = new JComboBox(playersStringArray);
+		testPane.add(playersList);
+		select = new JButton ("Select");
+		testPane.add(select);
+		select.addActionListener(profileSelected);
+
+		singlePlayerDialog = testPane.createDialog(null, "SinglePlayer Profile Choice");
+		singlePlayerDialog.setVisible(true);
+	}
+
+	private void refreshProfiles() throws IOException{
+		FileReader fr = new FileReader("profiles.kg");
+		BufferedReader br = new BufferedReader(fr);
+		int amountOfRegisteredPlayers=0;
+		ArrayList<KnollPlayer> players = new ArrayList<>();
+		
+		if(br.readLine().equals("<HEAD>KNOLLGEWINNT PROFILES<HEAD>")) {
+			amountOfRegisteredPlayers = Integer.parseInt((br.readLine().split("'")[1]));
+			for (int i = 0; i < amountOfRegisteredPlayers; i++) {
+				String[] actualLine = br.readLine().split("\\.");
+				players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]), Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
+			}
+			br.close();
+			HashMap<String, KnollPlayer> playerObjects = new HashMap<>();
+			Iterator <KnollPlayer>i = players.iterator();
+			while(i.hasNext()) {
+				KnollPlayer p = i.next();
+				playerObjects.put(p.getName(), p);
+			}
+			this.playersMap=playerObjects;
+		}else {
+			dataError(br);
+		}
+	}
+
 	protected void loadGame() throws IOException {
 		FileReader fr = new FileReader("save.kg");
 		BufferedReader br = new BufferedReader(fr);
@@ -146,19 +257,19 @@ public class MainFrame extends JFrame {
 			try {
 				readMode = Integer.parseInt(br.readLine().split("'")[3]);
 			} catch (NumberFormatException e) {
-				gameCouldNotBeLoadedWarning(br);
+				dataError(br);
 			}
 			for (int i = 0; i < rows.length; i++) {
 				rows[i] = br.readLine();
 			}
 		} else {
-			gameCouldNotBeLoadedWarning(br);
+			dataError(br);
 		}
 		br.close();
 		try {
 			resumeGame(readMode, rows, br);
 		} catch (Exception e) {
-			gameCouldNotBeLoadedWarning(br);
+			dataError(br);
 		}
 		JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
 	}
@@ -167,10 +278,10 @@ public class MainFrame extends JFrame {
 	 * @param br
 	 * @throws IOException
 	 */
-	private void gameCouldNotBeLoadedWarning(BufferedReader br) throws IOException {
-		JOptionPane.showMessageDialog(this, "Game could not be loaded.", "Warning", JOptionPane.WARNING_MESSAGE);
+	private void dataError(BufferedReader br) throws IOException {
+		JOptionPane.showMessageDialog(this, "Corrupt File Error.", "Warning", JOptionPane.WARNING_MESSAGE);
 		br.close();
-		throw new IOException("No valid savings File!");
+		throw new IOException("Corrupt File Error!");
 	}
 
 	protected void saveGame() throws IOException {
@@ -275,6 +386,28 @@ public class MainFrame extends JFrame {
 		};
 		this.getToolkit().addAWTEventListener(awt, AWTEvent.KEY_EVENT_MASK);
 
+		profileSelected = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource()==select) {
+					player1=playersMap.get(playersList.getSelectedItem());
+					player2=playersMap.get(new String("KI"));
+					System.out.println(System.currentTimeMillis()+ ": PLAYER1: " +player1.getName());
+					System.out.println(System.currentTimeMillis()+ ": PLAYER2: " +player2.getName());
+					singlePlayerDialog.dispose();
+				}
+				if(e.getSource()==selectMultiPlayer) {
+					player1=playersMap.get(playersList.getSelectedItem());
+					player2=playersMap.get(playersList2.getSelectedItem());
+					System.out.println(System.currentTimeMillis()+ ": PLAYER1: " +player1.getName());
+					System.out.println(System.currentTimeMillis()+ ": PLAYER2: " +player2.getName());
+					singlePlayerDialog.dispose();
+				}
+				
+			}
+		};
+		
 	}
 
 	protected void stopGame() {
