@@ -75,6 +75,10 @@ public class MainFrame extends JFrame {
 		this.selectedMode = 1;
 		tog = new BasePanel(7, 7);
 		initMenuBar();
+		try {
+			refreshProfiles();
+		} catch (IOException e2) {
+		}
 		manualGame = new JLabel(
 				"<html><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>SEE HELP FOR INSTRUCTIONS.<br> @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz<html>");
 		manualGame.setFont(new Font("Calibri", Font.PLAIN, 20));
@@ -84,21 +88,24 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == panel.newGame) {
 					resetFrame(panel.selectedMode(), player1, player2);
+					openPlayersChoice();
 				} else if (e.getSource() == panel.save) {
 					try {
 						saveGame();
 					} catch (IOException e1) {
+						dataErrorMessage();
 					}
 				} else if (e.getSource() == panel.load) {
 					try {
 						loadGame();
 					} catch (IOException e1) {
+						dataErrorMessage();
 					}
 				}
 
 			}
 		};
-	
+
 		panel = new ConfigPanel(newGameAction);
 		gameModeListener = new ItemListener() {
 
@@ -108,6 +115,7 @@ public class MainFrame extends JFrame {
 				selectedMode = panel.selectedMode();
 				panel.setPlayers(null, null);
 				resetFrame(selectedMode, null, null);
+				openPlayersChoice();
 			}
 		};
 		panel.addChangeListener(gameModeListener);
@@ -126,7 +134,8 @@ public class MainFrame extends JFrame {
 	private void initMenuBar() {
 		JMenuItem menuItemFileExit = new JMenuItem("Exit");
 		JMenuItem menueItemFileProfiles = new JMenuItem("Profiles");
-
+		JMenuItem menueItemFileAddProfiles = new JMenuItem("Add Profile");
+		JMenuItem menueItemFileStats = new JMenuItem("Stats");
 		JMenuItem menueItemHelpAbout = new JMenuItem("About");
 		JMenuItem menueItemHelpHelp = new JMenuItem("Help");
 		ActionListener actionMenu = new ActionListener() {
@@ -148,21 +157,47 @@ public class MainFrame extends JFrame {
 				}
 
 				if (e.getSource() == menueItemFileProfiles) {
-					if (selectedMode == 1)
-						try {
-							singlePlayerProfileChoice();
-						} catch (IOException e1) {
-
+					openPlayersChoice();
+				}
+				if (e.getSource() == menueItemFileAddProfiles) {
+					String name = JOptionPane.showInputDialog("Enter new Players name: ");
+					playersMap.put(name, new KnollPlayer(name, 0, 0, 0));
+					try {
+						updateStats();
+					} catch (IOException e1) {
+						dataErrorMessage();
+					}
+				}
+				if (e.getSource() == menueItemFileStats) {
+					try {
+						updateStats();
+						String[][] rows = new String[playersMap.keySet().size()][4];
+						String[] cols = { "Name", "Played Games", "Wins", "Steps to Win" };
+						Iterator<String> j = playersMap.keySet().iterator();
+						while (j.hasNext()) {
+							for (int i = 0; i < rows.length; i++) {
+								String next = j.next();
+								rows[i][0] = playersMap.get(next).getName();
+								rows[i][1] = Integer.toString(playersMap.get(next).getPlayedGames());
+								rows[i][2] = Integer.toString(playersMap.get(next).getWins());
+								rows[i][3] = Integer.toString(playersMap.get(next).getStepsToWin());
+							}
 						}
-					if (selectedMode == 2)
-						try {
-							multiPlayerProfileChoice();
-						} catch (IOException e1) {
 
-						}
+						JTable table = new JTable(rows, cols);
+						JOptionPane.showMessageDialog(null, new JScrollPane(table));
+					} catch (IOException e1) {
+						dataErrorMessage();
+					}
+
 				}
 
 			}
+
+			/**
+			 * 
+			 */
+
 		};
 
 		JMenuBar menuBar = new JMenuBar();
@@ -173,6 +208,12 @@ public class MainFrame extends JFrame {
 
 		menuFile.add(menueItemFileProfiles);
 		menueItemFileProfiles.addActionListener(actionMenu);
+
+		menuFile.add(menueItemFileAddProfiles);
+		menueItemFileAddProfiles.addActionListener(actionMenu);
+
+		menuFile.add(menueItemFileStats);
+		menueItemFileStats.addActionListener(actionMenu);
 
 		menuFile.add(menuItemFileExit);
 		menuItemFileExit.addActionListener(actionMenu);
@@ -185,6 +226,23 @@ public class MainFrame extends JFrame {
 
 		setJMenuBar(menuBar);
 
+	}
+
+	private void openPlayersChoice() {
+		if (selectedMode == 1)
+			try {
+				singlePlayerProfileChoice();
+			} catch (IOException e1) {
+				dataErrorMessage();
+
+			}
+		if (selectedMode == 2)
+			try {
+				multiPlayerProfileChoice();
+			} catch (IOException e1) {
+				dataErrorMessage();
+
+			}
 	}
 
 	protected void multiPlayerProfileChoice() throws IOException {
@@ -251,7 +309,7 @@ public class MainFrame extends JFrame {
 			for (int i = 0; i < amountOfRegisteredPlayers; i++) {
 				String[] actualLine = br.readLine().split("\\.");
 				players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]),
-						Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
+						Integer.parseInt(actualLine[2]), 0));
 			}
 			br.close();
 			HashMap<String, KnollPlayer> playerObjects = new HashMap<>();
@@ -262,7 +320,7 @@ public class MainFrame extends JFrame {
 			}
 			this.playersMap = playerObjects;
 		} else {
-			dataError(br);
+			dataErrorMessage();
 		}
 	}
 
@@ -302,6 +360,28 @@ public class MainFrame extends JFrame {
 		JOptionPane.showMessageDialog(this, "Corrupt File Error.", "Warning", JOptionPane.WARNING_MESSAGE);
 		br.close();
 		throw new IOException("Corrupt File Error!");
+	}
+
+	private void dataErrorMessage() {
+		JOptionPane.showMessageDialog(this, "Corrupt File Error.", "Warning", JOptionPane.WARNING_MESSAGE);
+		int reply = JOptionPane.showConfirmDialog(this, "Create new DATA.KG Files?", "Confirm Dialog",
+				JOptionPane.YES_NO_OPTION);
+		if (reply == JOptionPane.YES_OPTION) {
+			try {
+				FileWriter fw = new FileWriter("profiles.kg");
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
+				bw.newLine();
+				bw.write("<INFO> PLAYERS: '" + 1 + "' <INFO>");
+				bw.newLine();
+				bw.write("KI.0.0.0");
+				bw.close();
+				fw.close();
+				refreshProfiles();
+			} catch (IOException e) {
+				dataErrorMessage();
+			}
+		}
 	}
 
 	protected void saveGame() throws IOException {
@@ -377,36 +457,45 @@ public class MainFrame extends JFrame {
 							|| (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
 									&& won == false)) {
 						try {
-							if(player1==null || player2==null)return;
+							if (player1 == null || player2 == null)
+								return;
 							tog.throwCoin(currentPlayer);
-							if(currentPlayer==1)player1Count++;
-							if(currentPlayer==2 || currentPlayer==3)player2Count++;
+							if (currentPlayer == 1)
+								player1Count++;
+							if (currentPlayer == 2 || currentPlayer == 3)
+								player2Count++;
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						if (tog.evaluateRows() == true) {
 							won = true;
 							displayWinner(currentPlayer);
-							switch (currentPlayer) {
-							case 1:
-								player1.setWin(player1Count);
-								break;
-							case 2:
-								player2.setWin(player2Count);
-								break;
-							case 3:
-								player2.setWin(player2Count);
+							try {
+								switch (currentPlayer) {
+								case 1:
+									player1.setWin(player1Count);
+									updateStats();
+									break;
+								case 2:
+									player2.setWin(player2Count);
+									updateStats();
+									break;
+								case 3:
+									player2.setWin(player2Count);
+									updateStats();
+									break;
+								}
+							} catch (IOException e) {
+								e.printStackTrace();
 							}
 							stopGame();
 
 						}
 
 						try {
-							
+
 							switchPlayer();
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 
@@ -442,6 +531,26 @@ public class MainFrame extends JFrame {
 
 			}
 		};
+
+	}
+
+	protected void updateStats() throws IOException {
+		FileWriter fw = new FileWriter("profiles.kg");
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
+		bw.newLine();
+		bw.write("<INFO> PLAYERS: '" + playersMap.keySet().size() + "' <INFO>");
+		bw.newLine();
+		Iterator<String> i = playersMap.keySet().iterator();
+		while (i.hasNext()) {
+			String next = i.next();
+			bw.write(playersMap.get(next).getName() + "." + playersMap.get(next).getPlayedGames() + "."
+					+ playersMap.get(next).getWins() + "." + playersMap.get(next).getStepsToWin());
+			bw.newLine();
+		}
+		bw.close();
+		fw.close();
+		JOptionPane.showMessageDialog(this, "Update succesful!");
 
 	}
 
@@ -506,9 +615,13 @@ public class MainFrame extends JFrame {
 		tog.evaluatePlayablePanels();
 		if (won == false) {
 			tog.throwCoin(currentPlayer);
+			player2Count++;
 			if (tog.evaluateRows() == true) {
 				won = true;
 				displayWinner(currentPlayer);
+				player2.setWin(player2Count);
+				updateStats();
+				stopGame();
 
 			}
 
@@ -527,9 +640,11 @@ public class MainFrame extends JFrame {
 
 	private void resetFrame(int selectedModeInt, KnollPlayer player1, KnollPlayer player2) {
 		this.selectedMode = selectedModeInt;
-		this.player1=player1;
-		this.player2=player2;
+		this.player1 = player1;
+		this.player2 = player2;
 		panel.setPlayers(player1, player2);
+		player1Count = 0;
+		player2Count = 0;
 		currentPlayer = 1;
 		tog.player = 1;
 		won = false;
