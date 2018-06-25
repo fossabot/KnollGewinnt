@@ -524,8 +524,8 @@ public class MainFrame extends JFrame {
 				if (e.getSource() == select) {
 					player1 = playersMap.get(playersList.getSelectedItem());
 					player2 = playersMap.get(new String("KI"));
-					player1.play();
-					player2.play();
+					player1.playGame();
+					player2.playGame();
 					resetFrame(selectedMode, player1, player2);
 					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
 					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
@@ -534,8 +534,8 @@ public class MainFrame extends JFrame {
 				if (e.getSource() == selectMultiPlayer) {
 					player1 = playersMap.get(playersList.getSelectedItem());
 					player2 = playersMap.get(playersList2.getSelectedItem());
-					player1.play();
-					player2.play();
+					player1.playGame();
+					player2.playGame();
 					resetFrame(selectedMode, player1, player2);
 					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
 					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
