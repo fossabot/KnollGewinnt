@@ -161,11 +161,13 @@ public class MainFrame extends JFrame {
 				}
 				if (e.getSource() == menueItemFileAddProfiles) {
 					String name = JOptionPane.showInputDialog("Enter new Players name: ");
-					playersMap.put(name, new KnollPlayer(name, 0, 0, 0));
-					try {
-						updateStats();
-					} catch (IOException e1) {
-						dataErrorMessage();
+					if (name!=null && name.length()>0) {
+						playersMap.put(name, new KnollPlayer(name, 0, 0, 0));
+						try {
+							updateStats();
+						} catch (IOException e1) {
+							dataErrorMessage();
+						} 
 					}
 				}
 				if (e.getSource() == menueItemFileStats) {
