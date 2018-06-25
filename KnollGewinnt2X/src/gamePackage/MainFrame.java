@@ -309,22 +309,26 @@ public class MainFrame extends JFrame {
 		int amountOfRegisteredPlayers = 0;
 		ArrayList<KnollPlayer> players = new ArrayList<>();
 
-		if (br.readLine().equals("<HEAD>KNOLLGEWINNT PROFILES<HEAD>")) {
-			amountOfRegisteredPlayers = Integer.parseInt((br.readLine().split("'")[1]));
-			for (int i = 0; i < amountOfRegisteredPlayers; i++) {
-				String[] actualLine = br.readLine().split("\\.");
-				players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]),
-						Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
+		try {
+			if (br.readLine().equals("<HEAD>KNOLLGEWINNT PROFILES<HEAD>")) {
+				amountOfRegisteredPlayers = Integer.parseInt((br.readLine().split("'")[1]));
+				for (int i = 0; i < amountOfRegisteredPlayers; i++) {
+					String[] actualLine = br.readLine().split("\\.");
+					players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]),
+							Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
+				}
+				br.close();
+				HashMap<String, KnollPlayer> playerObjects = new HashMap<>();
+				Iterator<KnollPlayer> i = players.iterator();
+				while (i.hasNext()) {
+					KnollPlayer p = i.next();
+					playerObjects.put(p.getName(), p);
+				}
+				this.playersMap = playerObjects;
+			} else {
+				dataErrorMessage();
 			}
-			br.close();
-			HashMap<String, KnollPlayer> playerObjects = new HashMap<>();
-			Iterator<KnollPlayer> i = players.iterator();
-			while (i.hasNext()) {
-				KnollPlayer p = i.next();
-				playerObjects.put(p.getName(), p);
-			}
-			this.playersMap = playerObjects;
-		} else {
+		} catch (Exception e) {
 			dataErrorMessage();
 		}
 	}
