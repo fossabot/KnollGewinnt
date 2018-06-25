@@ -9,13 +9,12 @@ package gamePackage;
  * (c) 2018
  */
 import java.awt.Color;
-import java.awt.LayoutManager;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class GroundPanel extends JPanel implements KnollPanel{
 
+	private static final long serialVersionUID = -6043247421499329778L;
 	private boolean filled = false;
 
 	/**

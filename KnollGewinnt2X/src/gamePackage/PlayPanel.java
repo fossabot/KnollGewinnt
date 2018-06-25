@@ -9,21 +9,15 @@ package gamePackage;
  * (c) 2018
  */
 import java.awt.Color;
-import java.awt.FlowLayout;
-
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class PlayPanel extends JPanel implements KnollPanel {
+	private static final long serialVersionUID = -1753322270777722411L;
 	private static final int noOwner = -1;
 	private boolean filled;
 	private boolean playable;
 	private int owner;
-	private JLabel a;
 
 	/**
 	 * Constructor of Class PlayPanel. A PlayPanel is a panel which is displayed on
@@ -41,23 +35,23 @@ public class PlayPanel extends JPanel implements KnollPanel {
 		this.owner = -1;
 		this.activateBorder(Color.black);
 		System.out.println(System.currentTimeMillis() + ": PLAYPANEL CREATED");
-		//Icon b = new ImageIcon(getClass().getResource("knolll.png"));
-		//a = new JLabel(b);
-		//this.add(a);
-		//this.setLayout(new FlowLayout());
-		//a.setVisible(false);
+		// Icon b = new ImageIcon(getClass().getResource("knolll.png"));
+		// a = new JLabel(b);
+		// this.add(a);
+		// this.setLayout(new FlowLayout());
+		// a.setVisible(false);
 	}
 
 	/**
 	 * Fills this PlayPanel with the specific color of the player
 	 * 
 	 * @param player
-	 * @param b 
+	 * @param b
 	 * @throws Exception
 	 */
 	public void fill(int player, boolean b) throws Exception {
 		if ((this.getBackground().equals(Color.GREEN) || this.getBackground().equals(Color.BLUE)
-				|| this.getBackground().equals(Color.RED))&&b==true) {
+				|| this.getBackground().equals(Color.RED)) && b == true) {
 			throw new Exception("PlayPanel is already filled!");
 		} else {
 			this.owner = player;
@@ -80,7 +74,7 @@ public class PlayPanel extends JPanel implements KnollPanel {
 			// ---Put red for Player 3 aka KI---
 			case 3:
 				this.setBackground(Color.RED);
-				//a.setVisible(true);
+				// a.setVisible(true);
 				filled = true;
 				break;
 			}

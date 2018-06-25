@@ -1,28 +1,17 @@
 package gamePackage;
 
-/** 
- * KNOLL GEWINNT powered by javax.swing
- * CLASS: BaseP
- * @since 29.05.2018
- * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz
- * @version 0.1
- * (c) 2018
- */
-import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.LayoutManager;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 public class BasePanel extends JPanel {
 
+	private static final long serialVersionUID = -2993250489763372602L;
 	private static final int left = 1;
 	private static final int right = 2;
 	private static final int noOwner = -1;
 
-	private static final int playerOne = 1;
-	private static final int playerTwo = 2;
 	private static final int playerKI = 3;
 	private PlayPanel[][] playBoard;
 	private GroundPanel[] control;

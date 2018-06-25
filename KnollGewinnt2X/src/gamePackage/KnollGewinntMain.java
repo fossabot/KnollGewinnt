@@ -1,5 +1,4 @@
 package gamePackage;
-import java.io.IOException;
 
 /** 
  * KNOLL GEWINNT powered by javax.swing

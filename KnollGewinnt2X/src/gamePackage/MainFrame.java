@@ -1,5 +1,3 @@
-package gamePackage;
-
 /** 
  * KNOLL GEWINNT powered by javax.swing
  * CLASS: MainFrame
@@ -8,11 +6,13 @@ package gamePackage;
  * @version 0.1
  * (c) 2018
  */
+package gamePackage;
+
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,10 +21,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.*;
-import javax.swing.text.*;
 
 public class MainFrame extends JFrame {
 
+	private static final long serialVersionUID = 7046940995312716846L;
 	private static final int left = 1;
 	private static final int right = 2;
 	private int player1Count = 0;
@@ -40,13 +40,13 @@ public class MainFrame extends JFrame {
 	private int selectedMode; // '1' singlePlayer '2' multiPlayer
 	private JButton select;
 	private JOptionPane testPane;
-	private JComboBox playersList;
+	private JComboBox<String> playersList;
 	private HashMap<String, KnollPlayer> playersMap;
 	private KnollPlayer player1;
 	private KnollPlayer player2;
 	private JDialog singlePlayerDialog;
 	private JButton selectMultiPlayer;
-	private JComboBox playersList2;
+	private JComboBox<String> playersList2;
 	private ItemListener gameModeListener;
 
 	public MainFrame() {
@@ -264,10 +264,10 @@ public class MainFrame extends JFrame {
 		testPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION,
 				null, new Object[] {}, null);
 		testPane.add(new JLabel("Player 1: "));
-		playersList = new JComboBox(playersStringArray);
+		playersList = new JComboBox<String>(playersStringArray);
 		testPane.add(playersList);
 		testPane.add(new JLabel("Player 2: "));
-		playersList2 = new JComboBox(playersStringArray);
+		playersList2 = new JComboBox<String>(playersStringArray);
 		testPane.add(playersList2);
 		selectMultiPlayer = new JButton("Select");
 		testPane.add(selectMultiPlayer);
@@ -293,7 +293,7 @@ public class MainFrame extends JFrame {
 
 		testPane = new JOptionPane("Select your Player Profile", JOptionPane.QUESTION_MESSAGE,
 				JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
-		playersList = new JComboBox(playersStringArray);
+		playersList = new JComboBox<String>(playersStringArray);
 		testPane.add(playersList);
 		select = new JButton("Select");
 		testPane.add(select);
@@ -452,18 +452,18 @@ public class MainFrame extends JFrame {
 				switch (event.getID()) {
 				case KeyEvent.KEY_RELEASED:
 					System.out.println(System.currentTimeMillis() + ": "
-							+ ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()));
+							+ KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()));
 
-					if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("a")
-							|| ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("A")) {
+					if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("a")
+							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("A")) {
 						tog.changePointer(left);
 
-					} else if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("d")
-							|| ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("D")) {
+					} else if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("d")
+							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("D")) {
 						tog.changePointer(right);
-					} else if ((((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("s")
+					} else if ((KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("s")
 							&& won == false)
-							|| (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
+							|| (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
 									&& won == false)) {
 						try {
 							if (player1 == null || player2 == null)

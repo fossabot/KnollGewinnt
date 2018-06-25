@@ -8,6 +8,7 @@ import javax.swing.*;
 
 public class ConfigPanel extends JPanel {
 
+	private static final long serialVersionUID = -4392630694778787679L;
 	JButton newGame;
 	JButton save;
 	JButton load;
