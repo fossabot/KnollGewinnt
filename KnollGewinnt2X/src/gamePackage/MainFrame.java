@@ -352,7 +352,10 @@ public class MainFrame extends JFrame {
 			dataErrorMessage();
 		}
 	}
-
+/**
+ * Loads the last saved Game from the save.kg file and calls the resumeGame() with the values read
+ * @throws IOException
+ */
 	protected void loadGame() throws IOException {
 		FileReader fr = new FileReader("save.kg");
 		BufferedReader br = new BufferedReader(fr);
