@@ -9,7 +9,6 @@ package gamePackage;
 public class StockPanel {
 
 	private PlayPanel[] playPanels;
-	private String direction;
 	private boolean filledCompletely;
 
 	/**
