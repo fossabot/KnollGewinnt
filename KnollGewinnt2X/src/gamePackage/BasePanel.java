@@ -1,9 +1,10 @@
+package gamePackage;
 
 /** 
  * KNOLL GEWINNT powered by javax.swing
  * CLASS: BaseP
  * @since 29.05.2018
- * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert
+ * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz
  * @version 0.1
  * (c) 2018
  */
@@ -19,6 +20,10 @@ public class BasePanel extends JPanel {
 	private static final int left = 1;
 	private static final int right = 2;
 	private static final int noOwner = -1;
+
+	private static final int playerOne = 1;
+	private static final int playerTwo = 2;
+	private static final int playerKI = 3;
 	private PlayPanel[][] playBoard;
 	private GroundPanel[] control;
 	ArrayList<StockPanel> stocks;
@@ -39,6 +44,27 @@ public class BasePanel extends JPanel {
 		initializePanels(x, y);
 		generateStocks();
 
+	}
+
+	/**
+	 * @return the playBoard
+	 */
+	public PlayPanel[][] getPlayBoard() {
+		return playBoard;
+	}
+
+	/**
+	 * @return the control
+	 */
+	public GroundPanel[] getControl() {
+		return control;
+	}
+
+	/**
+	 * @return the stocks
+	 */
+	public ArrayList<StockPanel> getStocks() {
+		return stocks;
 	}
 
 	/**
@@ -68,7 +94,7 @@ public class BasePanel extends JPanel {
 			this.add(control[i]);
 		}
 		// ---set first pointer position (shows the selected coloumn)
-		control[control.length - 1].setPointer(true, player);
+		control[control.length - 1].fill(player, true);
 	}
 
 	/**
@@ -105,9 +131,9 @@ public class BasePanel extends JPanel {
 
 			if (i > 0 && i < (control.length)) {
 				// ---deactivate current pointer---
-				control[i].setPointer(false, player);
+				control[i].fill(player, false);
 				// ---activate pointer to the left
-				control[i - 1].setPointer(true, player);
+				control[i - 1].fill(player, true);
 			}
 			return;
 
@@ -115,9 +141,9 @@ public class BasePanel extends JPanel {
 
 			if (i >= 0 && i < (control.length) - 1) {
 				// ---deactivate current pointer---
-				control[i].setPointer(false, player);
+				control[i].fill(player, false);
 				// ---activate pointer to the right
-				control[i + 1].setPointer(true, player);
+				control[i + 1].fill(player, true);
 			}
 			return;
 
@@ -132,56 +158,32 @@ public class BasePanel extends JPanel {
 	 * 
 	 * @param player
 	 *            - the player who throws the coin
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void throwCoin(int player) throws Exception {
 
+		
+		
 		if (player == 3) {
-			int highestChanceKI = 0;
-			int highestChancePL = 0;
+
 			// ---highestChance KI---
-			for (int i = 0; i < stocks.size(); i++) {
-				if (stocks.get(i).calculateWinningChance(3) > highestChanceKI) {
-					highestChanceKI = stocks.get(i).calculateWinningChance(3);
-				}
-			}
-			// ---highestChance PL--- 
-			for (int i = 0; i < stocks.size(); i++) {
-				if (stocks.get(i).calculateWinningChance(1) > highestChancePL) {
-					highestChancePL = stocks.get(i).calculateWinningChance(1);
-				}
-			}
-			System.out.println("HighestChanceKI: " + highestChanceKI);
-			System.out.println("HighestChancePL: " + highestChancePL);
+			int highestChanceKI = calculateHighestChance(3);
+			// ---highestChance PL---
+			int highestChancePL = calculateHighestChance(1);
+
+			System.out.println(System.currentTimeMillis() + " " + "HighestChanceKI: " + highestChanceKI);
+			System.out.println(System.currentTimeMillis() + " " + "HighestChancePL: " + highestChancePL);
 
 			if (highestChanceKI == 0 && highestChancePL <= 0) {
-			System.out.println("Random");
-				for (int j = playBoard.length - 1; j >= 0; j--) {
+				throwCoinRandomKI(player);
+				return;
+			} else if (highestChanceKI >= highestChancePL && highestChanceKI > 0) {
 
-					for (int i = 0; i < playBoard[0].length; i++) {
-						if (playBoard[j][i].isFilled() == false) {
-							playBoard[j][i].fill(player);
-							return;
-						}
-					}
-				}
-			} else if (highestChanceKI >= highestChancePL && highestChanceKI >0) {
-				System.out.println("NotRandom");
-				this.evaluatePlayablePanels();
-				for (int i = 0; i < stocks.size(); i++) {
-					if (stocks.get(i).calculateWinningChance(3) == highestChanceKI) {
-						stocks.get(i).getPlayable().fill(3);
-						 return;
-					}
-				}
-			}else if (highestChancePL > highestChanceKI && highestChancePL >0) {
-				System.out.println("NotRandomPL");
-				for (int i = 0; i < stocks.size(); i++) {
-					if (stocks.get(i).calculateWinningChance(1) == highestChancePL) {
-						stocks.get(i).getPlayable().fill(3);
-						return;
-					}
-				}
+				throwCalculatedCoin(3, highestChanceKI);
+
+			} else if (highestChancePL > highestChanceKI && highestChancePL > 0) {
+
+				throwCalculatedCoin(1, highestChancePL);
 			}
 
 		} else {
@@ -189,12 +191,54 @@ public class BasePanel extends JPanel {
 
 				// ---fill next free playPanel starting from the bottom
 				if (playBoard[j][getActiveGroundPanel()].isFilled() == false) {
-					playBoard[j][getActiveGroundPanel()].fill(player);
+					playBoard[j][getActiveGroundPanel()].fill(player, true);
 					return;
 				}
 
 			}
 			return;
+		}
+	}
+
+	private void throwCalculatedCoin(int greaterPlayer, int highestChance) throws Exception {
+		for (int i = 0; i < stocks.size(); i++) {
+			if (stocks.get(i).calculateWinningChance(greaterPlayer) == highestChance) {
+				stocks.get(i).getPlayable().fill(playerKI, true);
+				return;
+			}
+		}
+		throwCoinRandomKI(player);
+		return;
+	}
+
+	/**
+	 * @return the highestChance for the Player after iterating over all 4er Stocks
+	 */
+	private int calculateHighestChance(int player) {
+		int highestChance = 0;
+		for (int i = 0; i < stocks.size(); i++) {
+			if (stocks.get(i).calculateWinningChance(player) > highestChance) {
+				highestChance = stocks.get(i).calculateWinningChance(1);
+			}
+		}
+		return highestChance;
+	}
+
+	/**
+	 * @param player
+	 * @throws Exception
+	 */
+	private void throwCoinRandomKI(int player) throws Exception {
+		System.out.println("Random");
+		for (int j = playBoard.length - 1; j >= 0; j--) {
+
+			for (int i = 0; i < playBoard[0].length; i++) {
+				if (playBoard[j][i].isFilled() == false) {
+					playBoard[j][i].fill(player, true);
+					playBoard[j][i].setPlayable(false);
+					return;
+				}
+			}
 		}
 	}
 
@@ -216,7 +260,7 @@ public class BasePanel extends JPanel {
 	 * color)
 	 */
 	public void changePlayer() {
-		control[getActiveGroundPanel()].setPointer(true, player);
+		control[getActiveGroundPanel()].fill(player, true);
 	}
 
 	/**
@@ -233,9 +277,10 @@ public class BasePanel extends JPanel {
 
 		for (int i = 0; i < playBoard[0].length; i++) {
 			for (int j = playBoard.length - 1; j >= 0; j--) {
-				if (playBoard[j][i].getOwner() == noOwner) {
+				if (playBoard[j][i].getOwner() == noOwner && playBoard[j][i].isFilled() == false) {
 					playBoard[j][i].setPlayable(true);
-					System.out.println(System.currentTimeMillis() + " " + i + " " + j + " playable_obj_ID "+ playBoard[j][i].hashCode());
+					System.out.println(System.currentTimeMillis() + " " + i + " " + j + " playable_obj_ID "
+							+ playBoard[j][i].hashCode());
 					break;
 				}
 			}
@@ -269,12 +314,14 @@ public class BasePanel extends JPanel {
 							playBoard[i + 3][j + 3]));
 				}
 				// --diagonale Stocks #2---
-				if (j - 3 < playBoard[i].length && i - 3 < playBoard.length && j - 3 >= 0 && i - 3 >= 0) {
-					stocks.add(new StockPanel(playBoard[i][j], playBoard[i - 1][j - 1], playBoard[i - 2][j - 2],
-							playBoard[i - 3][j - 3]));
+				if (j + 3 < playBoard[i].length && i - 3 < playBoard.length && j + 3 >= 0 && i - 3 >= 0) {
+					stocks.add(new StockPanel(playBoard[i][j], playBoard[i - 1][j + 1], playBoard[i - 2][j + 2],
+							playBoard[i - 3][j + 3]));
 				}
 
 			}
 		}
 	}
+
+	
 }
