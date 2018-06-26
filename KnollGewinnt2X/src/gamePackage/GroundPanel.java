@@ -1,5 +1,3 @@
-package gamePackage;
-
 /** 
  * KNOLL GEWINNT powered by javax.swing
  * CLASS: GroundPanel
@@ -8,6 +6,9 @@ package gamePackage;
  * @version 0.1
  * (c) 2018
  */
+package gamePackage;
+
+
 import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;

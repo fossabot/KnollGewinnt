@@ -45,8 +45,10 @@ public class KnollPlayer {
 	 */
 	public void setWin(int stepsToWin) {
 		wins++;
-		if (stepsToWin < this.stepsToWin)
-			this.stepsToWin = stepsToWin;
+		if (stepsToWin < this.stepsToWin || this.stepsToWin==0) {
+			this.stepsToWin = stepsToWin;	
+		}
+			
 
 	}
 	

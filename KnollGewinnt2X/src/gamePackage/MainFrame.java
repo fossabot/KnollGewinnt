@@ -129,7 +129,14 @@ public class MainFrame extends JFrame {
 		eventListener();
 
 	}
-
+/**
+ * initializes MenuBar including the ActionListener which is needed for enable the items to function
+ * @param menuItem* - all MenuItems in the Menus
+ * @param menuHelp - Help Menu which includes Items
+ * @param menuFile - File Menu which includes Items
+ * @param menuBar - the complete menuBar
+ * @param actionMenu - ActionListener which looks up the Source and execute the corresponding steps
+ */
 	private void initMenuBar() {
 		// ---MenuItems
 		JMenuItem menuItemFileExit = new JMenuItem("Exit");
@@ -143,23 +150,27 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				//---Exit Program---
 				if (e.getSource() == menuItemFileExit) {
 					System.exit(0);
 				}
+				//---Show About Dialog---
 				if (e.getSource() == menueItemHelpAbout) {
 					JOptionPane.showMessageDialog(null,
 							"<html>KNOLL GEWINNT VER.0.1 <br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
 							"About", JOptionPane.INFORMATION_MESSAGE);
 				}
+				//---Show Help Dialog---
 				if (e.getSource() == menueItemHelpHelp) {
 					JOptionPane.showMessageDialog(null,
 							"<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> <html>",
 							"Help", JOptionPane.INFORMATION_MESSAGE);
 				}
-
+				//---Show PlayersProfileChoice Dialog---
 				if (e.getSource() == menueItemFileProfiles) {
 					openPlayersChoice();
 				}
+				//---Show AddProfiles Dialog---
 				if (e.getSource() == menueItemFileAddProfiles) {
 					String name = JOptionPane.showInputDialog("Enter new Players name: ");
 					if (name != null && name.length() > 0) {
@@ -171,6 +182,7 @@ public class MainFrame extends JFrame {
 						}
 					}
 				}
+				//---Show Stats Dialog---
 				if (e.getSource() == menueItemFileStats) {
 					try {
 						updateStats();
@@ -367,33 +379,30 @@ public class MainFrame extends JFrame {
 			try {
 				readMode = Integer.parseInt(br.readLine().split("'")[3]);
 			} catch (NumberFormatException e) {
-				dataError(br);
+				br.close();
+				dataErrorMessage();
 			}
 			for (int i = 0; i < rows.length; i++) {
 				rows[i] = br.readLine();
 			}
 		} else {
-			dataError(br);
+			br.close();
+			dataErrorMessage();
 		}
 		br.close();
 		try {
 			resumeGame(readMode, rows, br);
 		} catch (Exception e) {
-			dataError(br);
+			br.close();
+			dataErrorMessage();
 		}
 		JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
 	}
 
 	/**
-	 * @param br
-	 * @throws IOException
+	 * Shows a user friendly dataError Message dialog. Should be used in a catch section instead of printing a stack trace.
+	 * @param reply - Integer value showing if the user wants to create new DATA.KG files. 
 	 */
-	private void dataError(BufferedReader br) throws IOException {
-		JOptionPane.showMessageDialog(this, "Corrupt File Error.", "Warning", JOptionPane.WARNING_MESSAGE);
-		br.close();
-		throw new IOException("Corrupt File Error!");
-	}
-
 	private void dataErrorMessage() {
 		JOptionPane.showMessageDialog(this, "Corrupt File Error.", "Warning", JOptionPane.WARNING_MESSAGE);
 		int reply = JOptionPane.showConfirmDialog(this, "Create new DATA.KG Files?", "Confirm Dialog",
@@ -415,7 +424,10 @@ public class MainFrame extends JFrame {
 			}
 		}
 	}
-
+/**
+ * Saves the current Game with its PlayBoard, Time and the selectedMode into a new save.kg file. Overwrites the old. 
+ * @throws IOException - FileWriter Failure
+ */
 	protected void saveGame() throws IOException {
 
 		FileWriter fw = new FileWriter("save.kg");
@@ -449,7 +461,7 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * consoleIntro
+	 * consoleIntro for Coolness 
 	 */
 	static void consoleIntro() {
 
@@ -463,9 +475,11 @@ public class MainFrame extends JFrame {
 
 	/**
 	 * Generates an eventListener to recognize pressed Keys.
+	 * Generates an actionListener to recognize Players selects in Players choice OptionPane
 	 * 
 	 * @param awt
 	 *            - AWTEventListener to process the KeyEvents.
+	 * @param profileSelected - ActionListener for the select Keys in Players choice OptionPane
 	 */
 	private void eventListener() {
 		awt = new AWTEventListener() {
@@ -568,6 +582,10 @@ public class MainFrame extends JFrame {
 
 	}
 
+	/**
+	 * 
+	 * @throws IOException
+	 */
 	protected void updateStats() throws IOException {
 		FileWriter fw = new FileWriter("profiles.kg");
 		BufferedWriter bw = new BufferedWriter(fw);

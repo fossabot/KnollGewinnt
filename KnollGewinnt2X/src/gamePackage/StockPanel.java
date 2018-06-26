@@ -1,11 +1,17 @@
-package gamePackage;
-/**
- * KNOLL GEWINNT powered by javax.swing CLASS: StockPanel
- * 
+/** 
+ * KNOLL GEWINNT powered by javax.swing
+ * CLASS: GroundPanel
  * @since 29.05.2018
  * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz
- * @version 0.1 (c) 2018
+ * @version 0.1
+ * (c) 2018
  */
+package gamePackage;
+
+import java.awt.Color;
+
+import javax.swing.BorderFactory;
+
 public class StockPanel {
 
 	private PlayPanel[] playPanels;
@@ -49,6 +55,10 @@ public class StockPanel {
 				&& playPanels[2].getOwner() == playPanels[3].getOwner() && playPanels[0].getOwner() != -1
 				&& playPanels[0].getOwner() != -2) {
 			this.filledCompletely = true;
+			//---promote Panels which are responsible for the win---
+			for (int i = 0; i < playPanels.length; i++) {
+				playPanels[i].setBorder(BorderFactory.createLineBorder(Color.ORANGE, 4));
+			}
 		}
 	}
 
