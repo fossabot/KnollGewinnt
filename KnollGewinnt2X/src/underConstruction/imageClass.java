@@ -1,29 +1,18 @@
 package underConstruction;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.HeadlessException;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
-import javax.imageio.ImageIO;
-import javax.print.attribute.standard.JobImpressionsCompleted;
+import java.net.MalformedURLException;
+
+
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import com.sun.prism.Graphics;
 
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 
 public class imageClass extends JFrame{
 
