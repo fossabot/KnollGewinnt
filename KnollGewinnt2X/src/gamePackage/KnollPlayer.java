@@ -8,7 +8,7 @@
  */
 package gamePackage;
 
-public class KnollPlayer {
+public class KnollPlayer implements Comparable<KnollPlayer>{
 
 	
 	
@@ -78,6 +78,13 @@ public class KnollPlayer {
 	 */
 	public int getWins() {
 		return wins;
+	}
+
+	@Override
+	public int compareTo(KnollPlayer o) {
+		if(this.getWins()<o.getWins() )return -1;
+		if(this.getWins()>o.getWins())return 1;
+		return 0;
 	}
 
 }

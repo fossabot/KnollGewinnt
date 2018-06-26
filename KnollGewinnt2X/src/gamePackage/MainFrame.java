@@ -23,6 +23,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class MainFrame extends JFrame {
 
@@ -243,8 +246,14 @@ public class MainFrame extends JFrame {
 								rows[i][3] = Integer.toString(playersMap.get(next).getStepsToWin());
 							}
 						}
-
 						JTable table = new JTable(rows, cols);
+						DefaultTableModel model = new DefaultTableModel(rows, cols) {
+							@Override
+							public boolean isCellEditable(int row, int column) {
+								return false;
+							}
+						};
+						table.setModel(model);
 						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
 								JOptionPane.INFORMATION_MESSAGE);
 					} catch (IOException e1) {
@@ -640,8 +649,9 @@ public class MainFrame extends JFrame {
 				if (e.getSource() == selectMultiPlayer) {
 					player1 = playersMap.get(playersList.getSelectedItem());
 					player2 = playersMap.get(playersList2.getSelectedItem());
-					if(player1==player2) {
-						JOptionPane.showMessageDialog(null,"You can not play against yourself!", "Error", JOptionPane.ERROR_MESSAGE);
+					if (player1 == player2) {
+						JOptionPane.showMessageDialog(null, "You can not play against yourself!", "Error",
+								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					player1.playGame();
