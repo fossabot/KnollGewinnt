@@ -30,7 +30,7 @@ public class MainFrame extends JFrame {
 	private int player2Count = 0;
 	private BasePanel tog;
 	private int currentPlayer = 1;
-	private ConfigPanel panel;
+	private ConfigPanel configPanel;
 	private Boolean won = false;
 	private ActionListener newGameAction;
 	private ActionListener profileSelected;
@@ -61,7 +61,7 @@ public class MainFrame extends JFrame {
 	 *            display the field.
 	 * @param newGameAction
 	 *            - ActionListener for the Buttons of the ConfigPanel
-	 * @param panel
+	 * @param configPanel
 	 *            - ConfigPanel which includes the Buttons
 	 * @param manualGame
 	 *            - JLabel with instructions how to play
@@ -85,16 +85,16 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == panel.newGame) {
-					resetFrame(panel.selectedMode(), player1, player2);
+				if (e.getSource() == configPanel.newGame) {
+					resetFrame(configPanel.selectedMode(), player1, player2);
 					openPlayersChoice();
-				} else if (e.getSource() == panel.save) {
+				} else if (e.getSource() == configPanel.save) {
 					try {
 						saveGame();
 					} catch (IOException e1) {
 						dataErrorMessage();
 					}
-				} else if (e.getSource() == panel.load) {
+				} else if (e.getSource() == configPanel.load) {
 					try {
 						loadGame();
 					} catch (IOException e1) {
@@ -105,21 +105,21 @@ public class MainFrame extends JFrame {
 			}
 		};
 
-		panel = new ConfigPanel(newGameAction);
+		configPanel = new ConfigPanel(newGameAction);
 		gameModeListener = new ItemListener() {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 
-				selectedMode = panel.selectedMode();
-				panel.setPlayers(null, null);
+				selectedMode = configPanel.selectedMode();
+				configPanel.setPlayers(null, null);
 				resetFrame(selectedMode, null, null);
 				openPlayersChoice();
 			}
 		};
-		panel.addChangeListener(gameModeListener);
+		configPanel.addChangeListener(gameModeListener);
 		this.getContentPane().add(tog, BorderLayout.CENTER);
-		this.getContentPane().add(panel, BorderLayout.EAST);
+		this.getContentPane().add(configPanel, BorderLayout.EAST);
 		this.getContentPane().add(manualGame, BorderLayout.SOUTH);
 		this.setLocationByPlatform(true);
 		this.setMinimumSize(new Dimension(800, 400));
@@ -129,14 +129,23 @@ public class MainFrame extends JFrame {
 		eventListener();
 
 	}
-/**
- * initializes MenuBar including the ActionListener which is needed for enable the items to function
- * @param menuItem* - all MenuItems in the Menus
- * @param menuHelp - Help Menu which includes Items
- * @param menuFile - File Menu which includes Items
- * @param menuBar - the complete menuBar
- * @param actionMenu - ActionListener which looks up the Source and execute the corresponding steps
- */
+
+	/**
+	 * initializes MenuBar including the ActionListener which is needed for enable
+	 * the items to function
+	 * 
+	 * @param menuItem*
+	 *            - all MenuItems in the Menus
+	 * @param menuHelp
+	 *            - Help Menu which includes Items
+	 * @param menuFile
+	 *            - File Menu which includes Items
+	 * @param menuBar
+	 *            - the complete menuBar
+	 * @param actionMenu
+	 *            - ActionListener which looks up the Source and execute the
+	 *            corresponding steps
+	 */
 	private void initMenuBar() {
 		// ---MenuItems
 		JMenuItem menuItemFileExit = new JMenuItem("Exit");
@@ -150,27 +159,27 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//---Exit Program---
+				// ---Exit Program---
 				if (e.getSource() == menuItemFileExit) {
 					System.exit(0);
 				}
-				//---Show About Dialog---
+				// ---Show About Dialog---
 				if (e.getSource() == menueItemHelpAbout) {
 					JOptionPane.showMessageDialog(null,
 							"<html>KNOLL GEWINNT VER.0.1 <br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
 							"About", JOptionPane.INFORMATION_MESSAGE);
 				}
-				//---Show Help Dialog---
+				// ---Show Help Dialog---
 				if (e.getSource() == menueItemHelpHelp) {
 					JOptionPane.showMessageDialog(null,
 							"<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> <html>",
 							"Help", JOptionPane.INFORMATION_MESSAGE);
 				}
-				//---Show PlayersProfileChoice Dialog---
+				// ---Show PlayersProfileChoice Dialog---
 				if (e.getSource() == menueItemFileProfiles) {
 					openPlayersChoice();
 				}
-				//---Show AddProfiles Dialog---
+				// ---Show AddProfiles Dialog---
 				if (e.getSource() == menueItemFileAddProfiles) {
 					String name = JOptionPane.showInputDialog("Enter new Players name: ");
 					if (name != null && name.length() > 0) {
@@ -182,7 +191,7 @@ public class MainFrame extends JFrame {
 						}
 					}
 				}
-				//---Show Stats Dialog---
+				// ---Show Stats Dialog---
 				if (e.getSource() == menueItemFileStats) {
 					try {
 						updateStats();
@@ -265,15 +274,19 @@ public class MainFrame extends JFrame {
 
 			}
 	}
+
 	/**
-	 * Opens a JOption Pane for MultiPlayers with 2 ComboBoxes which list all the Players read from the Profiles.kg file
-	 * @throws IOException if refreshProfiles() fails
+	 * Opens a JOption Pane for MultiPlayers with 2 ComboBoxes which list all the
+	 * Players read from the Profiles.kg file
+	 * 
+	 * @throws IOException
+	 *             if refreshProfiles() fails
 	 */
 	protected void multiPlayerProfileChoice() throws IOException {
-		refreshProfiles();//IOException if Profiles.kg corrupted or not existent
+		refreshProfiles();// IOException if Profiles.kg corrupted or not existent
 		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
 		Iterator<String> i = playersMap.keySet().iterator();
-		
+
 		int j = 0;
 		while (i.hasNext()) {
 			String next = i.next();
@@ -284,8 +297,8 @@ public class MainFrame extends JFrame {
 
 		}
 
-		selectionPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION,
-				null, new Object[] {}, null);
+		selectionPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE,
+				JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
 		selectionPane.add(new JLabel("Player 1: "));
 		playersList = new JComboBox<String>(playersStringArray);
 		selectionPane.add(playersList);
@@ -300,12 +313,16 @@ public class MainFrame extends JFrame {
 		singlePlayerDialog.setVisible(true);
 
 	}
+
 	/**
-	 * Opens a JOption Pane for SinglePlayers with 1 ComboBoxes which list all the Players read from the Profiles.kg file
-	 * @throws IOException if refreshProfiles() fails
+	 * Opens a JOption Pane for SinglePlayers with 1 ComboBoxes which list all the
+	 * Players read from the Profiles.kg file
+	 * 
+	 * @throws IOException
+	 *             if refreshProfiles() fails
 	 */
 	protected void singlePlayerProfileChoice() throws IOException {
-		refreshProfiles();//IOException if Profiles.kg corrupted or not existent
+		refreshProfiles();// IOException if Profiles.kg corrupted or not existent
 		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
 		Iterator<String> i = playersMap.keySet().iterator();
 		int j = 0;
@@ -330,11 +347,13 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * Reads all the players and stats from the profiles.kg file into the HashMap playersMap
-	 * Opens dataErrorMessage() if file is not as expected or corrupt
-	 * @throws IOException if File is not found
+	 * Reads all the players and stats from the profiles.kg file into the HashMap
+	 * playersMap Opens dataErrorMessage() if file is not as expected or corrupt
+	 * 
+	 * @throws IOException
+	 *             if File is not found
 	 */
-	
+
 	private void refreshProfiles() throws IOException {
 		FileReader fr = new FileReader("profiles.kg");
 		BufferedReader br = new BufferedReader(fr);
@@ -364,10 +383,13 @@ public class MainFrame extends JFrame {
 			dataErrorMessage();
 		}
 	}
-/**
- * Loads the last saved Game from the save.kg file and calls the resumeGame() with the values read
- * @throws IOException
- */
+
+	/**
+	 * Loads the last saved Game from the save.kg file and calls the resumeGame()
+	 * with the values read
+	 * 
+	 * @throws IOException
+	 */
 	protected void loadGame() throws IOException {
 		FileReader fr = new FileReader("save.kg");
 		BufferedReader br = new BufferedReader(fr);
@@ -391,7 +413,7 @@ public class MainFrame extends JFrame {
 		}
 		br.close();
 		try {
-			resumeGame(readMode, rows, br);
+			resumeGame(readMode, rows);
 		} catch (Exception e) {
 			br.close();
 			dataErrorMessage();
@@ -400,8 +422,12 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * Shows a user friendly dataError Message dialog. Should be used in a catch section instead of printing a stack trace.
-	 * @param reply - Integer value showing if the user wants to create new DATA.KG files. 
+	 * Shows a user friendly dataError Message dialog. Should be used in a catch
+	 * section instead of printing a stack trace.
+	 * 
+	 * @param reply
+	 *            - Integer value showing if the user wants to create new DATA.KG
+	 *            files.
 	 */
 	private void dataErrorMessage() {
 		JOptionPane.showMessageDialog(this, "Corrupt File Error.", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -424,10 +450,14 @@ public class MainFrame extends JFrame {
 			}
 		}
 	}
-/**
- * Saves the current Game with its PlayBoard, Time and the selectedMode into a new save.kg file. Overwrites the old. 
- * @throws IOException - FileWriter Failure
- */
+
+	/**
+	 * Saves the current Game with its PlayBoard, Time and the selectedMode into a
+	 * new save.kg file. Overwrites the old.
+	 * 
+	 * @throws IOException
+	 *             - FileWriter Failure
+	 */
 	protected void saveGame() throws IOException {
 
 		FileWriter fw = new FileWriter("save.kg");
@@ -461,7 +491,7 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * consoleIntro for Coolness 
+	 * consoleIntro for Coolness
 	 */
 	static void consoleIntro() {
 
@@ -474,14 +504,16 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * Generates an eventListener to recognize pressed Keys.
-	 * Generates an actionListener to recognize Players selects in Players choice OptionPane
+	 * Generates an eventListener to recognize pressed Keys. Generates an
+	 * actionListener to recognize Players selects in Players choice OptionPane
 	 * 
 	 * @param awt
 	 *            - AWTEventListener to process the KeyEvents.
-	 * @param profileSelected - ActionListener for the select Keys in Players choice OptionPane
+	 * @param profileSelected
+	 *            - ActionListener for the select Keys in Players choice OptionPane
 	 */
 	private void eventListener() {
+		// ---eventListener---
 		awt = new AWTEventListener() {
 
 			@Override
@@ -551,7 +583,7 @@ public class MainFrame extends JFrame {
 
 		};
 		this.getToolkit().addAWTEventListener(awt, AWTEvent.KEY_EVENT_MASK);
-
+		// ---actionListener for Players choice OptionPanes select Button---
 		profileSelected = new ActionListener() {
 
 			@Override
@@ -583,8 +615,10 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
+	 * Synchronizes the profiles.kg File from the playersMap.
 	 * 
 	 * @throws IOException
+	 *             if FileWriter fails.
 	 */
 	protected void updateStats() throws IOException {
 		FileWriter fw = new FileWriter("profiles.kg");
@@ -606,22 +640,30 @@ public class MainFrame extends JFrame {
 
 	}
 
+	/**
+	 * Stops the game with just removing the Key Event Listener.
+	 */
 	protected void stopGame() {
 		this.getToolkit().removeAWTEventListener(awt);
 	}
 
+	/**
+	 * Display the player on the configPanels Label.
+	 * 
+	 * @param player
+	 */
 	private void displayWinner(int player) {
 		switch (player) {
 		case 1:
-			panel.setWin(player1.getName());
+			configPanel.setWin(player1.getName());
 			break;
 
 		case 2:
-			panel.setWin(player2.getName());
+			configPanel.setWin(player2.getName());
 			break;
 
 		case 3:
-			panel.setWin(player2.getName());
+			configPanel.setWin(player2.getName());
 			break;
 		}
 
@@ -675,6 +717,12 @@ public class MainFrame extends JFrame {
 
 	}
 
+	/**
+	 * Is called if player 3 is the current Player.
+	 * 
+	 * @throws Exception
+	 *             if the throwCoin() fails.
+	 */
 	private void letKIPlay() throws Exception {
 		tog.evaluatePlayablePanels();
 		if (won == false) {
@@ -706,7 +754,7 @@ public class MainFrame extends JFrame {
 		this.selectedMode = selectedModeInt;
 		this.player1 = player1;
 		this.player2 = player2;
-		panel.setPlayers(player1, player2);
+		configPanel.setPlayers(player1, player2);
 		player1Count = 0;
 		player2Count = 0;
 		currentPlayer = 1;
@@ -718,12 +766,18 @@ public class MainFrame extends JFrame {
 		pack();
 		this.setVisible(true);
 		this.getToolkit().removeAWTEventListener(awt);
-		panel.setWin(null);
+		configPanel.setWin(null);
 		eventListener();
 
 	}
 
-	public void resumeGame(int readMode, String[] rows, BufferedReader br) throws Exception {
+	/**
+	 * Resumes the Game from the read savings.kg file. Fills the PlayBoard from the rows read from the file. 
+	 * @param readMode - chosen Game Mode (singlePlayer, multiPlayer)
+	 * @param rows - array of the rows from the file (filled/notFilled.Owner-filled/notFilled.Owner) 
+	 * @throws Exception if the PlayBoard (fill) method fails. 
+	 */
+	public void resumeGame(int readMode, String[] rows) throws Exception {
 		String[] temp = new String[tog.getPlayBoard()[0].length];
 		for (int i = 0; i < tog.getPlayBoard().length; i++) {
 			temp = rows[i].split("-");
@@ -731,7 +785,7 @@ public class MainFrame extends JFrame {
 				String[] temp2 = temp[j].split("\\.");
 				switch (temp2[0]) {
 				case "0":
-					tog.getPlayBoard()[i][j].fill(-1, false);
+					tog.getPlayBoard()[i][j].fill(-1, false);//false means dont check if already filled, just fill. 
 					break;
 				case "1":
 					switch (temp[j].split("\\.")[1]) {
@@ -754,7 +808,7 @@ public class MainFrame extends JFrame {
 			}
 		}
 		this.selectedMode = readMode;
-		panel.setMode(readMode);
+		configPanel.setMode(readMode);
 	}
 
 }
