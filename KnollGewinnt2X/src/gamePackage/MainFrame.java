@@ -13,12 +13,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,13 +23,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.*;
-
-import com.sun.media.jfxmedia.AudioClip;
-
-import sun.audio.AudioData;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
-import sun.audio.ContinuousAudioDataStream;
 
 public class MainFrame extends JFrame {
 
