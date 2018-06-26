@@ -160,7 +160,7 @@ public class MainFrame extends JFrame {
 		JMenuItem menueItemFileProfiles = new JMenuItem("Profiles");
 		JMenuItem menueItemFileAddProfiles = new JMenuItem("Add Profile");
 		JMenuItem menueItemFileDelProfiles = new JMenuItem("Delete Profile");
-		JMenuItem menueItemFileStats = new JMenuItem("Stats");
+		JMenuItem menueItemFileStats = new JMenuItem("Profiles & Stats");
 		JMenuItem menueItemHelpAbout = new JMenuItem("About");
 		JMenuItem menueItemHelpHelp = new JMenuItem("Help");
 
