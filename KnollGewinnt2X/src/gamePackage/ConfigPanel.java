@@ -101,9 +101,10 @@ public class ConfigPanel extends JPanel {
 	 */
 
 	public void setWin(String string) {
-		if(string!=null)this.gameInfo.setText("WINNER: " + string);
-		if(string==null)this.gameInfo.setText("Game currently running.");
-		
+		if (string != null)
+			this.gameInfo.setText("WINNER: " + string);
+		if (string == null)
+			this.gameInfo.setText("Game currently running.");
 
 	}
 
@@ -138,6 +139,11 @@ public class ConfigPanel extends JPanel {
 		return 0;
 	}
 
+	/**
+	 * Sets the RadioButton depending on the Mode.
+	 * 
+	 * @param readMode
+	 */
 	public void setMode(int readMode) {
 		switch (readMode) {
 		case 1:
@@ -153,6 +159,11 @@ public class ConfigPanel extends JPanel {
 
 	}
 
+	/**
+	 * adds the ItemListener for the radioButtons
+	 * 
+	 * @param g - ItemListener
+	 */
 	public void addChangeListener(ItemListener g) {
 		singlePlayer.addItemListener(g);
 		multiPlayer.addItemListener(g);
