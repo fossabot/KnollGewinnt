@@ -9,6 +9,7 @@
 package gamePackage;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 
@@ -83,7 +84,7 @@ public class StockPanel {
 	 */
 
 	public int calculateWinningChance(int player) {
-		if (getFilledFields(player) > 0) {
+		if (getFilledFields(player) > 0 && noFilledFieldsByOtherPlayer(player)==true) {
 			// ---check if all the Panels are free or not filled by another player
 
 			for (int i = 0; i < playPanels.length; i++) {
@@ -101,6 +102,15 @@ public class StockPanel {
 		}
 
 		return 0;
+	}
+
+	private boolean noFilledFieldsByOtherPlayer(int player) {
+		for (int i = 0; i < playPanels.length; i++) {
+			if(playPanels[i].getOwner()!=player && playPanels[i].getOwner()!=-1) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -122,10 +132,14 @@ public class StockPanel {
 	 *         underneath in the same coloumn)
 	 */
 	public PlayPanel getPlayable() {
+		ArrayList <PlayPanel> playablePanels = new ArrayList<>();
 		for (int i = 0; i < playPanels.length; i++) {
 			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled() == false) {
-				return playPanels[i];
+				playablePanels.add(playPanels[i]);
 			}
+		}
+		if(playablePanels.size()>0) {
+			return playablePanels.get((int) (Math.random()*(playablePanels.size())));
 		}
 		return null;
 	}

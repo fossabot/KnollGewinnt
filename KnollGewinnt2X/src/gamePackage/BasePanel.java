@@ -219,7 +219,7 @@ public class BasePanel extends JPanel {
 		int highestChance = 0;
 		for (int i = 0; i < stocks.size(); i++) {
 			if (stocks.get(i).calculateWinningChance(player) > highestChance) {
-				highestChance = stocks.get(i).calculateWinningChance(1);
+				highestChance = stocks.get(i).calculateWinningChance(player);
 			}
 		}
 		return highestChance;
