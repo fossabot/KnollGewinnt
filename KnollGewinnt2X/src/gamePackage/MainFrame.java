@@ -209,7 +209,7 @@ public class MainFrame extends JFrame {
 						boolean exist = false;
 						while(i.hasNext()) {
 							String next = i.next();
-							if(next.equals(name)) {
+							if(next.equals(name)&&!(next.equals("KI"))) {
 								i.remove();
 								exist = true;
 							}
