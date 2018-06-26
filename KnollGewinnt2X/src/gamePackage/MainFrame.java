@@ -8,18 +8,30 @@
  */
 package gamePackage;
 
+import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.*;
+
+import com.sun.media.jfxmedia.AudioClip;
+
+import sun.audio.AudioData;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+import sun.audio.ContinuousAudioDataStream;
 
 public class MainFrame extends JFrame {
 
@@ -127,6 +139,11 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		pack();
 		eventListener();
+		try {
+			playAudio();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
 	}
 
@@ -810,5 +827,13 @@ public class MainFrame extends JFrame {
 		this.selectedMode = readMode;
 		configPanel.setMode(readMode);
 	}
-
+	/**
+	 * @throws IOException 
+	 * 
+	 */
+   public void playAudio() throws IOException {
+	   java.applet.AudioClip clip = Applet.newAudioClip(new URL("file:./title.wav"));
+	   clip.loop();
+	   System.out.println(System.currentTimeMillis()+": AUDIO IS PLAYING");
+   }
 }
