@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.*;
 
@@ -168,6 +169,7 @@ public class MainFrame extends JFrame {
 		JMenuItem menuItemFileExit = new JMenuItem("Exit");
 		JMenuItem menueItemFileProfiles = new JMenuItem("Profiles");
 		JMenuItem menueItemFileAddProfiles = new JMenuItem("Add Profile");
+		JMenuItem menueItemFileDelProfiles = new JMenuItem("Delete Profile");
 		JMenuItem menueItemFileStats = new JMenuItem("Stats");
 		JMenuItem menueItemHelpAbout = new JMenuItem("About");
 		JMenuItem menueItemHelpHelp = new JMenuItem("Help");
@@ -203,6 +205,30 @@ public class MainFrame extends JFrame {
 						playersMap.put(name, new KnollPlayer(name, 0, 0, 0));
 						try {
 							updateStats();
+						} catch (IOException e1) {
+							dataErrorMessage();
+						}
+					}
+				}
+				// ---Show DelProfiles Dialog---
+				if (e.getSource() == menueItemFileDelProfiles) {
+					String name = JOptionPane.showInputDialog("Enter Players name to delete: ");
+					if (name != null && name.length() > 0) {
+						Set<String> playersKeySet = playersMap.keySet();
+						Iterator<String> i = playersKeySet.iterator();
+						boolean exist = false;
+						while(i.hasNext()) {
+							String next = i.next();
+							if(next.equals(name)) {
+								i.remove();
+								exist = true;
+							}
+							
+						}
+						if(exist==true)JOptionPane.showMessageDialog(null, "Player found and deleted.");
+						if(exist==false)JOptionPane.showMessageDialog(null, "Player not found.");	
+						try {
+							if(exist==true)updateStats();
 						} catch (IOException e1) {
 							dataErrorMessage();
 						}
@@ -255,6 +281,9 @@ public class MainFrame extends JFrame {
 		// ---Add AddProfiles---
 		menuFile.add(menueItemFileAddProfiles);
 		menueItemFileAddProfiles.addActionListener(actionMenu);
+		// ---Add DelProfiles---
+		menuFile.add(menueItemFileDelProfiles);
+		menueItemFileDelProfiles.addActionListener(actionMenu);
 		// ---Add Stats---
 		menuFile.add(menueItemFileStats);
 		menueItemFileStats.addActionListener(actionMenu);
@@ -828,8 +857,8 @@ public class MainFrame extends JFrame {
 		configPanel.setMode(readMode);
 	}
 	/**
-	 * @throws IOException 
-	 * 
+	 * Plays the background music. 
+	 * @throws IOException if Files corrupted / not found.
 	 */
    public void playAudio() throws IOException {
 	   java.applet.AudioClip clip = Applet.newAudioClip(new URL("file:./title.wav"));
