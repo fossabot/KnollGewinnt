@@ -1,28 +1,25 @@
-package gamePackage;
-
 /** 
  * KNOLL GEWINNT powered by javax.swing
- * CLASS: BaseP
+ * CLASS: GroundPanel
  * @since 29.05.2018
  * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz
  * @version 0.1
  * (c) 2018
  */
-import java.awt.Color;
+package gamePackage;
+
 import java.awt.GridLayout;
-import java.awt.LayoutManager;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 public class BasePanel extends JPanel {
 
+	private static final long serialVersionUID = -2993250489763372602L;
 	private static final int left = 1;
 	private static final int right = 2;
 	private static final int noOwner = -1;
 
-	private static final int playerOne = 1;
-	private static final int playerTwo = 2;
 	private static final int playerKI = 3;
 	private PlayPanel[][] playBoard;
 	private GroundPanel[] control;
@@ -162,8 +159,6 @@ public class BasePanel extends JPanel {
 	 */
 	public void throwCoin(int player) throws Exception {
 
-		
-		
 		if (player == 3) {
 
 			// ---highestChance KI---
@@ -200,6 +195,12 @@ public class BasePanel extends JPanel {
 		}
 	}
 
+	/**
+	 * Throw a coin into a the Position with the highest Chance for the greater Player.
+	 * @param greaterPlayer
+	 * @param highestChance
+	 * @throws Exception if .fill() method fails. 
+	 */
 	private void throwCalculatedCoin(int greaterPlayer, int highestChance) throws Exception {
 		for (int i = 0; i < stocks.size(); i++) {
 			if (stocks.get(i).calculateWinningChance(greaterPlayer) == highestChance) {
@@ -225,11 +226,12 @@ public class BasePanel extends JPanel {
 	}
 
 	/**
+	 * Throw a random coin for the player.
 	 * @param player
 	 * @throws Exception
 	 */
 	private void throwCoinRandomKI(int player) throws Exception {
-		System.out.println("Random");
+		System.out.println(System.currentTimeMillis()+": Random");
 		for (int j = playBoard.length - 1; j >= 0; j--) {
 
 			for (int i = 0; i < playBoard[0].length; i++) {
@@ -323,5 +325,4 @@ public class BasePanel extends JPanel {
 		}
 	}
 
-	
 }

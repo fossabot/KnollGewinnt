@@ -1,5 +1,3 @@
-package gamePackage;
-
 /** 
  * KNOLL GEWINNT powered by javax.swing
  * CLASS: GroundPanel
@@ -8,14 +6,16 @@ package gamePackage;
  * @version 0.1
  * (c) 2018
  */
-import java.awt.Color;
-import java.awt.LayoutManager;
+package gamePackage;
 
+
+import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class GroundPanel extends JPanel implements KnollPanel{
 
+	private static final long serialVersionUID = -6043247421499329778L;
 	private boolean filled = false;
 
 	/**

@@ -1,3 +1,11 @@
+/** 
+ * KNOLL GEWINNT powered by javax.swing
+ * CLASS: GroundPanel
+ * @since 29.05.2018
+ * @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz
+ * @version 0.1
+ * (c) 2018
+ */
 package gamePackage;
 
 import java.awt.Color;
@@ -8,6 +16,7 @@ import javax.swing.*;
 
 public class ConfigPanel extends JPanel {
 
+	private static final long serialVersionUID = -4392630694778787679L;
 	JButton newGame;
 	JButton save;
 	JButton load;
@@ -92,9 +101,10 @@ public class ConfigPanel extends JPanel {
 	 */
 
 	public void setWin(String string) {
-		if(string!=null)this.gameInfo.setText("WINNER: " + string);
-		if(string==null)this.gameInfo.setText("Game currently running.");
-		
+		if (string != null)
+			this.gameInfo.setText("WINNER: " + string);
+		if (string == null)
+			this.gameInfo.setText("Game currently running.");
 
 	}
 
@@ -129,6 +139,11 @@ public class ConfigPanel extends JPanel {
 		return 0;
 	}
 
+	/**
+	 * Sets the RadioButton depending on the Mode.
+	 * 
+	 * @param readMode
+	 */
 	public void setMode(int readMode) {
 		switch (readMode) {
 		case 1:
@@ -144,6 +159,11 @@ public class ConfigPanel extends JPanel {
 
 	}
 
+	/**
+	 * adds the ItemListener for the radioButtons
+	 * 
+	 * @param g - ItemListener
+	 */
 	public void addChangeListener(ItemListener g) {
 		singlePlayer.addItemListener(g);
 		multiPlayer.addItemListener(g);

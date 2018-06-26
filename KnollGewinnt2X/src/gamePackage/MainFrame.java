@@ -1,5 +1,3 @@
-package gamePackage;
-
 /** 
  * KNOLL GEWINNT powered by javax.swing
  * CLASS: MainFrame
@@ -8,30 +6,44 @@ package gamePackage;
  * @version 0.1
  * (c) 2018
  */
+package gamePackage;
+
+import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.*;
-import javax.swing.text.*;
+
+import com.sun.media.jfxmedia.AudioClip;
+
+import sun.audio.AudioData;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+import sun.audio.ContinuousAudioDataStream;
 
 public class MainFrame extends JFrame {
 
+	private static final long serialVersionUID = 7046940995312716846L;
 	private static final int left = 1;
 	private static final int right = 2;
 	private int player1Count = 0;
 	private int player2Count = 0;
 	private BasePanel tog;
 	private int currentPlayer = 1;
-	private ConfigPanel panel;
+	private ConfigPanel configPanel;
 	private Boolean won = false;
 	private ActionListener newGameAction;
 	private ActionListener profileSelected;
@@ -39,14 +51,14 @@ public class MainFrame extends JFrame {
 	private JLabel manualGame;
 	private int selectedMode; // '1' singlePlayer '2' multiPlayer
 	private JButton select;
-	private JOptionPane testPane;
-	private JComboBox playersList;
+	private JOptionPane selectionPane;
+	private JComboBox<String> playersList;
 	private HashMap<String, KnollPlayer> playersMap;
 	private KnollPlayer player1;
 	private KnollPlayer player2;
 	private JDialog singlePlayerDialog;
 	private JButton selectMultiPlayer;
-	private JComboBox playersList2;
+	private JComboBox<String> playersList2;
 	private ItemListener gameModeListener;
 
 	public MainFrame() {
@@ -62,7 +74,7 @@ public class MainFrame extends JFrame {
 	 *            display the field.
 	 * @param newGameAction
 	 *            - ActionListener for the Buttons of the ConfigPanel
-	 * @param panel
+	 * @param configPanel
 	 *            - ConfigPanel which includes the Buttons
 	 * @param manualGame
 	 *            - JLabel with instructions how to play
@@ -86,16 +98,16 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == panel.newGame) {
-					resetFrame(panel.selectedMode(), player1, player2);
+				if (e.getSource() == configPanel.newGame) {
+					resetFrame(configPanel.selectedMode(), player1, player2);
 					openPlayersChoice();
-				} else if (e.getSource() == panel.save) {
+				} else if (e.getSource() == configPanel.save) {
 					try {
 						saveGame();
 					} catch (IOException e1) {
 						dataErrorMessage();
 					}
-				} else if (e.getSource() == panel.load) {
+				} else if (e.getSource() == configPanel.load) {
 					try {
 						loadGame();
 					} catch (IOException e1) {
@@ -106,21 +118,21 @@ public class MainFrame extends JFrame {
 			}
 		};
 
-		panel = new ConfigPanel(newGameAction);
+		configPanel = new ConfigPanel(newGameAction);
 		gameModeListener = new ItemListener() {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 
-				selectedMode = panel.selectedMode();
-				panel.setPlayers(null, null);
+				selectedMode = configPanel.selectedMode();
+				configPanel.setPlayers(null, null);
 				resetFrame(selectedMode, null, null);
 				openPlayersChoice();
 			}
 		};
-		panel.addChangeListener(gameModeListener);
+		configPanel.addChangeListener(gameModeListener);
 		this.getContentPane().add(tog, BorderLayout.CENTER);
-		this.getContentPane().add(panel, BorderLayout.EAST);
+		this.getContentPane().add(configPanel, BorderLayout.EAST);
 		this.getContentPane().add(manualGame, BorderLayout.SOUTH);
 		this.setLocationByPlatform(true);
 		this.setMinimumSize(new Dimension(800, 400));
@@ -128,48 +140,101 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		pack();
 		eventListener();
+		try {
+			playAudio();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
 	}
 
+	/**
+	 * initializes MenuBar including the ActionListener which is needed for enable
+	 * the items to function
+	 * 
+	 * @param menuItem*
+	 *            - all MenuItems in the Menus
+	 * @param menuHelp
+	 *            - Help Menu which includes Items
+	 * @param menuFile
+	 *            - File Menu which includes Items
+	 * @param menuBar
+	 *            - the complete menuBar
+	 * @param actionMenu
+	 *            - ActionListener which looks up the Source and execute the
+	 *            corresponding steps
+	 */
 	private void initMenuBar() {
+		// ---MenuItems
 		JMenuItem menuItemFileExit = new JMenuItem("Exit");
 		JMenuItem menueItemFileProfiles = new JMenuItem("Profiles");
 		JMenuItem menueItemFileAddProfiles = new JMenuItem("Add Profile");
+		JMenuItem menueItemFileDelProfiles = new JMenuItem("Delete Profile");
 		JMenuItem menueItemFileStats = new JMenuItem("Stats");
 		JMenuItem menueItemHelpAbout = new JMenuItem("About");
 		JMenuItem menueItemHelpHelp = new JMenuItem("Help");
+
 		ActionListener actionMenu = new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// ---Exit Program---
 				if (e.getSource() == menuItemFileExit) {
 					System.exit(0);
 				}
+				// ---Show About Dialog---
 				if (e.getSource() == menueItemHelpAbout) {
 					JOptionPane.showMessageDialog(null,
 							"<html>KNOLL GEWINNT VER.0.1 <br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
 							"About", JOptionPane.INFORMATION_MESSAGE);
 				}
+				// ---Show Help Dialog---
 				if (e.getSource() == menueItemHelpHelp) {
 					JOptionPane.showMessageDialog(null,
 							"<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> <html>",
 							"Help", JOptionPane.INFORMATION_MESSAGE);
 				}
-
+				// ---Show PlayersProfileChoice Dialog---
 				if (e.getSource() == menueItemFileProfiles) {
 					openPlayersChoice();
 				}
+				// ---Show AddProfiles Dialog---
 				if (e.getSource() == menueItemFileAddProfiles) {
 					String name = JOptionPane.showInputDialog("Enter new Players name: ");
-					if (name!=null && name.length()>0) {
+					if (name != null && name.length() > 0) {
 						playersMap.put(name, new KnollPlayer(name, 0, 0, 0));
 						try {
 							updateStats();
 						} catch (IOException e1) {
 							dataErrorMessage();
-						} 
+						}
 					}
 				}
+				// ---Show DelProfiles Dialog---
+				if (e.getSource() == menueItemFileDelProfiles) {
+					String name = JOptionPane.showInputDialog("Enter Players name to delete: ");
+					if (name != null && name.length() > 0) {
+						Set<String> playersKeySet = playersMap.keySet();
+						Iterator<String> i = playersKeySet.iterator();
+						boolean exist = false;
+						while(i.hasNext()) {
+							String next = i.next();
+							if(next.equals(name)) {
+								i.remove();
+								exist = true;
+							}
+							
+						}
+						if(exist==true)JOptionPane.showMessageDialog(null, "Player found and deleted.");
+						if(exist==false)JOptionPane.showMessageDialog(null, "Player not found.");	
+						try {
+							if(exist==true)updateStats();
+						} catch (IOException e1) {
+							dataErrorMessage();
+						}
+					}
+				}
+				// ---Show Stats Dialog---
 				if (e.getSource() == menueItemFileStats) {
 					try {
 						updateStats();
@@ -187,7 +252,8 @@ public class MainFrame extends JFrame {
 						}
 
 						JTable table = new JTable(rows, cols);
-						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
+								JOptionPane.INFORMATION_MESSAGE);
 					} catch (IOException e1) {
 						dataErrorMessage();
 					}
@@ -202,27 +268,32 @@ public class MainFrame extends JFrame {
 
 		};
 
+		// ---MenuBar with Menus and the corresponding MenuItems with actionMenu
+		// Listener---
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuFile = new JMenu("File");
 		JMenu menuHelp = new JMenu("Help");
 		menuBar.add(menuFile);
 		menuBar.add(menuHelp);
-
+		// ---Add SelectProfiles---
 		menuFile.add(menueItemFileProfiles);
 		menueItemFileProfiles.addActionListener(actionMenu);
-
+		// ---Add AddProfiles---
 		menuFile.add(menueItemFileAddProfiles);
 		menueItemFileAddProfiles.addActionListener(actionMenu);
-
+		// ---Add DelProfiles---
+		menuFile.add(menueItemFileDelProfiles);
+		menueItemFileDelProfiles.addActionListener(actionMenu);
+		// ---Add Stats---
 		menuFile.add(menueItemFileStats);
 		menueItemFileStats.addActionListener(actionMenu);
-
+		// ---Add Exit---
 		menuFile.add(menuItemFileExit);
 		menuItemFileExit.addActionListener(actionMenu);
-
+		// ---Add About---
 		menuHelp.add(menueItemHelpAbout);
 		menueItemHelpAbout.addActionListener(actionMenu);
-
+		// ---Add Help---
 		menuHelp.add(menueItemHelpHelp);
 		menueItemHelpHelp.addActionListener(actionMenu);
 
@@ -230,15 +301,18 @@ public class MainFrame extends JFrame {
 
 	}
 
+	/**
+	 * opens the playersChoice PopUp depending on which mode is currently selected
+	 */
 	private void openPlayersChoice() {
-		if (selectedMode == 1)
+		if (selectedMode == 1) // singlePlayer
 			try {
 				singlePlayerProfileChoice();
 			} catch (IOException e1) {
 				dataErrorMessage();
 
 			}
-		if (selectedMode == 2)
+		if (selectedMode == 2)// multiPlayer
 			try {
 				multiPlayerProfileChoice();
 			} catch (IOException e1) {
@@ -247,10 +321,18 @@ public class MainFrame extends JFrame {
 			}
 	}
 
+	/**
+	 * Opens a JOption Pane for MultiPlayers with 2 ComboBoxes which list all the
+	 * Players read from the Profiles.kg file
+	 * 
+	 * @throws IOException
+	 *             if refreshProfiles() fails
+	 */
 	protected void multiPlayerProfileChoice() throws IOException {
-		refreshProfiles();
+		refreshProfiles();// IOException if Profiles.kg corrupted or not existent
 		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
 		Iterator<String> i = playersMap.keySet().iterator();
+
 		int j = 0;
 		while (i.hasNext()) {
 			String next = i.next();
@@ -258,28 +340,35 @@ public class MainFrame extends JFrame {
 				playersStringArray[j] = next;
 				j++;
 			}
-				
+
 		}
 
-		testPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION,
-				null, new Object[] {}, null);
-		testPane.add(new JLabel("Player 1: "));
-		playersList = new JComboBox(playersStringArray);
-		testPane.add(playersList);
-		testPane.add(new JLabel("Player 2: "));
-		playersList2 = new JComboBox(playersStringArray);
-		testPane.add(playersList2);
+		selectionPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE,
+				JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
+		selectionPane.add(new JLabel("Player 1: "));
+		playersList = new JComboBox<String>(playersStringArray);
+		selectionPane.add(playersList);
+		selectionPane.add(new JLabel("Player 2: "));
+		playersList2 = new JComboBox<String>(playersStringArray);
+		selectionPane.add(playersList2);
 		selectMultiPlayer = new JButton("Select");
-		testPane.add(selectMultiPlayer);
+		selectionPane.add(selectMultiPlayer);
 		selectMultiPlayer.addActionListener(profileSelected);
 
-		singlePlayerDialog = testPane.createDialog(null, "MultiPlayer Profile Choice");
+		singlePlayerDialog = selectionPane.createDialog(null, "MultiPlayer Profile Choice");
 		singlePlayerDialog.setVisible(true);
 
 	}
 
+	/**
+	 * Opens a JOption Pane for SinglePlayers with 1 ComboBoxes which list all the
+	 * Players read from the Profiles.kg file
+	 * 
+	 * @throws IOException
+	 *             if refreshProfiles() fails
+	 */
 	protected void singlePlayerProfileChoice() throws IOException {
-		refreshProfiles();
+		refreshProfiles();// IOException if Profiles.kg corrupted or not existent
 		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
 		Iterator<String> i = playersMap.keySet().iterator();
 		int j = 0;
@@ -291,17 +380,25 @@ public class MainFrame extends JFrame {
 			}
 		}
 
-		testPane = new JOptionPane("Select your Player Profile", JOptionPane.QUESTION_MESSAGE,
+		selectionPane = new JOptionPane("Select your Player Profile", JOptionPane.QUESTION_MESSAGE,
 				JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
-		playersList = new JComboBox(playersStringArray);
-		testPane.add(playersList);
+		playersList = new JComboBox<String>(playersStringArray);
+		selectionPane.add(playersList);
 		select = new JButton("Select");
-		testPane.add(select);
+		selectionPane.add(select);
 		select.addActionListener(profileSelected);
 
-		singlePlayerDialog = testPane.createDialog(null, "SinglePlayer Profile Choice");
+		singlePlayerDialog = selectionPane.createDialog(null, "SinglePlayer Profile Choice");
 		singlePlayerDialog.setVisible(true);
 	}
+
+	/**
+	 * Reads all the players and stats from the profiles.kg file into the HashMap
+	 * playersMap Opens dataErrorMessage() if file is not as expected or corrupt
+	 * 
+	 * @throws IOException
+	 *             if File is not found
+	 */
 
 	private void refreshProfiles() throws IOException {
 		FileReader fr = new FileReader("profiles.kg");
@@ -333,6 +430,12 @@ public class MainFrame extends JFrame {
 		}
 	}
 
+	/**
+	 * Loads the last saved Game from the save.kg file and calls the resumeGame()
+	 * with the values read
+	 * 
+	 * @throws IOException
+	 */
 	protected void loadGame() throws IOException {
 		FileReader fr = new FileReader("save.kg");
 		BufferedReader br = new BufferedReader(fr);
@@ -344,33 +447,34 @@ public class MainFrame extends JFrame {
 			try {
 				readMode = Integer.parseInt(br.readLine().split("'")[3]);
 			} catch (NumberFormatException e) {
-				dataError(br);
+				br.close();
+				dataErrorMessage();
 			}
 			for (int i = 0; i < rows.length; i++) {
 				rows[i] = br.readLine();
 			}
 		} else {
-			dataError(br);
+			br.close();
+			dataErrorMessage();
 		}
 		br.close();
 		try {
-			resumeGame(readMode, rows, br);
+			resumeGame(readMode, rows);
 		} catch (Exception e) {
-			dataError(br);
+			br.close();
+			dataErrorMessage();
 		}
 		JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
 	}
 
 	/**
-	 * @param br
-	 * @throws IOException
+	 * Shows a user friendly dataError Message dialog. Should be used in a catch
+	 * section instead of printing a stack trace.
+	 * 
+	 * @param reply
+	 *            - Integer value showing if the user wants to create new DATA.KG
+	 *            files.
 	 */
-	private void dataError(BufferedReader br) throws IOException {
-		JOptionPane.showMessageDialog(this, "Corrupt File Error.", "Warning", JOptionPane.WARNING_MESSAGE);
-		br.close();
-		throw new IOException("Corrupt File Error!");
-	}
-
 	private void dataErrorMessage() {
 		JOptionPane.showMessageDialog(this, "Corrupt File Error.", "Warning", JOptionPane.WARNING_MESSAGE);
 		int reply = JOptionPane.showConfirmDialog(this, "Create new DATA.KG Files?", "Confirm Dialog",
@@ -393,6 +497,13 @@ public class MainFrame extends JFrame {
 		}
 	}
 
+	/**
+	 * Saves the current Game with its PlayBoard, Time and the selectedMode into a
+	 * new save.kg file. Overwrites the old.
+	 * 
+	 * @throws IOException
+	 *             - FileWriter Failure
+	 */
 	protected void saveGame() throws IOException {
 
 		FileWriter fw = new FileWriter("save.kg");
@@ -426,7 +537,7 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * consoleIntro
+	 * consoleIntro for Coolness
 	 */
 	static void consoleIntro() {
 
@@ -439,32 +550,34 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * Generates an eventListener to recognize pressed Keys.
+	 * Generates an eventListener to recognize pressed Keys. Generates an
+	 * actionListener to recognize Players selects in Players choice OptionPane
 	 * 
 	 * @param awt
 	 *            - AWTEventListener to process the KeyEvents.
+	 * @param profileSelected
+	 *            - ActionListener for the select Keys in Players choice OptionPane
 	 */
 	private void eventListener() {
+		// ---eventListener---
 		awt = new AWTEventListener() {
 
 			@Override
 			public void eventDispatched(AWTEvent event) {
 				switch (event.getID()) {
 				case KeyEvent.KEY_RELEASED:
-					System.out.println(System.currentTimeMillis() + ": "
-							+ ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()));
+					System.out.println(
+							System.currentTimeMillis() + ": " + KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()));
 
-					if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("a")
-							|| ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("A")) {
+					if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("a")
+							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("A")) {
 						tog.changePointer(left);
 
-					} else if (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("d")
-							|| ((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("D")) {
+					} else if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("d")
+							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("D")) {
 						tog.changePointer(right);
-					} else if ((((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("s")
-							&& won == false)
-							|| (((KeyEvent) event).getKeyText(((KeyEvent) event).getKeyCode()).equals("S")
-									&& won == false)) {
+					} else if ((KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("s") && won == false)
+							|| (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("S") && won == false)) {
 						try {
 							if (player1 == null || player2 == null)
 								return;
@@ -516,7 +629,7 @@ public class MainFrame extends JFrame {
 
 		};
 		this.getToolkit().addAWTEventListener(awt, AWTEvent.KEY_EVENT_MASK);
-
+		// ---actionListener for Players choice OptionPanes select Button---
 		profileSelected = new ActionListener() {
 
 			@Override
@@ -524,8 +637,8 @@ public class MainFrame extends JFrame {
 				if (e.getSource() == select) {
 					player1 = playersMap.get(playersList.getSelectedItem());
 					player2 = playersMap.get(new String("KI"));
-					player1.play();
-					player2.play();
+					player1.playGame();
+					player2.playGame();
 					resetFrame(selectedMode, player1, player2);
 					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
 					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
@@ -534,8 +647,8 @@ public class MainFrame extends JFrame {
 				if (e.getSource() == selectMultiPlayer) {
 					player1 = playersMap.get(playersList.getSelectedItem());
 					player2 = playersMap.get(playersList2.getSelectedItem());
-					player1.play();
-					player2.play();
+					player1.playGame();
+					player2.playGame();
 					resetFrame(selectedMode, player1, player2);
 					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
 					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
@@ -547,6 +660,12 @@ public class MainFrame extends JFrame {
 
 	}
 
+	/**
+	 * Synchronizes the profiles.kg File from the playersMap.
+	 * 
+	 * @throws IOException
+	 *             if FileWriter fails.
+	 */
 	protected void updateStats() throws IOException {
 		FileWriter fw = new FileWriter("profiles.kg");
 		BufferedWriter bw = new BufferedWriter(fw);
@@ -567,26 +686,32 @@ public class MainFrame extends JFrame {
 
 	}
 
+	/**
+	 * Stops the game with just removing the Key Event Listener.
+	 */
 	protected void stopGame() {
 		this.getToolkit().removeAWTEventListener(awt);
 	}
 
+	/**
+	 * Display the player on the configPanels Label.
+	 * 
+	 * @param player
+	 */
 	private void displayWinner(int player) {
 		switch (player) {
 		case 1:
-			panel.setWin(player1.getName());
+			configPanel.setWin(player1.getName());
 			break;
 
 		case 2:
-			panel.setWin(player2.getName());
+			configPanel.setWin(player2.getName());
 			break;
-			
+
 		case 3:
-			panel.setWin(player2.getName());
+			configPanel.setWin(player2.getName());
 			break;
 		}
-		
-		
 
 	}
 
@@ -638,6 +763,12 @@ public class MainFrame extends JFrame {
 
 	}
 
+	/**
+	 * Is called if player 3 is the current Player.
+	 * 
+	 * @throws Exception
+	 *             if the throwCoin() fails.
+	 */
 	private void letKIPlay() throws Exception {
 		tog.evaluatePlayablePanels();
 		if (won == false) {
@@ -669,7 +800,7 @@ public class MainFrame extends JFrame {
 		this.selectedMode = selectedModeInt;
 		this.player1 = player1;
 		this.player2 = player2;
-		panel.setPlayers(player1, player2);
+		configPanel.setPlayers(player1, player2);
 		player1Count = 0;
 		player2Count = 0;
 		currentPlayer = 1;
@@ -681,12 +812,18 @@ public class MainFrame extends JFrame {
 		pack();
 		this.setVisible(true);
 		this.getToolkit().removeAWTEventListener(awt);
-		panel.setWin(null);
+		configPanel.setWin(null);
 		eventListener();
 
 	}
 
-	public void resumeGame(int readMode, String[] rows, BufferedReader br) throws Exception {
+	/**
+	 * Resumes the Game from the read savings.kg file. Fills the PlayBoard from the rows read from the file. 
+	 * @param readMode - chosen Game Mode (singlePlayer, multiPlayer)
+	 * @param rows - array of the rows from the file (filled/notFilled.Owner-filled/notFilled.Owner) 
+	 * @throws Exception if the PlayBoard (fill) method fails. 
+	 */
+	public void resumeGame(int readMode, String[] rows) throws Exception {
 		String[] temp = new String[tog.getPlayBoard()[0].length];
 		for (int i = 0; i < tog.getPlayBoard().length; i++) {
 			temp = rows[i].split("-");
@@ -694,7 +831,7 @@ public class MainFrame extends JFrame {
 				String[] temp2 = temp[j].split("\\.");
 				switch (temp2[0]) {
 				case "0":
-					tog.getPlayBoard()[i][j].fill(-1, false);
+					tog.getPlayBoard()[i][j].fill(-1, false);//false means dont check if already filled, just fill. 
 					break;
 				case "1":
 					switch (temp[j].split("\\.")[1]) {
@@ -717,7 +854,15 @@ public class MainFrame extends JFrame {
 			}
 		}
 		this.selectedMode = readMode;
-		panel.setMode(readMode);
+		configPanel.setMode(readMode);
 	}
-
+	/**
+	 * Plays the background music. 
+	 * @throws IOException if Files corrupted / not found.
+	 */
+   public void playAudio() throws IOException {
+	   java.applet.AudioClip clip = Applet.newAudioClip(new URL("file:./title.wav"));
+	   clip.loop();
+	   System.out.println(System.currentTimeMillis()+": AUDIO IS PLAYING");
+   }
 }
