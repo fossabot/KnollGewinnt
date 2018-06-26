@@ -41,6 +41,11 @@ public class StockPanel {
 
 	}
 
+	/**
+	 * @param index
+	 *            - PlayPanel number to return
+	 * @return - a PlayPanel
+	 */
 	public PlayPanel getPlayPanel(int index) {
 		return playPanels[index];
 	}
@@ -55,7 +60,7 @@ public class StockPanel {
 				&& playPanels[2].getOwner() == playPanels[3].getOwner() && playPanels[0].getOwner() != -1
 				&& playPanels[0].getOwner() != -2) {
 			this.filledCompletely = true;
-			//---promote Panels which are responsible for the win---
+			// ---promote Panels which are responsible for the win---
 			for (int i = 0; i < playPanels.length; i++) {
 				playPanels[i].setBorder(BorderFactory.createLineBorder(Color.ORANGE, 4));
 			}
@@ -70,9 +75,11 @@ public class StockPanel {
 	}
 
 	/**
+	 * Calculates the WinningChance in this specific StockPanel (0-4)
 	 * 
 	 * @param player
-	 * @return
+	 *            - WinningChance for what player?
+	 * @return - int between 0 and 4
 	 */
 
 	public int calculateWinningChance(int player) {
@@ -96,23 +103,31 @@ public class StockPanel {
 		return 0;
 	}
 
+	/**
+	 * @return - true if one of the PlayPanels is playable (Itself is not filled but
+	 *         all underneath in the same coloumn)
+	 */
 	public boolean isOnePlayable() {
 		for (int i = 0; i < playPanels.length; i++) {
-			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled()==false) {
+			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled() == false) {
 				return true;
 			}
-				
+
 		}
 		return false;
 	}
-	
+
+	/**
+	 * @return - the PlayPanel which is playable (Itself is not filled but all
+	 *         underneath in the same coloumn)
+	 */
 	public PlayPanel getPlayable() {
 		for (int i = 0; i < playPanels.length; i++) {
-			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled()==false) {
+			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled() == false) {
 				return playPanels[i];
-			}	
+			}
 		}
-		return null; 
+		return null;
 	}
 
 	/**
