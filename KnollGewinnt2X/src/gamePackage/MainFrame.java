@@ -640,6 +640,10 @@ public class MainFrame extends JFrame {
 				if (e.getSource() == selectMultiPlayer) {
 					player1 = playersMap.get(playersList.getSelectedItem());
 					player2 = playersMap.get(playersList2.getSelectedItem());
+					if(player1==player2) {
+						JOptionPane.showMessageDialog(null,"You can not play against yourself!", "Error", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					player1.playGame();
 					player2.playGame();
 					resetFrame(selectedMode, player1, player2);
