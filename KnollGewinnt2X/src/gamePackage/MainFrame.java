@@ -207,18 +207,21 @@ public class MainFrame extends JFrame {
 						Set<String> playersKeySet = playersMap.keySet();
 						Iterator<String> i = playersKeySet.iterator();
 						boolean exist = false;
-						while(i.hasNext()) {
+						while (i.hasNext()) {
 							String next = i.next();
-							if(next.equals(name)&&!(next.equals("KI"))) {
+							if (next.equals(name) && !(next.equals("KI"))) {
 								i.remove();
 								exist = true;
 							}
-							
+
 						}
-						if(exist==true)JOptionPane.showMessageDialog(null, "Player found and deleted.");
-						if(exist==false)JOptionPane.showMessageDialog(null, "Player not found.");	
+						if (exist == true)
+							JOptionPane.showMessageDialog(null, "Player found and deleted.");
+						if (exist == false)
+							JOptionPane.showMessageDialog(null, "Player not found.");
 						try {
-							if(exist==true)updateStats();
+							if (exist == true)
+								updateStats();
 						} catch (IOException e1) {
 							dataErrorMessage();
 						}
@@ -602,13 +605,13 @@ public class MainFrame extends JFrame {
 							}
 							stopGame();
 
-						}
+						} else {
+							try {
 
-						try {
-
-							switchPlayer();
-						} catch (Exception e) {
-							e.printStackTrace();
+								switchPlayer();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 
 					}
@@ -681,6 +684,8 @@ public class MainFrame extends JFrame {
 	 */
 	protected void stopGame() {
 		this.getToolkit().removeAWTEventListener(awt);
+		tog.removePointer();
+
 	}
 
 	/**
@@ -771,9 +776,10 @@ public class MainFrame extends JFrame {
 				updateStats();
 				stopGame();
 
+			} else {
+				switchPlayer();
 			}
 
-			switchPlayer();
 		}
 
 	}
@@ -808,10 +814,16 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * Resumes the Game from the read savings.kg file. Fills the PlayBoard from the rows read from the file. 
-	 * @param readMode - chosen Game Mode (singlePlayer, multiPlayer)
-	 * @param rows - array of the rows from the file (filled/notFilled.Owner-filled/notFilled.Owner) 
-	 * @throws Exception if the PlayBoard (fill) method fails. 
+	 * Resumes the Game from the read savings.kg file. Fills the PlayBoard from the
+	 * rows read from the file.
+	 * 
+	 * @param readMode
+	 *            - chosen Game Mode (singlePlayer, multiPlayer)
+	 * @param rows
+	 *            - array of the rows from the file
+	 *            (filled/notFilled.Owner-filled/notFilled.Owner)
+	 * @throws Exception
+	 *             if the PlayBoard (fill) method fails.
 	 */
 	public void resumeGame(int readMode, String[] rows) throws Exception {
 		String[] temp = new String[tog.getPlayBoard()[0].length];
@@ -821,7 +833,7 @@ public class MainFrame extends JFrame {
 				String[] temp2 = temp[j].split("\\.");
 				switch (temp2[0]) {
 				case "0":
-					tog.getPlayBoard()[i][j].fill(-1, false);//false means dont check if already filled, just fill. 
+					tog.getPlayBoard()[i][j].fill(-1, false);// false means dont check if already filled, just fill.
 					break;
 				case "1":
 					switch (temp[j].split("\\.")[1]) {
@@ -846,13 +858,16 @@ public class MainFrame extends JFrame {
 		this.selectedMode = readMode;
 		configPanel.setMode(readMode);
 	}
+
 	/**
-	 * Plays the background music. 
-	 * @throws IOException if Files corrupted / not found.
+	 * Plays the background music.
+	 * 
+	 * @throws IOException
+	 *             if Files corrupted / not found.
 	 */
-   public void playAudio() throws IOException {
-	   java.applet.AudioClip clip = Applet.newAudioClip(new URL("file:./title.wav"));
-	   clip.loop();
-	   System.out.println(System.currentTimeMillis()+": AUDIO IS PLAYING");
-   }
+	public void playAudio() throws IOException {
+		java.applet.AudioClip clip = Applet.newAudioClip(new URL("file:./title.wav"));
+		clip.loop();
+		System.out.println(System.currentTimeMillis() + ": AUDIO IS PLAYING");
+	}
 }

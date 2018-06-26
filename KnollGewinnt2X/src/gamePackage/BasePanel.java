@@ -196,10 +196,13 @@ public class BasePanel extends JPanel {
 	}
 
 	/**
-	 * Throw a coin into a the Position with the highest Chance for the greater Player.
+	 * Throw a coin into a the Position with the highest Chance for the greater
+	 * Player.
+	 * 
 	 * @param greaterPlayer
 	 * @param highestChance
-	 * @throws Exception if .fill() method fails. 
+	 * @throws Exception
+	 *             if .fill() method fails.
 	 */
 	private void throwCalculatedCoin(int greaterPlayer, int highestChance) throws Exception {
 		for (int i = 0; i < stocks.size(); i++) {
@@ -227,11 +230,12 @@ public class BasePanel extends JPanel {
 
 	/**
 	 * Throw a random coin for the player.
+	 * 
 	 * @param player
 	 * @throws Exception
 	 */
 	private void throwCoinRandomKI(int player) throws Exception {
-		System.out.println(System.currentTimeMillis()+": Random");
+		System.out.println(System.currentTimeMillis() + ": Random");
 		for (int j = playBoard.length - 1; j >= 0; j--) {
 
 			for (int i = 0; i < playBoard[0].length; i++) {
@@ -323,6 +327,16 @@ public class BasePanel extends JPanel {
 
 			}
 		}
+	}
+
+	/**
+	 * removes everyPointer for end of the Game
+	 */
+	public void removePointer() {
+		for (int i = 0; i < control.length; i++) {
+			control[i].fill(0, false);
+		}
+
 	}
 
 }

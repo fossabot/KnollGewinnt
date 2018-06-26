@@ -10,6 +10,7 @@ package gamePackage;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 
@@ -84,7 +85,7 @@ public class StockPanel {
 	 */
 
 	public int calculateWinningChance(int player) {
-		if (getFilledFields(player) > 0 && noFilledFieldsByOtherPlayer(player)==true) {
+		if (getFilledFields(player) > 0 && noFilledFieldsByOtherPlayer(player) == true) {
 			// ---check if all the Panels are free or not filled by another player
 
 			for (int i = 0; i < playPanels.length; i++) {
@@ -106,7 +107,7 @@ public class StockPanel {
 
 	private boolean noFilledFieldsByOtherPlayer(int player) {
 		for (int i = 0; i < playPanels.length; i++) {
-			if(playPanels[i].getOwner()!=player && playPanels[i].getOwner()!=-1) {
+			if (playPanels[i].getOwner() != player && playPanels[i].getOwner() != -1) {
 				return false;
 			}
 		}
@@ -132,14 +133,24 @@ public class StockPanel {
 	 *         underneath in the same coloumn)
 	 */
 	public PlayPanel getPlayable() {
-		ArrayList <PlayPanel> playablePanels = new ArrayList<>();
+		for (int i = 0; i < playPanels.length; i++) {
+			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled() == false) {
+				if (i < playPanels.length - 1 && playPanels[i + 1].isFilled() == true) {
+					return playPanels[i];
+				} else if (i > 0 && playPanels[i - 1].isFilled() == true) {
+					return playPanels[i];
+				}
+
+			}
+		}
+		ArrayList<PlayPanel> playablePanels = new ArrayList<>();
 		for (int i = 0; i < playPanels.length; i++) {
 			if (playPanels[i].isPlayable() == true && playPanels[i].isFilled() == false) {
 				playablePanels.add(playPanels[i]);
 			}
 		}
-		if(playablePanels.size()>0) {
-			return playablePanels.get((int) (Math.random()*(playablePanels.size())));
+		if (playablePanels.size() > 0) {
+			return playablePanels.get((int) (Math.random() * playablePanels.size()));
 		}
 		return null;
 	}
