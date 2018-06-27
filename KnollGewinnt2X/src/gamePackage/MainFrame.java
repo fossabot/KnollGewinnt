@@ -680,7 +680,7 @@ public class MainFrame extends JFrame {
 		kCounter=0;
 
 			try {
-				JOptionPane.showMessageDialog(null, new KnollEasterPanel(), "EasterEgg", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, new KnollEasterPanel(), "EasterEgg", JOptionPane.PLAIN_MESSAGE);
 			}  catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
