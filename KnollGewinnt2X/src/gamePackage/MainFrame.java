@@ -34,6 +34,7 @@ public class MainFrame extends JFrame {
 	private static final int right = 2;
 	private int player1Count = 0;
 	private int player2Count = 0;
+	private int kCounter;
 	private BasePanel tog;
 	private int currentPlayer = 1;
 	private ConfigPanel configPanel;
@@ -252,6 +253,7 @@ public class MainFrame extends JFrame {
 							public boolean isCellEditable(int row, int column) {
 								return false;
 							}
+							
 						};
 						table.setModel(model);
 						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
@@ -564,6 +566,7 @@ public class MainFrame extends JFrame {
 		// ---eventListener---
 		awt = new AWTEventListener() {
 
+			
 			@Override
 			public void eventDispatched(AWTEvent event) {
 				switch (event.getID()) {
@@ -623,6 +626,12 @@ public class MainFrame extends JFrame {
 							}
 						}
 
+					} else if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("k")
+							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("K")) {
+						if(kCounter>10) {
+							easterEgg();
+						}else kCounter++;
+						
 					}
 					break;
 				}
@@ -665,6 +674,19 @@ public class MainFrame extends JFrame {
 			}
 		};
 
+	}
+
+	protected void easterEgg() {
+		kCounter=0;
+
+			try {
+				JOptionPane.showMessageDialog(null, new KnollEasterPanel(), "EasterEgg", JOptionPane.INFORMATION_MESSAGE);
+			}  catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		
 	}
 
 	/**
