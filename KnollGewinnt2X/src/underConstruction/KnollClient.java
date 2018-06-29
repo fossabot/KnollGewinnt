@@ -1,57 +1,42 @@
 package underConstruction;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Scanner;
-
-import com.sun.xml.internal.fastinfoset.sax.SystemIdResolver;
 
 public class KnollClient {
 
 	public static void main(String[] args) {
-       System.out.println("KnollClient");
-		Socket socket = null;
-        System.out.println("Enter IP-Adress: ");
-        String ipAdress = new Scanner(System.in).nextLine(); 
+	
+		KnollClient client = new KnollClient("localhost", 8000);
+		client.sendMessage("Hallo");
+	}
+	
+	private InetSocketAddress adress;
+	
+	public KnollClient(String adress, int port) {
+		this.adress = new InetSocketAddress(adress, port);
+	}
+	
+	public void sendMessage(String msg) {
+		Socket socket = new Socket();
 		try {
-            socket = new Socket(ipAdress, 6131);
-
-            OutputStream raus = socket.getOutputStream();
-            PrintStream ps = new PrintStream(raus, true);
-            ps.println("Hallo Welt!");
-            ps.println("Hallo Otto!");
-
-            InputStream rein = socket.getInputStream();
-            System.out.println("verf\u00FCgbare Bytes: " + rein.available());
-            BufferedReader buff = new BufferedReader(new InputStreamReader(rein));
-            
-            while (buff.ready()) {
-                System.out.println(buff.readLine());
-            }
-
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown Host...");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("IOProbleme...");
-            e.printStackTrace();
-        } finally {
-            if (socket != null)
-                try {
-                    socket.close();
-                    System.out.println("Socket geschlossen...");
-                } catch (IOException e) {
-                    System.out.println("Socket nicht zu schliessen...");
-                    e.printStackTrace();
-                }
-        }
-    } 
+			socket.connect(this.adress, 5000);
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+			pw.println(msg);
+			pw.flush();
+			
+			//wieder schließen
+			
+			pw.close();
+			socket.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

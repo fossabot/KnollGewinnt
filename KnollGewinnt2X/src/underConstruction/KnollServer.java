@@ -3,60 +3,52 @@ package underConstruction;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class KnollServer {
 
-	private final ServerSocket server;
+	private int port;
 
-	public KnollServer(int port) throws IOException {
-		server = new ServerSocket(port);
+	public KnollServer(int port) {
+		this.port = port;
 	}
 
-	private void verbinde() {
+	public static void main(String[] args) {
+		KnollServer server = new KnollServer(8000);
+		server.startListening();
+	}
 
-		System.out.println("Verbinde");
-		
-		while (true) {
-			Socket socket = null;
-			try {
-				socket = server.accept();
-				reinRaus(socket);
-			}
+	public void startListening() {
+		new Thread(new Runnable() {
 
-			catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (socket != null)
+			@Override
+			public void run() {
+				while (true) {
 					try {
+						System.out.println("[Server] Startet...");
+						ServerSocket socket = new ServerSocket(port);
+						//Repräsentation vom CLient
+						System.out.println("[Server] Wartet auf Verbindung...");
+						Socket client = socket.accept(); //alles was reinkommt
+						System.out.println("[Server] Client verbunden: " + client.getRemoteSocketAddress());
+						Scanner s = new Scanner(new BufferedReader(new InputStreamReader(client.getInputStream())));
+						if (s.hasNextLine()) {
+							System.out.println("[Server] Message from Client: " + s.nextLine());
+						}
+						//Das ganze wieder schließen
+						s.close();
+						client.close();
 						socket.close();
 					} catch (IOException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}
+					} 
+				}
+
 			}
-		}
-	}
-
-	private void reinRaus(Socket socket) throws IOException {
-		System.out.println("ReinRaus");
-		BufferedReader rein = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		PrintStream raus = new PrintStream(socket.getOutputStream());
-		String s;
-
-		while (rein.ready()) {
-			s = rein.readLine();
-			raus.println(s);
-		}
-	}
-
-	public static void main(String[] args) throws IOException {
-		KnollServer server = new KnollServer(6131);
-		server.verbinde();
+		}).start();
 	}
 
 }
