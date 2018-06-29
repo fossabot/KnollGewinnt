@@ -58,9 +58,9 @@ public class ConfigPanel extends JPanel {
 
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-		Icon b = new ImageIcon(getClass().getResource("dhbw_grey_logo.png"));
-		JLabel a = new JLabel(b);
-		this.add(a);
+		Icon dhbw_icon = new ImageIcon(getClass().getResource("dhbw_grey_logo.png"));
+		JLabel dhbw_label = new JLabel(dhbw_icon);
+		this.add(dhbw_label);
 
 		newGame = new JButton("New Game");
 		this.add(newGame);
