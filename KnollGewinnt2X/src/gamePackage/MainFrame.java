@@ -165,6 +165,7 @@ public class MainFrame extends JFrame {
 		JMenuItem menueItemFileAddProfiles = new JMenuItem("Add Profile");
 		JMenuItem menueItemFileDelProfiles = new JMenuItem("Delete Profile");
 		JMenuItem menueItemFileStats = new JMenuItem("Profiles & Stats");
+		JMenuItem menueItemFileBash = new JMenuItem("Bash Control");
 		JMenuItem menueItemHelpAbout = new JMenuItem("About");
 		JMenuItem menueItemHelpHelp = new JMenuItem("Help");
 
@@ -253,7 +254,7 @@ public class MainFrame extends JFrame {
 							public boolean isCellEditable(int row, int column) {
 								return false;
 							}
-							
+
 						};
 						table.setModel(model);
 						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
@@ -262,6 +263,10 @@ public class MainFrame extends JFrame {
 						dataErrorMessage();
 					}
 
+				}
+				// ---Show BashControl Dialog---
+				if (e.getSource() == menueItemFileBash) {
+					JOptionPane.showInputDialog(null, "", "BashControl", JOptionPane.PLAIN_MESSAGE);
 				}
 
 			}
@@ -291,6 +296,9 @@ public class MainFrame extends JFrame {
 		// ---Add Stats---
 		menuFile.add(menueItemFileStats);
 		menueItemFileStats.addActionListener(actionMenu);
+		// ---Add Bash Control---
+		menuFile.add(menueItemFileBash);
+		menueItemFileBash.addActionListener(actionMenu);
 		// ---Add Exit---
 		menuFile.add(menuItemFileExit);
 		menuItemFileExit.addActionListener(actionMenu);
@@ -405,7 +413,9 @@ public class MainFrame extends JFrame {
 	 */
 
 	private void refreshProfiles() throws IOException {
-		FileReader fr = new FileReader("profiles.kg");
+		URL temp = MainFrame.class.getResource("profiles.kg");
+		
+		FileReader fr = new FileReader(temp.getPath());
 		BufferedReader br = new BufferedReader(fr);
 		int amountOfRegisteredPlayers = 0;
 		ArrayList<KnollPlayer> players = new ArrayList<>();
@@ -441,7 +451,9 @@ public class MainFrame extends JFrame {
 	 * @throws IOException
 	 */
 	protected void loadGame() throws IOException {
-		FileReader fr = new FileReader("save.kg");
+		URL temp = MainFrame.class.getResource("save.kg");
+
+		FileReader fr = new FileReader(temp.getPath());
 		BufferedReader br = new BufferedReader(fr);
 
 		String[] rows = new String[tog.getPlayBoard().length];
@@ -510,7 +522,8 @@ public class MainFrame extends JFrame {
 	 */
 	protected void saveGame() throws IOException {
 
-		FileWriter fw = new FileWriter("save.kg");
+		URL temp = MainFrame.class.getResource("save.kg");
+		FileWriter fw = new FileWriter(temp.getPath());
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>");
 		bw.newLine();
@@ -566,7 +579,6 @@ public class MainFrame extends JFrame {
 		// ---eventListener---
 		awt = new AWTEventListener() {
 
-			
 			@Override
 			public void eventDispatched(AWTEvent event) {
 				switch (event.getID()) {
@@ -628,10 +640,11 @@ public class MainFrame extends JFrame {
 
 					} else if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("k")
 							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("K")) {
-						if(kCounter>10) {
+						if (kCounter > 10) {
 							easterEgg();
-						}else kCounter++;
-						
+						} else
+							kCounter++;
+
 					}
 					break;
 				}
@@ -677,16 +690,15 @@ public class MainFrame extends JFrame {
 	}
 
 	protected void easterEgg() {
-		kCounter=0;
+		kCounter = 0;
 
-			try {
-				JOptionPane.showMessageDialog(null, new KnollEasterPanel(), "EasterEgg", JOptionPane.PLAIN_MESSAGE);
-			}  catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		try {
+			JOptionPane.showMessageDialog(null, new KnollEasterPanel(), "EasterEgg", JOptionPane.PLAIN_MESSAGE);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		
 	}
 
 	/**
@@ -696,7 +708,9 @@ public class MainFrame extends JFrame {
 	 *             if FileWriter fails.
 	 */
 	protected void updateStats() throws IOException {
-		FileWriter fw = new FileWriter("profiles.kg");
+		URL temp = MainFrame.class.getResource("profiles.kg");
+		
+		FileWriter fw = new FileWriter(temp.getPath());
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
 		bw.newLine();
@@ -902,7 +916,7 @@ public class MainFrame extends JFrame {
 	 *             if Files corrupted / not found.
 	 */
 	public void playAudio() throws IOException {
-		java.applet.AudioClip clip = Applet.newAudioClip(new URL("file:./title.wav"));
+		java.applet.AudioClip clip = Applet.newAudioClip(MainFrame.class.getResource("title.wav"));
 		clip.loop();
 		System.out.println(System.currentTimeMillis() + ": AUDIO IS PLAYING");
 	}

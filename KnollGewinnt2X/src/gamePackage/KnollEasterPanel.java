@@ -13,11 +13,8 @@ public class KnollEasterPanel extends JPanel{
 
 	public KnollEasterPanel() throws Exception {
 		super();
-		
-		this.add(new JLabel(new ImageIcon(new URL("file:./KnollTurn.gif"))) );
+		this.add(new JLabel(new ImageIcon(KnollEasterPanel.class.getResource("KnollTurn.gif"))));
 		this.setVisible(true);	
-
-
 	}
 	
 
