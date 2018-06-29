@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -415,7 +416,7 @@ public class MainFrame extends JFrame {
 	private void refreshProfiles() throws IOException {
 		URL temp = MainFrame.class.getResource("profiles.kg");
 		
-		FileReader fr = new FileReader(temp.getPath());
+		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
 		BufferedReader br = new BufferedReader(fr);
 		int amountOfRegisteredPlayers = 0;
 		ArrayList<KnollPlayer> players = new ArrayList<>();
@@ -453,7 +454,7 @@ public class MainFrame extends JFrame {
 	protected void loadGame() throws IOException {
 		URL temp = MainFrame.class.getResource("save.kg");
 
-		FileReader fr = new FileReader(temp.getPath());
+		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
 		BufferedReader br = new BufferedReader(fr);
 
 		String[] rows = new String[tog.getPlayBoard().length];
@@ -523,7 +524,7 @@ public class MainFrame extends JFrame {
 	protected void saveGame() throws IOException {
 
 		URL temp = MainFrame.class.getResource("save.kg");
-		FileWriter fw = new FileWriter(temp.getPath());
+		FileWriter fw = new FileWriter(URLDecoder.decode(temp.getPath()));
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>");
 		bw.newLine();
@@ -710,7 +711,7 @@ public class MainFrame extends JFrame {
 	protected void updateStats() throws IOException {
 		URL temp = MainFrame.class.getResource("profiles.kg");
 		
-		FileWriter fw = new FileWriter(temp.getPath());
+		FileWriter fw = new FileWriter(URLDecoder.decode(temp.getPath()));
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
 		bw.newLine();
