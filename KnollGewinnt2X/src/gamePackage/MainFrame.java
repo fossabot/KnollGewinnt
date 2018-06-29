@@ -124,10 +124,16 @@ public class MainFrame extends JFrame {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 
-				selectedMode = configPanel.selectedMode();
-				configPanel.setPlayers(null, null);
-				resetFrame(selectedMode, null, null);
-				openPlayersChoice();
+				if(e.getSource()==configPanel.singlePlayer || e.getSource()==configPanel.multiPlayer) {
+					selectedMode = configPanel.selectedMode();
+					configPanel.setPlayers(null, null);
+					resetFrame(selectedMode, null, null);
+					openPlayersChoice();
+				}
+				if(e.getSource()==configPanel.networkPlayer) {
+					JOptionPane.showMessageDialog(null, new NetworkPanel(), "Setup knoll.net Game", JOptionPane.PLAIN_MESSAGE);
+				}
+				
 			}
 		};
 		configPanel.addChangeListener(gameModeListener);

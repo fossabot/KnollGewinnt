@@ -27,6 +27,7 @@ public class ConfigPanel extends JPanel {
 	JLabel gameInfo;
 	JLabel players;
 	String[] arg = { "1 Player", "2 Player" };
+	JRadioButton networkPlayer;
 
 	/**
 	 * Constructor of Class ConfigPanel.
@@ -68,12 +69,16 @@ public class ConfigPanel extends JPanel {
 
 		singlePlayer = new JRadioButton("Single Player");
 		multiPlayer = new JRadioButton("Multi Player");
+		networkPlayer = new JRadioButton("Network Player");
 
+		
 		playerChoice.add(singlePlayer);
 		playerChoice.add(multiPlayer);
+		playerChoice.add(networkPlayer);
 		singlePlayer.setSelected(true);
 		this.add(singlePlayer);
 		this.add(multiPlayer);
+		this.add(networkPlayer);
 
 		save = new JButton("Save current Game");
 		this.add(save);
@@ -167,6 +172,7 @@ public class ConfigPanel extends JPanel {
 	public void addChangeListener(ItemListener g) {
 		singlePlayer.addItemListener(g);
 		multiPlayer.addItemListener(g);
+		networkPlayer.addItemListener(g);
 	}
 
 }

@@ -22,8 +22,11 @@ public class KnollClient {
 	
 	public void sendMessage(String msg) {
 		Socket socket = new Socket();
+		System.out.println("[Client] Startet...");
 		try {
+			System.out.println("[Client] Verbinde...");
 			socket.connect(this.adress, 5000);
+			System.out.println("[Client] Verbunden.");
 			PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 			pw.println(msg);
 			pw.flush();
