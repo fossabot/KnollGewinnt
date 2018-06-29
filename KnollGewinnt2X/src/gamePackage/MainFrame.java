@@ -917,7 +917,8 @@ public class MainFrame extends JFrame {
 	 *             if Files corrupted / not found.
 	 */
 	public void playAudio() throws IOException {
-		java.applet.AudioClip clip = Applet.newAudioClip(MainFrame.class.getResource("title.wav"));
+		URL temp = MainFrame.class.getResource("title.wav");
+		java.applet.AudioClip clip = Applet.newAudioClip(temp);
 		clip.loop();
 		System.out.println(System.currentTimeMillis() + ": AUDIO IS PLAYING");
 	}
