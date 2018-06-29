@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,6 +24,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -137,7 +142,7 @@ public class MainFrame extends JFrame {
 		eventListener();
 		try {
 			playAudio();
-		} catch (IOException e1) {
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 
@@ -915,11 +920,18 @@ public class MainFrame extends JFrame {
 	 * 
 	 * @throws IOException
 	 *             if Files corrupted / not found.
+	 * @throws Exception 
 	 */
-	public void playAudio() throws IOException {
-		URL temp = MainFrame.class.getResource("title.wav");
-		java.applet.AudioClip clip = Applet.newAudioClip(temp);
-		clip.loop();
+	public void playAudio() throws Exception {
+		File audioFile = new File(URLDecoder.decode(MainFrame.class.getResource("title.wav").getPath()));
+		AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+		Clip clip = AudioSystem.getClip();
+		clip.open(audioStream);
+		clip.loop(clip.LOOP_CONTINUOUSLY);
 		System.out.println(System.currentTimeMillis() + ": AUDIO IS PLAYING");
+//		URL temp = MainFrame.class.getResource("title.wav");
+//		java.applet.AudioClip clip = Applet.newAudioClip(temp);
+//		clip.loop();
+		
 	}
 }
