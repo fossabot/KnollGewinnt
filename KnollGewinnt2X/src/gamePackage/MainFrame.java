@@ -91,7 +91,7 @@ public class MainFrame extends JFrame {
 		tog = new BasePanel(7, 7);
 		initMenuBar();
 		try {
-			refreshProfiles();
+			refreshProfilesFromFile();
 		} catch (IOException e2) {
 		}
 		manualGame = new JLabel(
@@ -215,7 +215,7 @@ public class MainFrame extends JFrame {
 					if (name != null && name.length() > 0) {
 						playersMap.put(name, new KnollPlayer(name, 0, 0, 0));
 						try {
-							updateStats();
+							updateStatsToFile();
 						} catch (IOException e1) {
 							dataErrorMessage();
 						}
@@ -242,7 +242,7 @@ public class MainFrame extends JFrame {
 							JOptionPane.showMessageDialog(null, "Player not found.");
 						try {
 							if (exist == true)
-								updateStats();
+								updateStatsToFile();
 						} catch (IOException e1) {
 							dataErrorMessage();
 						}
@@ -251,7 +251,7 @@ public class MainFrame extends JFrame {
 				// ---Show Stats Dialog---
 				if (e.getSource() == menueItemFileStats) {
 					try {
-						updateStats();
+						updateStatsToFile();
 						String[][] rows = new String[playersMap.keySet().size()][4];
 						String[] cols = { "Name", "Played Games", "Wins", "Steps to Win" };
 						Iterator<String> j = playersMap.keySet().iterator();
@@ -275,7 +275,7 @@ public class MainFrame extends JFrame {
 						table.setModel(model);
 						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
 								JOptionPane.INFORMATION_MESSAGE);
-						
+
 					} catch (IOException e1) {
 						dataErrorMessage();
 					}
@@ -291,18 +291,17 @@ public class MainFrame extends JFrame {
 							try {
 								bash.setAnswer(sendMessageToServer(bash.getText()));
 							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+								JOptionPane.showMessageDialog(null,
+										"Connection refused @knollserver.westus.cloudapp.azure.com \nPlease check your internet connection.",
+										"ConnectionError", JOptionPane.WARNING_MESSAGE);
 							}
 
 						}
 
 					};
 					bash.addActionListener(f);
-					JOptionPane.showOptionDialog(null, bash,
-				            "knollgewinnt@knollserver.westus.cloudapp.azure.com", JOptionPane.DEFAULT_OPTION,
-				            JOptionPane.PLAIN_MESSAGE, null, new Object[] {},
-				            null);
+					JOptionPane.showOptionDialog(null, bash, "knollgewinnt@knollserver.westus.cloudapp.azure.com",
+							JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[] {}, null);
 
 				}
 
@@ -378,7 +377,7 @@ public class MainFrame extends JFrame {
 	 *             if refreshProfiles() fails
 	 */
 	protected void multiPlayerProfileChoice() throws IOException {
-		refreshProfiles();// IOException if Profiles.kg corrupted or not existent
+		refreshProfilesFromFile();// IOException if Profiles.kg corrupted or not existent
 		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
 		Iterator<String> i = playersMap.keySet().iterator();
 
@@ -417,7 +416,7 @@ public class MainFrame extends JFrame {
 	 *             if refreshProfiles() fails
 	 */
 	protected void singlePlayerProfileChoice() throws IOException {
-		refreshProfiles();// IOException if Profiles.kg corrupted or not existent
+		refreshProfilesFromFile();// IOException if Profiles.kg corrupted or not existent
 		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
 		Iterator<String> i = playersMap.keySet().iterator();
 		int j = 0;
@@ -449,36 +448,71 @@ public class MainFrame extends JFrame {
 	 *             if File is not found
 	 */
 
-	private void refreshProfiles() throws IOException {
-		URL temp = MainFrame.class.getResource("profiles.kg");
-		//String profiles = sendMessageToServer("GETSTATS");
-		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
-		BufferedReader br = new BufferedReader(fr);
+	private void refreshProfilesFromFile() throws IOException {
+		String profiles = null;
+		
+		try {
+			profiles = sendMessageToServer("GETSTATS");
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(null,
+					"Connection refused @knollserver.westus.cloudapp.azure.com\nPlease check your internet connection.\nThe last local saved profiles will be loaded.",
+					"ConnectionError", JOptionPane.WARNING_MESSAGE);
+			
+		}
+		
+		
 		int amountOfRegisteredPlayers = 0;
 		ArrayList<KnollPlayer> players = new ArrayList<>();
 
-		try {
-			if (br.readLine().equals("<HEAD>KNOLLGEWINNT PROFILES<HEAD>")) {
-				amountOfRegisteredPlayers = Integer.parseInt((br.readLine().split("'")[1]));
-				for (int i = 0; i < amountOfRegisteredPlayers; i++) {
-					String[] actualLine = br.readLine().split("\\.");
-					players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]),
-							Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
+		if (profiles != null) {
+			String[] splittedProfiles = profiles.split("\\.");
+			if (splittedProfiles.length > 1) {
+				int i = 1;
+				while (i < splittedProfiles.length) {
+					players.add(new KnollPlayer(splittedProfiles[i], Integer.parseInt(splittedProfiles[i + 1]),
+							Integer.parseInt(splittedProfiles[i + 2]), Integer.parseInt(splittedProfiles[i + 3])));
+					i = i + 4;
 				}
-				br.close();
+
 				HashMap<String, KnollPlayer> playerObjects = new HashMap<>();
-				Iterator<KnollPlayer> i = players.iterator();
-				while (i.hasNext()) {
-					KnollPlayer p = i.next();
+				Iterator<KnollPlayer> j = players.iterator();
+				while (j.hasNext()) {
+					KnollPlayer p = j.next();
 					playerObjects.put(p.getName(), p);
 				}
 				this.playersMap = playerObjects;
 			} else {
 				dataErrorMessage();
 			}
-		} catch (Exception e) {
-			dataErrorMessage();
+		} else if (profiles == null) {
+
+			FileReader fr = new FileReader("profiles.kg");
+			BufferedReader br = new BufferedReader(fr);
+			try {
+				if (br.readLine().equals("<HEAD>KNOLLGEWINNT PROFILES<HEAD>")) {
+					amountOfRegisteredPlayers = Integer.parseInt((br.readLine().split("'")[1]));
+					for (int i = 0; i < amountOfRegisteredPlayers; i++) {
+						String[] actualLine = br.readLine().split("\\.");
+						players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]),
+								Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
+					}
+					br.close();
+					HashMap<String, KnollPlayer> playerObjects = new HashMap<>();
+					Iterator<KnollPlayer> i = players.iterator();
+					while (i.hasNext()) {
+						KnollPlayer p = i.next();
+						playerObjects.put(p.getName(), p);
+					}
+					this.playersMap = playerObjects;
+				} else {
+					dataErrorMessage();
+				}
+			} catch (Exception e) {
+				dataErrorMessage();
+			}
 		}
+		
+
 	}
 
 	/**
@@ -543,7 +577,7 @@ public class MainFrame extends JFrame {
 				bw.write("KI.0.0.0");
 				bw.close();
 				fw.close();
-				refreshProfiles();
+				refreshProfilesFromFile();
 			} catch (IOException e) {
 				dataErrorMessage();
 			}
@@ -650,15 +684,15 @@ public class MainFrame extends JFrame {
 								switch (currentPlayer) {
 								case 1:
 									player1.setWin(player1Count);
-									updateStats();
+									updateStatsToFile();
 									break;
 								case 2:
 									player2.setWin(player2Count);
-									updateStats();
+									updateStatsToFile();
 									break;
 								case 3:
 									player2.setWin(player2Count);
-									updateStats();
+									updateStatsToFile();
 									break;
 								}
 							} catch (IOException e) {
@@ -744,25 +778,44 @@ public class MainFrame extends JFrame {
 	 * @throws IOException
 	 *             if FileWriter fails.
 	 */
-	protected void updateStats() throws IOException {
-		URL temp = MainFrame.class.getResource("profiles.kg");
+	protected void updateStatsToFile() throws IOException {
+		
+		String profiles=null;
+		
+		String pl = "<PROFILES>.";
+		Iterator<String> i = playersMap.keySet().iterator();
+		while (i.hasNext()) {
+			String next = i.next();
+			pl = pl + (playersMap.get(next).getName() + "." + playersMap.get(next).getPlayedGames() + "."
+					+ playersMap.get(next).getWins() + "." + playersMap.get(next).getStepsToWin())+".";
 
-		FileWriter fw = new FileWriter(URLDecoder.decode(temp.getPath()));
+		}
+		
+		try {
+			profiles = sendMessageToServer("SETSTATS"+pl);
+			System.out.println(pl);
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(null,
+					"Connection refused @knollserver.westus.cloudapp.azure.com\nPlease check your internet connection.\nThe last local saved profiles will be loaded.",
+					"ConnectionError", JOptionPane.WARNING_MESSAGE);
+		}
+		
+		FileWriter fw = new FileWriter("profiles.kg");
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
 		bw.newLine();
 		bw.write("<INFO> PLAYERS: '" + playersMap.keySet().size() + "' <INFO>");
 		bw.newLine();
-		Iterator<String> i = playersMap.keySet().iterator();
-		while (i.hasNext()) {
-			String next = i.next();
+		Iterator<String> j = playersMap.keySet().iterator();
+		while (j.hasNext()) {
+			String next = j.next();
 			bw.write(playersMap.get(next).getName() + "." + playersMap.get(next).getPlayedGames() + "."
 					+ playersMap.get(next).getWins() + "." + playersMap.get(next).getStepsToWin());
 			bw.newLine();
 		}
 		bw.close();
 		fw.close();
-		JOptionPane.showMessageDialog(this, "Update succesful!");
+		//JOptionPane.showMessageDialog(this, "Update succesful!");
 
 	}
 
@@ -860,7 +913,7 @@ public class MainFrame extends JFrame {
 				won = true;
 				displayWinner(currentPlayer);
 				player2.setWin(player2Count);
-				updateStats();
+				updateStatsToFile();
 				stopGame();
 
 			} else {
@@ -978,29 +1031,29 @@ public class MainFrame extends JFrame {
 			is = new BufferedReader(new InputStreamReader(s1.getInputStream()));
 			os = new PrintWriter(s1.getOutputStream());
 		} catch (IOException e) {
-			e.printStackTrace();
-			return e.getMessage();
+			throw e;
+
 		}
 
-		System.out.println(System.currentTimeMillis()+ ": Client Address : " + address);
+		System.out.println(System.currentTimeMillis() + ": Server Address : " + address);
 		String answer = null;
 		try {
 
 			os.println(text);
 			os.flush();
 			answer = is.readLine();
-			System.out.println(System.currentTimeMillis()+ ": Server Response : " + answer);
+			System.out.println(System.currentTimeMillis() + ": Server Response : " + answer);
 			os.println("QUIT");
 			os.flush();
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println(System.currentTimeMillis()+ ": Socket read Error");
+			System.out.println(System.currentTimeMillis() + ": Socket read Error");
 		} finally {
 			is.close();
 			os.close();
 			s1.close();
-			System.out.println(System.currentTimeMillis()+ ": Connection Closed");
+			System.out.println(System.currentTimeMillis() + ": Connection Closed");
 
 		}
 
