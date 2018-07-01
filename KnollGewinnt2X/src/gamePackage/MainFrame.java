@@ -17,6 +17,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -124,16 +127,17 @@ public class MainFrame extends JFrame {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 
-				if(e.getSource()==configPanel.singlePlayer || e.getSource()==configPanel.multiPlayer) {
+				if (e.getSource() == configPanel.singlePlayer || e.getSource() == configPanel.multiPlayer) {
 					selectedMode = configPanel.selectedMode();
 					configPanel.setPlayers(null, null);
 					resetFrame(selectedMode, null, null);
 					openPlayersChoice();
 				}
-				if(e.getSource()==configPanel.networkPlayer) {
-					JOptionPane.showMessageDialog(null, new NetworkPanel(), "Setup knoll.net Game", JOptionPane.PLAIN_MESSAGE);
+				if (e.getSource() == configPanel.networkPlayer) {
+					JOptionPane.showMessageDialog(null, new NetworkPanel(), "Setup knoll.net Game",
+							JOptionPane.PLAIN_MESSAGE);
 				}
-				
+
 			}
 		};
 		configPanel.addChangeListener(gameModeListener);
@@ -271,6 +275,7 @@ public class MainFrame extends JFrame {
 						table.setModel(model);
 						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
 								JOptionPane.INFORMATION_MESSAGE);
+						
 					} catch (IOException e1) {
 						dataErrorMessage();
 					}
@@ -278,7 +283,27 @@ public class MainFrame extends JFrame {
 				}
 				// ---Show BashControl Dialog---
 				if (e.getSource() == menueItemFileBash) {
-					JOptionPane.showInputDialog(null, "", "BashControl", JOptionPane.PLAIN_MESSAGE);
+					BashPanel bash = new BashPanel();
+					ActionListener f = new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							try {
+								bash.setAnswer(sendMessageToServer(bash.getText()));
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+
+						}
+
+					};
+					bash.addActionListener(f);
+					JOptionPane.showOptionDialog(null, bash,
+				            "knollgewinnt@knollserver.westus.cloudapp.azure.com", JOptionPane.DEFAULT_OPTION,
+				            JOptionPane.PLAIN_MESSAGE, null, new Object[] {},
+				            null);
+
 				}
 
 			}
@@ -426,7 +451,7 @@ public class MainFrame extends JFrame {
 
 	private void refreshProfiles() throws IOException {
 		URL temp = MainFrame.class.getResource("profiles.kg");
-		
+		//String profiles = sendMessageToServer("GETSTATS");
 		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
 		BufferedReader br = new BufferedReader(fr);
 		int amountOfRegisteredPlayers = 0;
@@ -721,7 +746,7 @@ public class MainFrame extends JFrame {
 	 */
 	protected void updateStats() throws IOException {
 		URL temp = MainFrame.class.getResource("profiles.kg");
-		
+
 		FileWriter fw = new FileWriter(URLDecoder.decode(temp.getPath()));
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
@@ -926,7 +951,7 @@ public class MainFrame extends JFrame {
 	 * 
 	 * @throws IOException
 	 *             if Files corrupted / not found.
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void playAudio() throws Exception {
 		File audioFile = new File(URLDecoder.decode(MainFrame.class.getResource("title.wav").getPath()));
@@ -935,9 +960,50 @@ public class MainFrame extends JFrame {
 		clip.open(audioStream);
 		clip.loop(clip.LOOP_CONTINUOUSLY);
 		System.out.println(System.currentTimeMillis() + ": AUDIO IS PLAYING");
-//		URL temp = MainFrame.class.getResource("title.wav");
-//		java.applet.AudioClip clip = Applet.newAudioClip(temp);
-//		clip.loop();
-		
+		// URL temp = MainFrame.class.getResource("title.wav");
+		// java.applet.AudioClip clip = Applet.newAudioClip(temp);
+		// clip.loop();
+
+	}
+
+	protected String sendMessageToServer(String text) throws IOException {
+		String address = "knollserver.westus.cloudapp.azure.com";
+		int port = 8000;
+		Socket s1 = null;
+		BufferedReader is = null;
+		PrintWriter os = null;
+
+		try {
+			s1 = new Socket(address, port);
+			is = new BufferedReader(new InputStreamReader(s1.getInputStream()));
+			os = new PrintWriter(s1.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+
+		System.out.println(System.currentTimeMillis()+ ": Client Address : " + address);
+		String answer = null;
+		try {
+
+			os.println(text);
+			os.flush();
+			answer = is.readLine();
+			System.out.println(System.currentTimeMillis()+ ": Server Response : " + answer);
+			os.println("QUIT");
+			os.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println(System.currentTimeMillis()+ ": Socket read Error");
+		} finally {
+			is.close();
+			os.close();
+			s1.close();
+			System.out.println(System.currentTimeMillis()+ ": Connection Closed");
+
+		}
+
+		return answer;
 	}
 }

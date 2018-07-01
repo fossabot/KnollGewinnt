@@ -10,7 +10,7 @@ public class KnollClient {
 
 	public static void main(String[] args) {
 	
-		KnollClient client = new KnollClient("localhost", 8000);
+		KnollClient client = new KnollClient("knollserver.westus.cloudapp.azure.com", 8000);
 		client.sendMessage("Hallo");
 	}
 	
