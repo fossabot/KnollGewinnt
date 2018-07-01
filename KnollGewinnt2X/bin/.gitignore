@@ -1,3 +1,5 @@
 /gamePackage/
-/testPackage/
+<<<<<<< HEAD
+=======
 /underConstruction/
+>>>>>>> parent of 33660a0... integrated sendMessageToServer()
