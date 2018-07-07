@@ -33,6 +33,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import errorMessages.SavingsErrorMessage;
+
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 7046940995312716846L;
@@ -41,7 +43,7 @@ public class MainFrame extends JFrame {
 	private int player1Count = 0;
 	private int player2Count = 0;
 	private int kCounter;
-	private BasePanel tog;
+	private BasePanel basePanel;
 	private int currentPlayer = 1;
 	private ConfigPanel configPanel;
 	private Boolean won = false;
@@ -60,6 +62,9 @@ public class MainFrame extends JFrame {
 	private JButton selectMultiPlayer;
 	private JComboBox<String> playersList2;
 	private ItemListener gameModeListener;
+	private boolean playerset;
+	private KnollAudioPlayer audioPlayer;
+	private KnollSavingsHandler saver;
 
 	public MainFrame() {
 		init();
@@ -69,7 +74,7 @@ public class MainFrame extends JFrame {
 	/**
 	 * Initializes the MainFrame.
 	 * 
-	 * @param tog
+	 * @param basePanel
 	 *            - BasePanel which includes the GroundPanels and Playpanels to
 	 *            display the field.
 	 * @param newGameAction
@@ -85,7 +90,7 @@ public class MainFrame extends JFrame {
 		setTitle("Knoll Gewinnt Ver.0.1");
 		this.setLayout(new BorderLayout());
 		this.selectedMode = 1;
-		tog = new BasePanel(7, 7);
+		basePanel = new BasePanel(7, 7);
 		initMenuBar();
 		try {
 			refreshProfiles();
@@ -103,14 +108,33 @@ public class MainFrame extends JFrame {
 					openPlayersChoice();
 				} else if (e.getSource() == configPanel.save) {
 					try {
-						saveGame();
+						if (won == true) {
+							JOptionPane.showMessageDialog(null, "You can't save a game if somebody won already.",
+									"Warning", JOptionPane.WARNING_MESSAGE);
+						} else if (playerset == false) {
+							JOptionPane.showMessageDialog(null, "You can't save a game without players.", "Warning",
+									JOptionPane.WARNING_MESSAGE);
+						} else {
+							saveGame();
+						}
 					} catch (IOException e1) {
 						dataErrorMessage();
 					}
 				} else if (e.getSource() == configPanel.load) {
 					try {
-						loadGame();
-					} catch (IOException e1) {
+						if (won == true) {
+							JOptionPane.showMessageDialog(null,
+									"You can't load a game if somebody won already. \n Please start a new game.",
+									"Warning", JOptionPane.WARNING_MESSAGE);
+						} else if (playerset == false) {
+							JOptionPane.showMessageDialog(null, "You can't load a game without players.", "Warning",
+									JOptionPane.WARNING_MESSAGE);
+						} else {
+							loadGame();
+						}
+
+					} catch (Exception e1) {
+						e1.printStackTrace();
 						dataErrorMessage();
 					}
 				}
@@ -131,7 +155,7 @@ public class MainFrame extends JFrame {
 			}
 		};
 		configPanel.addChangeListener(gameModeListener);
-		this.getContentPane().add(tog, BorderLayout.CENTER);
+		this.getContentPane().add(basePanel, BorderLayout.CENTER);
 		this.getContentPane().add(configPanel, BorderLayout.EAST);
 		this.getContentPane().add(manualGame, BorderLayout.SOUTH);
 		this.setLocationByPlatform(true);
@@ -140,8 +164,10 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		pack();
 		eventListener();
+		saver = new KnollSavingsHandler();
 		try {
-			playAudio();
+			audioPlayer = new KnollAudioPlayer();
+			audioPlayer.play();
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -420,7 +446,7 @@ public class MainFrame extends JFrame {
 
 	private void refreshProfiles() throws IOException {
 		URL temp = MainFrame.class.getResource("profiles.kg");
-		
+
 		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
 		BufferedReader br = new BufferedReader(fr);
 		int amountOfRegisteredPlayers = 0;
@@ -456,37 +482,18 @@ public class MainFrame extends JFrame {
 	 * 
 	 * @throws IOException
 	 */
-	protected void loadGame() throws IOException {
-		URL temp = MainFrame.class.getResource("save.kg");
-
-		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
-		BufferedReader br = new BufferedReader(fr);
-
-		String[] rows = new String[tog.getPlayBoard().length];
-		int readMode = 1;
-		if (br.readLine().equals("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>")) {
-
-			try {
-				readMode = Integer.parseInt(br.readLine().split("'")[3]);
-			} catch (NumberFormatException e) {
-				br.close();
-				dataErrorMessage();
-			}
-			for (int i = 0; i < rows.length; i++) {
-				rows[i] = br.readLine();
-			}
-		} else {
-			br.close();
-			dataErrorMessage();
-		}
-		br.close();
+	protected void loadGame() throws Exception {
+		Object[] read = saver.readFile(basePanel);
+		//Object[0] contains readMode
+		//Object[1] contains readStringArray
 		try {
-			resumeGame(readMode, rows);
+			resumeGame((int) read[0], (String[]) read[1]);
+			JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
+
 		} catch (Exception e) {
-			br.close();
-			dataErrorMessage();
+			new SavingsErrorMessage();
 		}
-		JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
+
 	}
 
 	/**
@@ -527,36 +534,11 @@ public class MainFrame extends JFrame {
 	 *             - FileWriter Failure
 	 */
 	protected void saveGame() throws IOException {
-
-		URL temp = MainFrame.class.getResource("save.kg");
-		FileWriter fw = new FileWriter(URLDecoder.decode(temp.getPath()));
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write("<HEAD>KNOLLGEWINNT SAVINGS<HEAD>");
-		bw.newLine();
-		bw.write("<GAMEINFO> TIME: '" + System.currentTimeMillis() + "' MODE: '" + this.selectedMode + "'<GAMEINFO>");
-		bw.newLine();
-
-		for (int i = 0; i < tog.getPlayBoard().length; i++) {
-			for (int j = 0; j < tog.getPlayBoard()[i].length; j++) {
-				if (tog.getPlayBoard()[i][j].isFilled() == true)
-					bw.write("1.");
-				if (tog.getPlayBoard()[i][j].isFilled() == false)
-					bw.write("0.");
-				if (tog.getPlayBoard()[i][j].getOwner() == -1)
-					bw.write("NO");
-				if (tog.getPlayBoard()[i][j].getOwner() == 1)
-					bw.write("P1");
-				if (tog.getPlayBoard()[i][j].getOwner() == 2)
-					bw.write("P2");
-				if (tog.getPlayBoard()[i][j].getOwner() == 3)
-					bw.write("KI");
-				bw.write("-");
-			}
-			bw.newLine();
+		try {
+			saver.writeFile(this.basePanel, this.selectedMode);
+		} catch (Exception e) {
+			new SavingsErrorMessage();
 		}
-		bw.close();
-		JOptionPane.showMessageDialog(this, "Game succesfully saved.");
-
 	}
 
 	/**
@@ -594,17 +576,17 @@ public class MainFrame extends JFrame {
 
 					if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("a")
 							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("A")) {
-						tog.changePointer(left);
+						basePanel.changePointer(left);
 
 					} else if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("d")
 							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("D")) {
-						tog.changePointer(right);
+						basePanel.changePointer(right);
 					} else if ((KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("s") && won == false)
 							|| (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("S") && won == false)) {
 						try {
 							if (player1 == null || player2 == null)
 								return;
-							tog.throwCoin(currentPlayer);
+							basePanel.throwCoin(currentPlayer);
 							if (currentPlayer == 1)
 								player1Count++;
 							if (currentPlayer == 2 || currentPlayer == 3)
@@ -612,7 +594,7 @@ public class MainFrame extends JFrame {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						if (tog.evaluateRows() == true) {
+						if (basePanel.evaluateRows() == true) {
 							won = true;
 							displayWinner(currentPlayer);
 							try {
@@ -670,6 +652,7 @@ public class MainFrame extends JFrame {
 					player1.playGame();
 					player2.playGame();
 					resetFrame(selectedMode, player1, player2);
+					playerset = true;
 					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
 					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
 					singlePlayerDialog.dispose();
@@ -685,6 +668,7 @@ public class MainFrame extends JFrame {
 					player1.playGame();
 					player2.playGame();
 					resetFrame(selectedMode, player1, player2);
+					playerset = true;
 					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
 					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
 					singlePlayerDialog.dispose();
@@ -715,7 +699,7 @@ public class MainFrame extends JFrame {
 	 */
 	protected void updateStats() throws IOException {
 		URL temp = MainFrame.class.getResource("profiles.kg");
-		
+
 		FileWriter fw = new FileWriter(URLDecoder.decode(temp.getPath()));
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
@@ -740,7 +724,7 @@ public class MainFrame extends JFrame {
 	 */
 	protected void stopGame() {
 		this.getToolkit().removeAWTEventListener(awt);
-		tog.removePointer();
+		basePanel.removePointer();
 
 	}
 
@@ -778,18 +762,18 @@ public class MainFrame extends JFrame {
 			switch (this.selectedMode) {
 			case 1:
 				currentPlayer = 3;
-				tog.player = 3;
+				basePanel.player = 3;
 				// tog.evaluatePlayablePanels();
-				tog.changePlayer();
+				basePanel.changePlayer();
 				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 				letKIPlay();
 				break;
 
 			case 2:
 				currentPlayer = 2;
-				tog.player = 2;
+				basePanel.player = 2;
 
-				tog.changePlayer();
+				basePanel.changePlayer();
 				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 				break;
 			}
@@ -797,17 +781,17 @@ public class MainFrame extends JFrame {
 
 		case 2:
 			currentPlayer = 1;
-			tog.player = 1;
+			basePanel.player = 1;
 
-			tog.changePlayer();
+			basePanel.changePlayer();
 			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;
 
 		case 3:
 			currentPlayer = 1;
-			tog.player = 1;
+			basePanel.player = 1;
 
-			tog.changePlayer();
+			basePanel.changePlayer();
 			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;
 		}
@@ -821,11 +805,11 @@ public class MainFrame extends JFrame {
 	 *             if the throwCoin() fails.
 	 */
 	private void letKIPlay() throws Exception {
-		tog.evaluatePlayablePanels();
+		basePanel.evaluatePlayablePanels();
 		if (won == false) {
-			tog.throwCoin(currentPlayer);
+			basePanel.throwCoin(currentPlayer);
 			player2Count++;
-			if (tog.evaluateRows() == true) {
+			if (basePanel.evaluateRows() == true) {
 				won = true;
 				displayWinner(currentPlayer);
 				player2.setWin(player2Count);
@@ -852,15 +836,17 @@ public class MainFrame extends JFrame {
 		this.selectedMode = selectedModeInt;
 		this.player1 = player1;
 		this.player2 = player2;
+		if (player1 == null || player2 == null)
+			playerset = false;
 		configPanel.setPlayers(player1, player2);
 		player1Count = 0;
 		player2Count = 0;
 		currentPlayer = 1;
-		tog.player = 1;
+		basePanel.player = 1;
 		won = false;
-		this.remove(tog);
-		tog = new BasePanel(7, 7);
-		this.getContentPane().add(tog, BorderLayout.CENTER);
+		this.remove(basePanel);
+		basePanel = new BasePanel(7, 7);
+		this.getContentPane().add(basePanel, BorderLayout.CENTER);
 		pack();
 		this.setVisible(true);
 		this.getToolkit().removeAWTEventListener(awt);
@@ -882,28 +868,29 @@ public class MainFrame extends JFrame {
 	 *             if the PlayBoard (fill) method fails.
 	 */
 	public void resumeGame(int readMode, String[] rows) throws Exception {
-		String[] temp = new String[tog.getPlayBoard()[0].length];
-		for (int i = 0; i < tog.getPlayBoard().length; i++) {
+		String[] temp = new String[basePanel.getPlayBoard()[0].length];
+		for (int i = 0; i < basePanel.getPlayBoard().length; i++) {
 			temp = rows[i].split("-");
-			for (int j = 0; j < tog.getPlayBoard()[i].length; j++) {
+			for (int j = 0; j < basePanel.getPlayBoard()[i].length; j++) {
 				String[] temp2 = temp[j].split("\\.");
 				switch (temp2[0]) {
 				case "0":
-					tog.getPlayBoard()[i][j].fill(-1, false);// false means dont check if already filled, just fill.
+					basePanel.getPlayBoard()[i][j].fill(-1, false);// false means dont check if already filled, just
+																	// fill.
 					break;
 				case "1":
 					switch (temp[j].split("\\.")[1]) {
 					case "NO":
-						tog.getPlayBoard()[i][j].fill(-1, false);
+						basePanel.getPlayBoard()[i][j].fill(-1, false);
 						break;
 					case "P1":
-						tog.getPlayBoard()[i][j].fill(1, false);
+						basePanel.getPlayBoard()[i][j].fill(1, false);
 						break;
 					case "P2":
-						tog.getPlayBoard()[i][j].fill(2, false);
+						basePanel.getPlayBoard()[i][j].fill(2, false);
 						break;
 					case "KI":
-						tog.getPlayBoard()[i][j].fill(3, false);
+						basePanel.getPlayBoard()[i][j].fill(3, false);
 						break;
 					}
 
@@ -913,25 +900,5 @@ public class MainFrame extends JFrame {
 		}
 		this.selectedMode = readMode;
 		configPanel.setMode(readMode);
-	}
-
-	/**
-	 * Plays the background music.
-	 * 
-	 * @throws IOException
-	 *             if Files corrupted / not found.
-	 * @throws Exception 
-	 */
-	public void playAudio() throws Exception {
-		File audioFile = new File(URLDecoder.decode(MainFrame.class.getResource("title.wav").getPath()));
-		AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-		Clip clip = AudioSystem.getClip();
-		clip.open(audioStream);
-		clip.loop(clip.LOOP_CONTINUOUSLY);
-		System.out.println(System.currentTimeMillis() + ": AUDIO IS PLAYING");
-//		URL temp = MainFrame.class.getResource("title.wav");
-//		java.applet.AudioClip clip = Applet.newAudioClip(temp);
-//		clip.loop();
-		
 	}
 }
