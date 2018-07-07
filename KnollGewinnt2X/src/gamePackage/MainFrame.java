@@ -272,9 +272,13 @@ public class MainFrame extends JFrame {
 						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
 								JOptionPane.INFORMATION_MESSAGE);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> parent of 33660a0... integrated sendMessageToServer()
+=======
+
+>>>>>>> e364cc502fb6b0d1d862cac46c2d9fad6e63dab9
 					} catch (IOException e1) {
 						dataErrorMessage();
 					}
@@ -452,6 +456,9 @@ public class MainFrame extends JFrame {
 	 */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e364cc502fb6b0d1d862cac46c2d9fad6e63dab9
 	private void refreshProfilesFromFile() throws IOException {
 		String profiles = null;
 		
@@ -465,6 +472,7 @@ public class MainFrame extends JFrame {
 		}
 		
 		
+<<<<<<< HEAD
 =======
 	private void refreshProfiles() throws IOException {
 		URL temp = MainFrame.class.getResource("profiles.kg");
@@ -472,6 +480,8 @@ public class MainFrame extends JFrame {
 		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
 		BufferedReader br = new BufferedReader(fr);
 >>>>>>> parent of 33660a0... integrated sendMessageToServer()
+=======
+>>>>>>> e364cc502fb6b0d1d862cac46c2d9fad6e63dab9
 		int amountOfRegisteredPlayers = 0;
 		ArrayList<KnollPlayer> players = new ArrayList<>();
 
@@ -790,6 +800,9 @@ public class MainFrame extends JFrame {
 	 *             if FileWriter fails.
 	 */
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e364cc502fb6b0d1d862cac46c2d9fad6e63dab9
 	protected void updateStatsToFile() throws IOException {
 		
 		String profiles=null;
@@ -813,12 +826,15 @@ public class MainFrame extends JFrame {
 		}
 		
 		FileWriter fw = new FileWriter("profiles.kg");
+<<<<<<< HEAD
 =======
 	protected void updateStats() throws IOException {
 		URL temp = MainFrame.class.getResource("profiles.kg");
 		
 		FileWriter fw = new FileWriter(URLDecoder.decode(temp.getPath()));
 >>>>>>> parent of 33660a0... integrated sendMessageToServer()
+=======
+>>>>>>> e364cc502fb6b0d1d862cac46c2d9fad6e63dab9
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
 		bw.newLine();
