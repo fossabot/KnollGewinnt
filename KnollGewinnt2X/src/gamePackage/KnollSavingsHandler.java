@@ -14,7 +14,6 @@ import errorMessages.SavingsErrorMessage;
 public class KnollSavingsHandler implements KnollFileHandler {
 
 	public KnollSavingsHandler() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
