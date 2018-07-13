@@ -16,6 +16,7 @@ public class KnollPlayer implements Comparable<KnollPlayer>{
 	private int playedGames;
 	private int wins;
 	private int stepsToWin;
+	private int steps;
 
 	
 	/**
@@ -32,11 +33,30 @@ public class KnollPlayer implements Comparable<KnollPlayer>{
 		this.stepsToWin = stepsToWin;
 	}
 
+	
+	public void reset() {
+		this.steps=0;
+	}
 	/**
 	 * Play a new Game
 	 */
 	public void playGame() {
 		playedGames++;
+	}
+	
+	/**
+	 * Increase steps
+	 */
+	
+	public void increaseTurn() {
+		this.steps++;
+	}
+
+	/**
+	 * @return the steps
+	 */
+	public int getSteps() {
+		return steps;
 	}
 
 	/**

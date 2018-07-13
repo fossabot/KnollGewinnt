@@ -34,14 +34,16 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import errorMessages.SavingsErrorMessage;
+import handlerPackage.KnollProfilesHandler;
+import handlerPackage.KnollSavingsHandler;
+import panelPackage.BasePanel;
+import panelPackage.ConfigPanel;
+import panelPackage.KnollEasterPanel;
 
 public class MainFrame extends JFrame {
 
-	private static final long serialVersionUID = 7046940995312716846L;
 	private static final int left = 1;
 	private static final int right = 2;
-	private int player1Count = 0;
-	private int player2Count = 0;
 	private int kCounter;
 	private BasePanel basePanel;
 	private int currentPlayer = 1;
@@ -65,6 +67,7 @@ public class MainFrame extends JFrame {
 	private boolean playerset;
 	private KnollAudioPlayer audioPlayer;
 	private KnollSavingsHandler saver;
+	private KnollProfilesHandler profSaver;
 
 	public MainFrame() {
 		init();
@@ -92,8 +95,10 @@ public class MainFrame extends JFrame {
 		this.selectedMode = 1;
 		basePanel = new BasePanel(7, 7);
 		initMenuBar();
+		saver = new KnollSavingsHandler();
+		profSaver = new KnollProfilesHandler();
 		try {
-			refreshProfiles();
+			readProfilesFromFile();
 		} catch (IOException e2) {
 		}
 		manualGame = new JLabel(
@@ -118,7 +123,7 @@ public class MainFrame extends JFrame {
 							saveGame();
 						}
 					} catch (IOException e1) {
-						dataErrorMessage();
+						new SavingsErrorMessage();
 					}
 				} else if (e.getSource() == configPanel.load) {
 					try {
@@ -134,8 +139,7 @@ public class MainFrame extends JFrame {
 						}
 
 					} catch (Exception e1) {
-						e1.printStackTrace();
-						dataErrorMessage();
+						new SavingsErrorMessage();
 					}
 				}
 
@@ -164,7 +168,7 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 		pack();
 		eventListener();
-		saver = new KnollSavingsHandler();
+
 		try {
 			audioPlayer = new KnollAudioPlayer();
 			audioPlayer.play();
@@ -231,9 +235,9 @@ public class MainFrame extends JFrame {
 					if (name != null && name.length() > 0) {
 						playersMap.put(name, new KnollPlayer(name, 0, 0, 0));
 						try {
-							updateStats();
+							writeProfilesToFile();
 						} catch (IOException e1) {
-							dataErrorMessage();
+							profSaver.createNewStats();
 						}
 					}
 				}
@@ -258,16 +262,16 @@ public class MainFrame extends JFrame {
 							JOptionPane.showMessageDialog(null, "Player not found.");
 						try {
 							if (exist == true)
-								updateStats();
+								writeProfilesToFile();
 						} catch (IOException e1) {
-							dataErrorMessage();
+							profSaver.createNewStats();
 						}
 					}
 				}
 				// ---Show Stats Dialog---
 				if (e.getSource() == menueItemFileStats) {
 					try {
-						updateStats();
+						writeProfilesToFile();
 						String[][] rows = new String[playersMap.keySet().size()][4];
 						String[] cols = { "Name", "Played Games", "Wins", "Steps to Win" };
 						Iterator<String> j = playersMap.keySet().iterator();
@@ -292,7 +296,7 @@ public class MainFrame extends JFrame {
 						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
 								JOptionPane.INFORMATION_MESSAGE);
 					} catch (IOException e1) {
-						dataErrorMessage();
+						profSaver.createNewStats();
 					}
 
 				}
@@ -353,14 +357,14 @@ public class MainFrame extends JFrame {
 			try {
 				singlePlayerProfileChoice();
 			} catch (IOException e1) {
-				dataErrorMessage();
+				profSaver.createNewStats();
 
 			}
 		if (selectedMode == 2)// multiPlayer
 			try {
 				multiPlayerProfileChoice();
 			} catch (IOException e1) {
-				dataErrorMessage();
+				profSaver.createNewStats();
 
 			}
 	}
@@ -373,7 +377,7 @@ public class MainFrame extends JFrame {
 	 *             if refreshProfiles() fails
 	 */
 	protected void multiPlayerProfileChoice() throws IOException {
-		refreshProfiles();// IOException if Profiles.kg corrupted or not existent
+		readProfilesFromFile();// IOException if Profiles.kg corrupted or not existent
 		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
 		Iterator<String> i = playersMap.keySet().iterator();
 
@@ -412,7 +416,7 @@ public class MainFrame extends JFrame {
 	 *             if refreshProfiles() fails
 	 */
 	protected void singlePlayerProfileChoice() throws IOException {
-		refreshProfiles();// IOException if Profiles.kg corrupted or not existent
+		readProfilesFromFile();// IOException if Profiles.kg corrupted or not existent
 		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
 		Iterator<String> i = playersMap.keySet().iterator();
 		int j = 0;
@@ -444,36 +448,8 @@ public class MainFrame extends JFrame {
 	 *             if File is not found
 	 */
 
-	private void refreshProfiles() throws IOException {
-		URL temp = MainFrame.class.getResource("profiles.kg");
-
-		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
-		BufferedReader br = new BufferedReader(fr);
-		int amountOfRegisteredPlayers = 0;
-		ArrayList<KnollPlayer> players = new ArrayList<>();
-
-		try {
-			if (br.readLine().equals("<HEAD>KNOLLGEWINNT PROFILES<HEAD>")) {
-				amountOfRegisteredPlayers = Integer.parseInt((br.readLine().split("'")[1]));
-				for (int i = 0; i < amountOfRegisteredPlayers; i++) {
-					String[] actualLine = br.readLine().split("\\.");
-					players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]),
-							Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
-				}
-				br.close();
-				HashMap<String, KnollPlayer> playerObjects = new HashMap<>();
-				Iterator<KnollPlayer> i = players.iterator();
-				while (i.hasNext()) {
-					KnollPlayer p = i.next();
-					playerObjects.put(p.getName(), p);
-				}
-				this.playersMap = playerObjects;
-			} else {
-				dataErrorMessage();
-			}
-		} catch (Exception e) {
-			dataErrorMessage();
-		}
+	private void readProfilesFromFile() throws IOException {
+		this.playersMap = profSaver.readFile();
 	}
 
 	/**
@@ -483,9 +459,7 @@ public class MainFrame extends JFrame {
 	 * @throws IOException
 	 */
 	protected void loadGame() throws Exception {
-		Object[] read = saver.readFile(basePanel);
-		//Object[0] contains readMode
-		//Object[1] contains readStringArray
+		Object [] read = saver.readFile(basePanel);
 		try {
 			resumeGame((int) read[0], (String[]) read[1]);
 			JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
@@ -494,36 +468,6 @@ public class MainFrame extends JFrame {
 			new SavingsErrorMessage();
 		}
 
-	}
-
-	/**
-	 * Shows a user friendly dataError Message dialog. Should be used in a catch
-	 * section instead of printing a stack trace.
-	 * 
-	 * @param reply
-	 *            - Integer value showing if the user wants to create new DATA.KG
-	 *            files.
-	 */
-	private void dataErrorMessage() {
-		JOptionPane.showMessageDialog(this, "Corrupt File Error.", "Warning", JOptionPane.WARNING_MESSAGE);
-		int reply = JOptionPane.showConfirmDialog(this, "Create new DATA.KG Files?", "Confirm Dialog",
-				JOptionPane.YES_NO_OPTION);
-		if (reply == JOptionPane.YES_OPTION) {
-			try {
-				FileWriter fw = new FileWriter("profiles.kg");
-				BufferedWriter bw = new BufferedWriter(fw);
-				bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
-				bw.newLine();
-				bw.write("<INFO> PLAYERS: '" + 1 + "' <INFO>");
-				bw.newLine();
-				bw.write("KI.0.0.0");
-				bw.close();
-				fw.close();
-				refreshProfiles();
-			} catch (IOException e) {
-				dataErrorMessage();
-			}
-		}
 	}
 
 	/**
@@ -588,9 +532,9 @@ public class MainFrame extends JFrame {
 								return;
 							basePanel.throwCoin(currentPlayer);
 							if (currentPlayer == 1)
-								player1Count++;
+								player1.increaseTurn();
 							if (currentPlayer == 2 || currentPlayer == 3)
-								player2Count++;
+								player2.increaseTurn();
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -600,16 +544,16 @@ public class MainFrame extends JFrame {
 							try {
 								switch (currentPlayer) {
 								case 1:
-									player1.setWin(player1Count);
-									updateStats();
+									player1.setWin(player1.getSteps());
+									writeProfilesToFile();
 									break;
 								case 2:
-									player2.setWin(player2Count);
-									updateStats();
+									player2.setWin(player2.getSteps());
+									writeProfilesToFile();
 									break;
 								case 3:
-									player2.setWin(player2Count);
-									updateStats();
+									player2.setWin(player2.getSteps());
+									writeProfilesToFile();
 									break;
 								}
 							} catch (IOException e) {
@@ -697,25 +641,8 @@ public class MainFrame extends JFrame {
 	 * @throws IOException
 	 *             if FileWriter fails.
 	 */
-	protected void updateStats() throws IOException {
-		URL temp = MainFrame.class.getResource("profiles.kg");
-
-		FileWriter fw = new FileWriter(URLDecoder.decode(temp.getPath()));
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
-		bw.newLine();
-		bw.write("<INFO> PLAYERS: '" + playersMap.keySet().size() + "' <INFO>");
-		bw.newLine();
-		Iterator<String> i = playersMap.keySet().iterator();
-		while (i.hasNext()) {
-			String next = i.next();
-			bw.write(playersMap.get(next).getName() + "." + playersMap.get(next).getPlayedGames() + "."
-					+ playersMap.get(next).getWins() + "." + playersMap.get(next).getStepsToWin());
-			bw.newLine();
-		}
-		bw.close();
-		fw.close();
-		JOptionPane.showMessageDialog(this, "Update succesful!");
+	protected void writeProfilesToFile() throws IOException {
+		profSaver.writeFile(playersMap);
 
 	}
 
@@ -808,12 +735,12 @@ public class MainFrame extends JFrame {
 		basePanel.evaluatePlayablePanels();
 		if (won == false) {
 			basePanel.throwCoin(currentPlayer);
-			player2Count++;
+			player2.increaseTurn();
 			if (basePanel.evaluateRows() == true) {
 				won = true;
 				displayWinner(currentPlayer);
-				player2.setWin(player2Count);
-				updateStats();
+				player2.setWin(player2.getSteps());
+				writeProfilesToFile();
 				stopGame();
 
 			} else {
@@ -836,13 +763,17 @@ public class MainFrame extends JFrame {
 		this.selectedMode = selectedModeInt;
 		this.player1 = player1;
 		this.player2 = player2;
-		if (player1 == null || player2 == null)
+		if (player1 == null || player2 == null) {
 			playerset = false;
+		}else {
+			player1.reset();
+			player2.reset();
+			currentPlayer = 1;
+			basePanel.player = 1;
+		}
+			
 		configPanel.setPlayers(player1, player2);
-		player1Count = 0;
-		player2Count = 0;
-		currentPlayer = 1;
-		basePanel.player = 1;
+
 		won = false;
 		this.remove(basePanel);
 		basePanel = new BasePanel(7, 7);

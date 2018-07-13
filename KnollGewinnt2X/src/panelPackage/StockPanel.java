@@ -6,7 +6,7 @@
  * @version 0.1
  * (c) 2018
  */
-package gamePackage;
+package panelPackage;
 
 import java.awt.Color;
 import java.util.ArrayList;

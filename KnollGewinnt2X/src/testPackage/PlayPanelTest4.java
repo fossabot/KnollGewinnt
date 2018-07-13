@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 
-import gamePackage.PlayPanel;
+import panelPackage.PlayPanel;
 
 public class PlayPanelTest4 {
 

@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 
-import gamePackage.GroundPanel;
+import panelPackage.GroundPanel;
 
 public class GroundPanelTest4 {
 

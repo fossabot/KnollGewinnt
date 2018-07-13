@@ -1,4 +1,4 @@
-package gamePackage;
+package handlerPackage;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,16 +10,18 @@ import java.net.URLDecoder;
 import javax.swing.JOptionPane;
 
 import errorMessages.SavingsErrorMessage;
+import gamePackage.MainFrame;
+import panelPackage.BasePanel;
 
-public class KnollSavingsHandler implements KnollFileHandler {
+public class KnollSavingsHandler {
 
 	public KnollSavingsHandler() {
 	}
 
-	@Override
-	public void writeFile(Object object, Object object2) throws Exception {
-		BasePanel basePanel = (BasePanel) object;
-		int selectedMode = (int) object2;
+	public void writeFile(BasePanel base, int mode) throws Exception {
+		System.out.println(System.currentTimeMillis()+": WRITING FILE...");
+		BasePanel basePanel = base;
+		int selectedMode = mode;
 		URL temp = MainFrame.class.getResource("save.kg");
 		FileWriter fw = new FileWriter(URLDecoder.decode(temp.getPath()));
 		BufferedWriter bw = new BufferedWriter(fw);
@@ -47,13 +49,13 @@ public class KnollSavingsHandler implements KnollFileHandler {
 			bw.newLine();
 		}
 		bw.close();
+		System.out.println(System.currentTimeMillis()+": FINISHED WRITING FILE.");
 		JOptionPane.showMessageDialog(null, "Game succesfully saved.");
 
 	}
 
-	@Override
-	public Object[] readFile(Object object) throws Exception {
-		BasePanel basePanel = (BasePanel) object;
+	public Object[] readFile(BasePanel base) throws Exception {
+		BasePanel basePanel = base;
 		URL temp = MainFrame.class.getResource("save.kg");
 		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
 		BufferedReader br = new BufferedReader(fr);

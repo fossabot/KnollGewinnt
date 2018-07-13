@@ -11,10 +11,10 @@ import javax.swing.border.LineBorder;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
-import gamePackage.BasePanel;
-import gamePackage.GroundPanel;
-import gamePackage.PlayPanel;
-import gamePackage.StockPanel;
+import panelPackage.BasePanel;
+import panelPackage.GroundPanel;
+import panelPackage.PlayPanel;
+import panelPackage.StockPanel;
 
 public class BasePanelTest {
 

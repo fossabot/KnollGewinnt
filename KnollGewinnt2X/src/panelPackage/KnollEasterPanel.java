@@ -1,4 +1,4 @@
-package gamePackage;
+package panelPackage;
 
 
 import java.net.URL;

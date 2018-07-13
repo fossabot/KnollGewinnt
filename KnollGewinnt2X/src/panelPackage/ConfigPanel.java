@@ -6,7 +6,7 @@
  * @version 0.1
  * (c) 2018
  */
-package gamePackage;
+package panelPackage;
 
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -14,12 +14,14 @@ import java.awt.event.ItemListener;
 
 import javax.swing.*;
 
+import gamePackage.KnollPlayer;
+
 public class ConfigPanel extends JPanel {
 
 	private static final long serialVersionUID = -4392630694778787679L;
-	JButton newGame;
-	JButton save;
-	JButton load;
+	public JButton newGame;
+	public JButton save;
+	public JButton load;
 	JRadioButton singlePlayer;
 	JRadioButton multiPlayer;
 	ButtonGroup playerChoice = new ButtonGroup();;
