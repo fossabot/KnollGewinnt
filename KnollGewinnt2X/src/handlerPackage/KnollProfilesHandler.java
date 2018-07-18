@@ -1,5 +1,7 @@
 package handlerPackage;
 
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -81,7 +83,7 @@ public class KnollProfilesHandler {
 				dataErrorMessage();
 			}
 		} catch (Exception e) {
-			createNewStats();
+			createNewStats(false);
 
 		}
 
@@ -91,8 +93,25 @@ public class KnollProfilesHandler {
 	/**
 	 *
 	 */
-	public void createNewStats() {
-		if (dataErrorMessage() == JOptionPane.YES_OPTION) {
+	public void createNewStats(boolean showMessage) {
+		if (showMessage) {
+			if (dataErrorMessage() == JOptionPane.YES_OPTION) {
+				try {
+					FileWriter fw = new FileWriter("profiles.kg");
+					BufferedWriter bw = new BufferedWriter(fw);
+					bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
+					bw.newLine();
+					bw.write("<INFO> PLAYERS: '" + 1 + "' <INFO>");
+					bw.newLine();
+					bw.write("KI.0.0.0");
+					bw.close();
+					fw.close();
+				} catch (Exception f) {
+					f.printStackTrace();
+					new UnknownErrorMessage();
+				}
+			} 
+		}else {
 			try {
 				FileWriter fw = new FileWriter("profiles.kg");
 				BufferedWriter bw = new BufferedWriter(fw);
@@ -105,7 +124,6 @@ public class KnollProfilesHandler {
 				fw.close();
 			} catch (Exception f) {
 				f.printStackTrace();
-				new UnknownErrorMessage();
 			}
 		}
 	}

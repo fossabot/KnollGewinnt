@@ -264,8 +264,10 @@ public class BasePanel extends JPanel {
 	/**
 	 * changes the pointer to the current player (calls setPointer who changes the
 	 * color)
+	 * @param i 
 	 */
-	public void changePlayer() {
+	public void changePlayer(int i) {
+		this.player=i;
 		control[getActiveGroundPanel()].fill(player, true);
 	}
 

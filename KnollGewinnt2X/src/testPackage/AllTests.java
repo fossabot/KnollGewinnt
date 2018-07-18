@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ GroundPanelTest4.class, PlayPanelTest4.class, BasePanelTest.class })
+@SuiteClasses({ GroundPanelTest4.class, PlayPanelTest4.class, BasePanelTest.class, KnollProfilesHandlerTest.class })
 public class AllTests {
 
 }

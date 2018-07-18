@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -54,20 +55,16 @@ public class MainFrame extends JFrame {
 	private AWTEventListener awt;
 	private JLabel manualGame;
 	private int selectedMode; // '1' singlePlayer '2' multiPlayer
-	private JButton select;
-	private JOptionPane selectionPane;
-	private JComboBox<String> playersList;
 	private HashMap<String, KnollPlayer> playersMap;
 	private KnollPlayer player1;
 	private KnollPlayer player2;
-	private JDialog singlePlayerDialog;
-	private JButton selectMultiPlayer;
-	private JComboBox<String> playersList2;
 	private ItemListener gameModeListener;
 	private boolean playerset;
 	private KnollAudioPlayer audioPlayer;
 	private KnollSavingsHandler saver;
 	private KnollProfilesHandler profSaver;
+	private MultiPlayerProfileChooser multiPlayerChooser;
+	private SinglePlayerProfileChooser singlePlayerChooser;
 
 	public MainFrame() {
 		init();
@@ -97,6 +94,8 @@ public class MainFrame extends JFrame {
 		initMenuBar();
 		saver = new KnollSavingsHandler();
 		profSaver = new KnollProfilesHandler();
+		singlePlayerChooser= new SinglePlayerProfileChooser();
+		multiPlayerChooser = new MultiPlayerProfileChooser();
 		try {
 			readProfilesFromFile();
 		} catch (IOException e2) {
@@ -237,7 +236,7 @@ public class MainFrame extends JFrame {
 						try {
 							writeProfilesToFile();
 						} catch (IOException e1) {
-							profSaver.createNewStats();
+							profSaver.createNewStats(true);
 						}
 					}
 				}
@@ -264,7 +263,7 @@ public class MainFrame extends JFrame {
 							if (exist == true)
 								writeProfilesToFile();
 						} catch (IOException e1) {
-							profSaver.createNewStats();
+							profSaver.createNewStats(true);
 						}
 					}
 				}
@@ -296,7 +295,7 @@ public class MainFrame extends JFrame {
 						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
 								JOptionPane.INFORMATION_MESSAGE);
 					} catch (IOException e1) {
-						profSaver.createNewStats();
+						profSaver.createNewStats(true);
 					}
 
 				}
@@ -357,14 +356,14 @@ public class MainFrame extends JFrame {
 			try {
 				singlePlayerProfileChoice();
 			} catch (IOException e1) {
-				profSaver.createNewStats();
+				profSaver.createNewStats(true);
 
 			}
 		if (selectedMode == 2)// multiPlayer
 			try {
 				multiPlayerProfileChoice();
 			} catch (IOException e1) {
-				profSaver.createNewStats();
+				profSaver.createNewStats(true);
 
 			}
 	}
@@ -378,33 +377,7 @@ public class MainFrame extends JFrame {
 	 */
 	protected void multiPlayerProfileChoice() throws IOException {
 		readProfilesFromFile();// IOException if Profiles.kg corrupted or not existent
-		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
-		Iterator<String> i = playersMap.keySet().iterator();
-
-		int j = 0;
-		while (i.hasNext()) {
-			String next = i.next();
-			if (!(next.equals("KI"))) {
-				playersStringArray[j] = next;
-				j++;
-			}
-
-		}
-
-		selectionPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE,
-				JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
-		selectionPane.add(new JLabel("Player 1: "));
-		playersList = new JComboBox<String>(playersStringArray);
-		selectionPane.add(playersList);
-		selectionPane.add(new JLabel("Player 2: "));
-		playersList2 = new JComboBox<String>(playersStringArray);
-		selectionPane.add(playersList2);
-		selectMultiPlayer = new JButton("Select");
-		selectionPane.add(selectMultiPlayer);
-		selectMultiPlayer.addActionListener(profileSelected);
-
-		singlePlayerDialog = selectionPane.createDialog(null, "MultiPlayer Profile Choice");
-		singlePlayerDialog.setVisible(true);
+		multiPlayerChooser.open(playersMap, profileSelected);
 
 	}
 
@@ -416,28 +389,9 @@ public class MainFrame extends JFrame {
 	 *             if refreshProfiles() fails
 	 */
 	protected void singlePlayerProfileChoice() throws IOException {
-		readProfilesFromFile();// IOException if Profiles.kg corrupted or not existent
-		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
-		Iterator<String> i = playersMap.keySet().iterator();
-		int j = 0;
-		while (i.hasNext()) {
-			String next = i.next();
-			if (!(next.equals("KI"))) {
-				playersStringArray[j] = next;
-				j++;
-			}
-		}
-
-		selectionPane = new JOptionPane("Select your Player Profile", JOptionPane.QUESTION_MESSAGE,
-				JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
-		playersList = new JComboBox<String>(playersStringArray);
-		selectionPane.add(playersList);
-		select = new JButton("Select");
-		selectionPane.add(select);
-		select.addActionListener(profileSelected);
-
-		singlePlayerDialog = selectionPane.createDialog(null, "SinglePlayer Profile Choice");
-		singlePlayerDialog.setVisible(true);
+		readProfilesFromFile();
+		singlePlayerChooser.open(playersMap, profileSelected);// IOException if Profiles.kg corrupted or not existent
+		
 	}
 
 	/**
@@ -590,8 +544,8 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == select) {
-					player1 = playersMap.get(playersList.getSelectedItem());
+				if (e.getSource() == SinglePlayerProfileChooser.select) {
+					player1 = playersMap.get(SinglePlayerProfileChooser.playersList.getSelectedItem());
 					player2 = playersMap.get(new String("KI"));
 					player1.playGame();
 					player2.playGame();
@@ -599,11 +553,11 @@ public class MainFrame extends JFrame {
 					playerset = true;
 					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
 					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
-					singlePlayerDialog.dispose();
+					singlePlayerChooser.dispose();
 				}
-				if (e.getSource() == selectMultiPlayer) {
-					player1 = playersMap.get(playersList.getSelectedItem());
-					player2 = playersMap.get(playersList2.getSelectedItem());
+				if (e.getSource() == MultiPlayerProfileChooser.selectMultiPlayer) {
+					player1 = playersMap.get(MultiPlayerProfileChooser.playersList.getSelectedItem());
+					player2 = playersMap.get(MultiPlayerProfileChooser.playersList2.getSelectedItem());
 					if (player1 == player2) {
 						JOptionPane.showMessageDialog(null, "You can not play against yourself!", "Error",
 								JOptionPane.ERROR_MESSAGE);
@@ -615,7 +569,7 @@ public class MainFrame extends JFrame {
 					playerset = true;
 					System.out.println(System.currentTimeMillis() + ": PLAYER1: " + player1.getName());
 					System.out.println(System.currentTimeMillis() + ": PLAYER2: " + player2.getName());
-					singlePlayerDialog.dispose();
+					multiPlayerChooser.dispose();
 				}
 
 			}
@@ -689,36 +643,23 @@ public class MainFrame extends JFrame {
 			switch (this.selectedMode) {
 			case 1:
 				currentPlayer = 3;
-				basePanel.player = 3;
-				// tog.evaluatePlayablePanels();
-				basePanel.changePlayer();
+				basePanel.changePlayer(3);
 				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 				letKIPlay();
 				break;
 
 			case 2:
 				currentPlayer = 2;
-				basePanel.player = 2;
-
-				basePanel.changePlayer();
+				basePanel.changePlayer(2);
 				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 				break;
 			}
 			break;
 
 		case 2:
-			currentPlayer = 1;
-			basePanel.player = 1;
-
-			basePanel.changePlayer();
-			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
-			break;
-
 		case 3:
 			currentPlayer = 1;
-			basePanel.player = 1;
-
-			basePanel.changePlayer();
+			basePanel.changePlayer(1);
 			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
 			break;
 		}
