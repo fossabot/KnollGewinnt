@@ -157,7 +157,7 @@ public class BasePanel extends JPanel {
 	 *            - the player who throws the coin
 	 * @throws Exception
 	 */
-	public void throwCoin(int player) throws Exception {
+	public void throwCoin(int player){
 
 		if (player == 3) {
 
@@ -204,7 +204,7 @@ public class BasePanel extends JPanel {
 	 * @throws Exception
 	 *             if .fill() method fails.
 	 */
-	private void throwCalculatedCoin(int greaterPlayer, int highestChance) throws Exception {
+	private void throwCalculatedCoin(int greaterPlayer, int highestChance){
 		for (int i = 0; i < stocks.size(); i++) {
 			if (stocks.get(i).calculateWinningChance(greaterPlayer) == highestChance) {
 				stocks.get(i).getPlayable().fill(playerKI, true);
@@ -234,7 +234,7 @@ public class BasePanel extends JPanel {
 	 * @param player
 	 * @throws Exception
 	 */
-	private void throwCoinRandomKI(int player) throws Exception {
+	private void throwCoinRandomKI(int player){
 		System.out.println(System.currentTimeMillis() + ": Random");
 		for (int j = playBoard.length - 1; j >= 0; j--) {
 

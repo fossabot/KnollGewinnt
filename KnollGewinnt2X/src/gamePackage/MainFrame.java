@@ -34,6 +34,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import errorMessages.AudioErrorMessage;
 import errorMessages.SavingsErrorMessage;
 import handlerPackage.KnollProfilesHandler;
 import handlerPackage.KnollSavingsHandler;
@@ -103,47 +104,7 @@ public class MainFrame extends JFrame {
 		manualGame = new JLabel(
 				"<html><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>SEE HELP FOR INSTRUCTIONS.<br> @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz<html>");
 		manualGame.setFont(new Font("Calibri", Font.PLAIN, 20));
-		newGameAction = new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == configPanel.newGame) {
-					resetFrame(configPanel.selectedMode(), player1, player2);
-					openPlayersChoice();
-				} else if (e.getSource() == configPanel.save) {
-					try {
-						if (won == true) {
-							JOptionPane.showMessageDialog(null, "You can't save a game if somebody won already.",
-									"Warning", JOptionPane.WARNING_MESSAGE);
-						} else if (playerset == false) {
-							JOptionPane.showMessageDialog(null, "You can't save a game without players.", "Warning",
-									JOptionPane.WARNING_MESSAGE);
-						} else {
-							saveGame();
-						}
-					} catch (IOException e1) {
-						new SavingsErrorMessage();
-					}
-				} else if (e.getSource() == configPanel.load) {
-					try {
-						if (won == true) {
-							JOptionPane.showMessageDialog(null,
-									"You can't load a game if somebody won already. \n Please start a new game.",
-									"Warning", JOptionPane.WARNING_MESSAGE);
-						} else if (playerset == false) {
-							JOptionPane.showMessageDialog(null, "You can't load a game without players.", "Warning",
-									JOptionPane.WARNING_MESSAGE);
-						} else {
-							loadGame();
-						}
-
-					} catch (Exception e1) {
-						new SavingsErrorMessage();
-					}
-				}
-
-			}
-		};
+		newGameAction = buttonActionListener();
 
 		configPanel = new ConfigPanel(newGameAction);
 		gameModeListener = new ItemListener() {
@@ -172,10 +133,12 @@ public class MainFrame extends JFrame {
 			audioPlayer = new KnollAudioPlayer();
 			audioPlayer.play();
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			new AudioErrorMessage();
 		}
 
 	}
+
+	
 
 	/**
 	 * initializes MenuBar including the ActionListener which is needed for enable
@@ -194,159 +157,17 @@ public class MainFrame extends JFrame {
 	 *            corresponding steps
 	 */
 	private void initMenuBar() {
-		// ---MenuItems
-		JMenuItem menuItemFileExit = new JMenuItem("Exit");
-		JMenuItem menueItemFileProfiles = new JMenuItem("Profiles");
-		JMenuItem menueItemFileAddProfiles = new JMenuItem("Add Profile");
-		JMenuItem menueItemFileDelProfiles = new JMenuItem("Delete Profile");
-		JMenuItem menueItemFileStats = new JMenuItem("Profiles & Stats");
-		JMenuItem menueItemFileBash = new JMenuItem("Bash Control");
-		JMenuItem menueItemHelpAbout = new JMenuItem("About");
-		JMenuItem menueItemHelpHelp = new JMenuItem("Help");
 
-		ActionListener actionMenu = new ActionListener() {
+		KnollMenuBar menu = new KnollMenuBar();
+		
+		ActionListener actionMenu = menuActionListener(menu);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// ---Exit Program---
-				if (e.getSource() == menuItemFileExit) {
-					System.exit(0);
-				}
-				// ---Show About Dialog---
-				if (e.getSource() == menueItemHelpAbout) {
-					JOptionPane.showMessageDialog(null,
-							"<html>KNOLL GEWINNT VER.0.1 <br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
-							"About", JOptionPane.INFORMATION_MESSAGE);
-				}
-				// ---Show Help Dialog---
-				if (e.getSource() == menueItemHelpHelp) {
-					JOptionPane.showMessageDialog(null,
-							"<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> <html>",
-							"Help", JOptionPane.INFORMATION_MESSAGE);
-				}
-				// ---Show PlayersProfileChoice Dialog---
-				if (e.getSource() == menueItemFileProfiles) {
-					openPlayersChoice();
-				}
-				// ---Show AddProfiles Dialog---
-				if (e.getSource() == menueItemFileAddProfiles) {
-					String name = JOptionPane.showInputDialog("Enter new Players name: ");
-					if (name != null && name.length() > 0) {
-						playersMap.put(name, new KnollPlayer(name, 0, 0, 0));
-						try {
-							writeProfilesToFile();
-						} catch (IOException e1) {
-							profSaver.createNewStats(true);
-						}
-					}
-				}
-				// ---Show DelProfiles Dialog---
-				if (e.getSource() == menueItemFileDelProfiles) {
-					String name = JOptionPane.showInputDialog("Enter Players name to delete: ");
-					if (name != null && name.length() > 0) {
-						Set<String> playersKeySet = playersMap.keySet();
-						Iterator<String> i = playersKeySet.iterator();
-						boolean exist = false;
-						while (i.hasNext()) {
-							String next = i.next();
-							if (next.equals(name) && !(next.equals("KI"))) {
-								i.remove();
-								exist = true;
-							}
-
-						}
-						if (exist == true)
-							JOptionPane.showMessageDialog(null, "Player found and deleted.");
-						if (exist == false)
-							JOptionPane.showMessageDialog(null, "Player not found.");
-						try {
-							if (exist == true)
-								writeProfilesToFile();
-						} catch (IOException e1) {
-							profSaver.createNewStats(true);
-						}
-					}
-				}
-				// ---Show Stats Dialog---
-				if (e.getSource() == menueItemFileStats) {
-					try {
-						writeProfilesToFile();
-						String[][] rows = new String[playersMap.keySet().size()][4];
-						String[] cols = { "Name", "Played Games", "Wins", "Steps to Win" };
-						Iterator<String> j = playersMap.keySet().iterator();
-						while (j.hasNext()) {
-							for (int i = 0; i < rows.length; i++) {
-								String next = j.next();
-								rows[i][0] = playersMap.get(next).getName();
-								rows[i][1] = Integer.toString(playersMap.get(next).getPlayedGames());
-								rows[i][2] = Integer.toString(playersMap.get(next).getWins());
-								rows[i][3] = Integer.toString(playersMap.get(next).getStepsToWin());
-							}
-						}
-						JTable table = new JTable(rows, cols);
-						DefaultTableModel model = new DefaultTableModel(rows, cols) {
-							@Override
-							public boolean isCellEditable(int row, int column) {
-								return false;
-							}
-
-						};
-						table.setModel(model);
-						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
-								JOptionPane.INFORMATION_MESSAGE);
-					} catch (IOException e1) {
-						profSaver.createNewStats(true);
-					}
-
-				}
-				// ---Show BashControl Dialog---
-				if (e.getSource() == menueItemFileBash) {
-					JOptionPane.showInputDialog(null, "", "BashControl", JOptionPane.PLAIN_MESSAGE);
-				}
-
-			}
-
-			/**
-			 * 
-			 */
-
-		};
-
-		// ---MenuBar with Menus and the corresponding MenuItems with actionMenu
-		// Listener---
-		JMenuBar menuBar = new JMenuBar();
-		JMenu menuFile = new JMenu("File");
-		JMenu menuHelp = new JMenu("Help");
-		menuBar.add(menuFile);
-		menuBar.add(menuHelp);
-		// ---Add SelectProfiles---
-		menuFile.add(menueItemFileProfiles);
-		menueItemFileProfiles.addActionListener(actionMenu);
-		// ---Add AddProfiles---
-		menuFile.add(menueItemFileAddProfiles);
-		menueItemFileAddProfiles.addActionListener(actionMenu);
-		// ---Add DelProfiles---
-		menuFile.add(menueItemFileDelProfiles);
-		menueItemFileDelProfiles.addActionListener(actionMenu);
-		// ---Add Stats---
-		menuFile.add(menueItemFileStats);
-		menueItemFileStats.addActionListener(actionMenu);
-		// ---Add Bash Control---
-		menuFile.add(menueItemFileBash);
-		menueItemFileBash.addActionListener(actionMenu);
-		// ---Add Exit---
-		menuFile.add(menuItemFileExit);
-		menuItemFileExit.addActionListener(actionMenu);
-		// ---Add About---
-		menuHelp.add(menueItemHelpAbout);
-		menueItemHelpAbout.addActionListener(actionMenu);
-		// ---Add Help---
-		menuHelp.add(menueItemHelpHelp);
-		menueItemHelpHelp.addActionListener(actionMenu);
-
-		setJMenuBar(menuBar);
+		menu.addActionListener(actionMenu);
+		setJMenuBar(menu);
 
 	}
+
+	
 
 	/**
 	 * opens the playersChoice PopUp depending on which mode is currently selected
@@ -452,6 +273,378 @@ public class MainFrame extends JFrame {
 		System.out.println("***********************************************");
 	}
 
+	
+
+	protected void easterEgg() {
+		kCounter = 0;
+
+		try {
+			JOptionPane.showMessageDialog(null, new KnollEasterPanel(), "EasterEgg", JOptionPane.PLAIN_MESSAGE);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Synchronizes the profiles.kg File from the playersMap.
+	 * 
+	 * @throws IOException
+	 *             if FileWriter fails.
+	 */
+	protected void writeProfilesToFile() throws IOException {
+		profSaver.writeFile(playersMap);
+
+	}
+
+	/**
+	 * Stops the game with just removing the Key Event Listener.
+	 */
+	protected void stopGame() {
+		this.getToolkit().removeAWTEventListener(awt);
+		basePanel.removePointer();
+
+	}
+
+	/**
+	 * Display the player on the configPanels Label.
+	 * 
+	 * @param player
+	 */
+	private void displayWinner(int player) {
+		switch (player) {
+		case 1:
+			configPanel.setWin(player1.getName());
+			break;
+
+		case 2:
+			configPanel.setWin(player2.getName());
+			break;
+
+		case 3:
+			configPanel.setWin(player2.getName());
+			break;
+		}
+
+	}
+
+	/**
+	 * Switches the Player depending on the current value of Player.
+	 * 
+	 * @throws Exception
+	 */
+
+	private void switchPlayer(){
+		switch (currentPlayer) {
+		case 1:
+			switch (this.selectedMode) {
+			case 1:
+				currentPlayer = 3;
+				basePanel.changePlayer(3);
+				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
+				letKIPlay();
+				break;
+
+			case 2:
+				currentPlayer = 2;
+				basePanel.changePlayer(2);
+				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
+				break;
+			}
+			break;
+
+		case 2:
+		case 3:
+			currentPlayer = 1;
+			basePanel.changePlayer(1);
+			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
+			break;
+		}
+
+	}
+
+	/**
+	 * Is called if player 3 is the current Player.
+	 * 
+	 * @throws Exception
+	 *             if the throwCoin() fails.
+	 */
+	private void letKIPlay()  {
+		basePanel.evaluatePlayablePanels();
+		if (won == false) {
+			basePanel.throwCoin(currentPlayer);
+			player2.increaseTurn();
+			if (basePanel.evaluateRows() == true) {
+				won = true;
+				displayWinner(currentPlayer);
+				player2.setWin(player2.getSteps());
+				try {
+					writeProfilesToFile();
+				} catch (IOException e) {
+					profSaver.createNewStats(true);
+				}
+				stopGame();
+
+			} else {
+				switchPlayer();
+			}
+
+		}
+
+	}
+
+	/**
+	 * Resets the Frame to start a new Game and recognize changement of the selected
+	 * Mode
+	 * 
+	 * @param selectedModeInt
+	 *            - '1' singlePlayer '2' multiPlayer
+	 */
+
+	private void resetFrame(int selectedModeInt, KnollPlayer player1, KnollPlayer player2) {
+		this.selectedMode = selectedModeInt;
+		this.player1 = player1;
+		this.player2 = player2;
+		if (player1 == null || player2 == null) {
+			playerset = false;
+		}else {
+			player1.reset();
+			player2.reset();
+			currentPlayer = 1;
+			basePanel.player = 1;
+		}
+			
+		configPanel.setPlayers(player1, player2);
+
+		won = false;
+		this.remove(basePanel);
+		basePanel = new BasePanel(7, 7);
+		this.getContentPane().add(basePanel, BorderLayout.CENTER);
+		pack();
+		this.setVisible(true);
+		this.getToolkit().removeAWTEventListener(awt);
+		configPanel.setWin(null);
+		eventListener();
+
+	}
+
+	/**
+	 * Resumes the Game from the read savings.kg file. Fills the PlayBoard from the
+	 * rows read from the file.
+	 * 
+	 * @param readMode
+	 *            - chosen Game Mode (singlePlayer, multiPlayer)
+	 * @param rows
+	 *            - array of the rows from the file
+	 *            (filled/notFilled.Owner-filled/notFilled.Owner)
+	 * @throws Exception
+	 *             if the PlayBoard (fill) method fails.
+	 */
+	public void resumeGame(int readMode, String[] rows) throws Exception {
+		String[] temp = new String[basePanel.getPlayBoard()[0].length];
+		for (int i = 0; i < basePanel.getPlayBoard().length; i++) {
+			temp = rows[i].split("-");
+			for (int j = 0; j < basePanel.getPlayBoard()[i].length; j++) {
+				String[] temp2 = temp[j].split("\\.");
+				switch (temp2[0]) {
+				case "0":
+					basePanel.getPlayBoard()[i][j].fill(-1, false);// false means dont check if already filled, just
+																	// fill.
+					break;
+				case "1":
+					switch (temp[j].split("\\.")[1]) {
+					case "NO":
+						basePanel.getPlayBoard()[i][j].fill(-1, false);
+						break;
+					case "P1":
+						basePanel.getPlayBoard()[i][j].fill(1, false);
+						break;
+					case "P2":
+						basePanel.getPlayBoard()[i][j].fill(2, false);
+						break;
+					case "KI":
+						basePanel.getPlayBoard()[i][j].fill(3, false);
+						break;
+					}
+
+				}
+
+			}
+		}
+		this.selectedMode = readMode;
+		configPanel.setMode(readMode);
+	}
+	
+	//--------------------------
+	//ACTIONLISTENERS
+	//--------------------------
+	/**
+	 * @param menu
+	 * @return
+	 */
+	private ActionListener menuActionListener(KnollMenuBar menu) {
+		ActionListener actionMenu = new ActionListener() {
+
+			
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// ---Exit Program---
+				if (e.getSource() == menu.getMenuItemFileExit()) {
+					System.exit(0);
+				}
+				// ---Show About Dialog---
+				if (e.getSource() == menu.getMenueItemHelpAbout()) {
+					JOptionPane.showMessageDialog(null,
+							"<html>KNOLL GEWINNT VER.0.1 <br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
+							"About", JOptionPane.INFORMATION_MESSAGE);
+				}
+				// ---Show Help Dialog---
+				if (e.getSource() == menu.getMenueItemHelpHelp()) {
+					JOptionPane.showMessageDialog(null,
+							"<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> <html>",
+							"Help", JOptionPane.INFORMATION_MESSAGE);
+				}
+				// ---Show PlayersProfileChoice Dialog---
+				if (e.getSource() == menu.getMenueItemFileProfiles()) {
+					openPlayersChoice();
+				}
+				// ---Show AddProfiles Dialog---
+				if (e.getSource() == menu.getMenueItemFileAddProfiles()) {
+					String name = JOptionPane.showInputDialog("Enter new Players name: ");
+					if (name != null && name.length() > 0) {
+						playersMap.put(name, new KnollPlayer(name, 0, 0, 0));
+						try {
+							writeProfilesToFile();
+						} catch (IOException e1) {
+							profSaver.createNewStats(true);
+						}
+					}
+				}
+				// ---Show DelProfiles Dialog---
+				if (e.getSource() == menu.getMenueItemFileDelProfiles()) {
+					String name = JOptionPane.showInputDialog("Enter Players name to delete: ");
+					if (name != null && name.length() > 0) {
+						Set<String> playersKeySet = playersMap.keySet();
+						Iterator<String> i = playersKeySet.iterator();
+						boolean exist = false;
+						while (i.hasNext()) {
+							String next = i.next();
+							if (next.equals(name) && !(next.equals("KI"))) {
+								i.remove();
+								exist = true;
+							}
+
+						}
+						if (exist == true)
+							JOptionPane.showMessageDialog(null, "Player found and deleted.");
+						if (exist == false)
+							JOptionPane.showMessageDialog(null, "Player not found.");
+						try {
+							if (exist == true)
+								writeProfilesToFile();
+						} catch (IOException e1) {
+							profSaver.createNewStats(true);
+						}
+					}
+				}
+				// ---Show Stats Dialog---
+				if (e.getSource() == menu.getMenueItemFileStats()) {
+					try {
+						writeProfilesToFile();
+						String[][] rows = new String[playersMap.keySet().size()][4];
+						String[] cols = { "Name", "Played Games", "Wins", "Steps to Win" };
+						Iterator<String> j = playersMap.keySet().iterator();
+						while (j.hasNext()) {
+							for (int i = 0; i < rows.length; i++) {
+								String next = j.next();
+								rows[i][0] = playersMap.get(next).getName();
+								rows[i][1] = Integer.toString(playersMap.get(next).getPlayedGames());
+								rows[i][2] = Integer.toString(playersMap.get(next).getWins());
+								rows[i][3] = Integer.toString(playersMap.get(next).getStepsToWin());
+							}
+						}
+						JTable table = new JTable(rows, cols);
+						DefaultTableModel model = new DefaultTableModel(rows, cols) {
+							@Override
+							public boolean isCellEditable(int row, int column) {
+								return false;
+							}
+
+						};
+						table.setModel(model);
+						JOptionPane.showMessageDialog(null, new JScrollPane(table), "Stats",
+								JOptionPane.INFORMATION_MESSAGE);
+					} catch (IOException e1) {
+						profSaver.createNewStats(true);
+					}
+
+				}
+				// ---Show BashControl Dialog---
+				if (e.getSource() == menu.getMenueItemFileBash()) {
+					JOptionPane.showInputDialog(null, "", "BashControl", JOptionPane.PLAIN_MESSAGE);
+				}
+
+			}
+
+			/**
+			 * 
+			 */
+
+		};
+		return actionMenu;
+	}
+	
+	/**
+	 * @return 
+	 * 
+	 */
+	private ActionListener buttonActionListener() {
+		newGameAction = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == configPanel.newGame) {
+					resetFrame(configPanel.selectedMode(), player1, player2);
+					openPlayersChoice();
+				} else if (e.getSource() == configPanel.save) {
+					try {
+						if (won == true) {
+							JOptionPane.showMessageDialog(null, "You can't save a game if somebody won already.",
+									"Warning", JOptionPane.WARNING_MESSAGE);
+						} else if (playerset == false) {
+							JOptionPane.showMessageDialog(null, "You can't save a game without players.", "Warning",
+									JOptionPane.WARNING_MESSAGE);
+						} else {
+							saveGame();
+						}
+					} catch (IOException e1) {
+						new SavingsErrorMessage();
+					}
+				} else if (e.getSource() == configPanel.load) {
+					try {
+						if (won == true) {
+							JOptionPane.showMessageDialog(null,
+									"You can't load a game if somebody won already. \n Please start a new game.",
+									"Warning", JOptionPane.WARNING_MESSAGE);
+						} else if (playerset == false) {
+							JOptionPane.showMessageDialog(null, "You can't load a game without players.", "Warning",
+									JOptionPane.WARNING_MESSAGE);
+						} else {
+							loadGame();
+						}
+
+					} catch (Exception e1) {
+						new SavingsErrorMessage();
+					}
+				}
+
+			}
+		};
+		return newGameAction;
+	}
+	
 	/**
 	 * Generates an eventListener to recognize pressed Keys. Generates an
 	 * actionListener to recognize Players selects in Players choice OptionPane
@@ -576,201 +769,5 @@ public class MainFrame extends JFrame {
 		};
 
 	}
-
-	protected void easterEgg() {
-		kCounter = 0;
-
-		try {
-			JOptionPane.showMessageDialog(null, new KnollEasterPanel(), "EasterEgg", JOptionPane.PLAIN_MESSAGE);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	/**
-	 * Synchronizes the profiles.kg File from the playersMap.
-	 * 
-	 * @throws IOException
-	 *             if FileWriter fails.
-	 */
-	protected void writeProfilesToFile() throws IOException {
-		profSaver.writeFile(playersMap);
-
-	}
-
-	/**
-	 * Stops the game with just removing the Key Event Listener.
-	 */
-	protected void stopGame() {
-		this.getToolkit().removeAWTEventListener(awt);
-		basePanel.removePointer();
-
-	}
-
-	/**
-	 * Display the player on the configPanels Label.
-	 * 
-	 * @param player
-	 */
-	private void displayWinner(int player) {
-		switch (player) {
-		case 1:
-			configPanel.setWin(player1.getName());
-			break;
-
-		case 2:
-			configPanel.setWin(player2.getName());
-			break;
-
-		case 3:
-			configPanel.setWin(player2.getName());
-			break;
-		}
-
-	}
-
-	/**
-	 * Switches the Player depending on the current value of Player.
-	 * 
-	 * @throws Exception
-	 */
-
-	private void switchPlayer() throws Exception {
-		switch (currentPlayer) {
-		case 1:
-			switch (this.selectedMode) {
-			case 1:
-				currentPlayer = 3;
-				basePanel.changePlayer(3);
-				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
-				letKIPlay();
-				break;
-
-			case 2:
-				currentPlayer = 2;
-				basePanel.changePlayer(2);
-				System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
-				break;
-			}
-			break;
-
-		case 2:
-		case 3:
-			currentPlayer = 1;
-			basePanel.changePlayer(1);
-			System.out.println(System.currentTimeMillis() + ": Turn of Player: " + currentPlayer);
-			break;
-		}
-
-	}
-
-	/**
-	 * Is called if player 3 is the current Player.
-	 * 
-	 * @throws Exception
-	 *             if the throwCoin() fails.
-	 */
-	private void letKIPlay() throws Exception {
-		basePanel.evaluatePlayablePanels();
-		if (won == false) {
-			basePanel.throwCoin(currentPlayer);
-			player2.increaseTurn();
-			if (basePanel.evaluateRows() == true) {
-				won = true;
-				displayWinner(currentPlayer);
-				player2.setWin(player2.getSteps());
-				writeProfilesToFile();
-				stopGame();
-
-			} else {
-				switchPlayer();
-			}
-
-		}
-
-	}
-
-	/**
-	 * Resets the Frame to start a new Game and recognize changement of the selected
-	 * Mode
-	 * 
-	 * @param selectedModeInt
-	 *            - '1' singlePlayer '2' multiPlayer
-	 */
-
-	private void resetFrame(int selectedModeInt, KnollPlayer player1, KnollPlayer player2) {
-		this.selectedMode = selectedModeInt;
-		this.player1 = player1;
-		this.player2 = player2;
-		if (player1 == null || player2 == null) {
-			playerset = false;
-		}else {
-			player1.reset();
-			player2.reset();
-			currentPlayer = 1;
-			basePanel.player = 1;
-		}
-			
-		configPanel.setPlayers(player1, player2);
-
-		won = false;
-		this.remove(basePanel);
-		basePanel = new BasePanel(7, 7);
-		this.getContentPane().add(basePanel, BorderLayout.CENTER);
-		pack();
-		this.setVisible(true);
-		this.getToolkit().removeAWTEventListener(awt);
-		configPanel.setWin(null);
-		eventListener();
-
-	}
-
-	/**
-	 * Resumes the Game from the read savings.kg file. Fills the PlayBoard from the
-	 * rows read from the file.
-	 * 
-	 * @param readMode
-	 *            - chosen Game Mode (singlePlayer, multiPlayer)
-	 * @param rows
-	 *            - array of the rows from the file
-	 *            (filled/notFilled.Owner-filled/notFilled.Owner)
-	 * @throws Exception
-	 *             if the PlayBoard (fill) method fails.
-	 */
-	public void resumeGame(int readMode, String[] rows) throws Exception {
-		String[] temp = new String[basePanel.getPlayBoard()[0].length];
-		for (int i = 0; i < basePanel.getPlayBoard().length; i++) {
-			temp = rows[i].split("-");
-			for (int j = 0; j < basePanel.getPlayBoard()[i].length; j++) {
-				String[] temp2 = temp[j].split("\\.");
-				switch (temp2[0]) {
-				case "0":
-					basePanel.getPlayBoard()[i][j].fill(-1, false);// false means dont check if already filled, just
-																	// fill.
-					break;
-				case "1":
-					switch (temp[j].split("\\.")[1]) {
-					case "NO":
-						basePanel.getPlayBoard()[i][j].fill(-1, false);
-						break;
-					case "P1":
-						basePanel.getPlayBoard()[i][j].fill(1, false);
-						break;
-					case "P2":
-						basePanel.getPlayBoard()[i][j].fill(2, false);
-						break;
-					case "KI":
-						basePanel.getPlayBoard()[i][j].fill(3, false);
-						break;
-					}
-
-				}
-
-			}
-		}
-		this.selectedMode = readMode;
-		configPanel.setMode(readMode);
-	}
+	
 }
