@@ -35,7 +35,6 @@ public class KnollMenuBar extends JMenuBar {
 		menueItemFileAddProfiles = new JMenuItem("Add Profile");
 		menueItemFileDelProfiles = new JMenuItem("Delete Profile");
 		menueItemFileStats = new JMenuItem("Profiles & Stats");
-		menueItemFileBash = new JMenuItem("Bash Control");
 		menueItemHelpAbout = new JMenuItem("About");
 		menueItemHelpHelp = new JMenuItem("Help");
 
@@ -57,9 +56,7 @@ public class KnollMenuBar extends JMenuBar {
 		
 		// ---Add Stats---
 		menuFile.add(menueItemFileStats);
-		
-		// ---Add Bash Control---
-		menuFile.add(menueItemFileBash);
+
 		
 		// ---Add Exit---
 		menuFile.add(menuItemFileExit);
@@ -132,7 +129,6 @@ public class KnollMenuBar extends JMenuBar {
 		menueItemHelpHelp.addActionListener(actionMenu);
 		menueItemHelpAbout.addActionListener(actionMenu);
 		menuItemFileExit.addActionListener(actionMenu);
-		menueItemFileBash.addActionListener(actionMenu);
 		menueItemFileStats.addActionListener(actionMenu);
 		menueItemFileDelProfiles.addActionListener(actionMenu);
 		menueItemFileAddProfiles.addActionListener(actionMenu);

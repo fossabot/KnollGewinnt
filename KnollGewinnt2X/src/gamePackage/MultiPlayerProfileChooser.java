@@ -10,7 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-public class MultiPlayerProfileChooser implements InterfaceProfileChooser {
+public class MultiPlayerProfileChooser implements ProfileChooser {
 
 	private JOptionPane selectionPane;
 	static JComboBox<String> playersList;
@@ -24,18 +24,8 @@ public class MultiPlayerProfileChooser implements InterfaceProfileChooser {
 
 	@Override
 	public void open(HashMap<String, KnollPlayer> playersMap, ActionListener profileSelected) {
-		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
-		Iterator<String> i = playersMap.keySet().iterator();
-
-		int j = 0;
-		while (i.hasNext()) {
-			String next = i.next();
-			if (!(next.equals("KI"))) {
-				playersStringArray[j] = next;
-				j++;
-			}
-
-		}
+		String[] playersStringArray = playersMap.values().stream().filter(player -> !(player.getName().equals("KI")))
+				.map(player -> player.getName()).toArray(String[]::new);
 
 		selectionPane = new JOptionPane("Select Player Profiles", JOptionPane.QUESTION_MESSAGE,
 				JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);

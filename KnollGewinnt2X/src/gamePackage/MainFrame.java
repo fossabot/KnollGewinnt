@@ -44,8 +44,9 @@ import panelPackage.KnollEasterPanel;
 
 public class MainFrame extends JFrame {
 
-	private static final int left = 1;
-	private static final int right = 2;
+	private static final String VERSION = "0.1";
+	private static final int LEFT = 1;
+	private static final int RIGHT = 2;
 	private int kCounter;
 	private BasePanel basePanel;
 	private int currentPlayer = 1;
@@ -53,7 +54,7 @@ public class MainFrame extends JFrame {
 	private Boolean won = false;
 	private ActionListener newGameAction;
 	private ActionListener profileSelected;
-	private AWTEventListener awt;
+	private AWTEventListener keyboardListener;
 	private JLabel manualGame;
 	private int selectedMode; // '1' singlePlayer '2' multiPlayer
 	private HashMap<String, KnollPlayer> playersMap;
@@ -62,10 +63,11 @@ public class MainFrame extends JFrame {
 	private ItemListener gameModeListener;
 	private boolean playerset;
 	private KnollAudioPlayer audioPlayer;
-	private KnollSavingsHandler saver;
+	private KnollSavingsHandler gameSaver;
 	private KnollProfilesHandler profSaver;
 	private MultiPlayerProfileChooser multiPlayerChooser;
 	private SinglePlayerProfileChooser singlePlayerChooser;
+	KnollMenuBar menu;
 
 	public MainFrame() {
 		init();
@@ -86,23 +88,21 @@ public class MainFrame extends JFrame {
 	 *            - JLabel with instructions how to play
 	 */
 	private void init() {
-		consoleIntro();
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("Knoll Gewinnt Ver.0.1");
-		this.setLayout(new BorderLayout());
+		initFrame();
 		this.selectedMode = 1;
 		basePanel = new BasePanel(7, 7);
 		initMenuBar();
-		saver = new KnollSavingsHandler();
+		gameSaver = new KnollSavingsHandler();
 		profSaver = new KnollProfilesHandler();
-		singlePlayerChooser= new SinglePlayerProfileChooser();
+		singlePlayerChooser = new SinglePlayerProfileChooser();
 		multiPlayerChooser = new MultiPlayerProfileChooser();
 		try {
 			readProfilesFromFile();
 		} catch (IOException e2) {
+			profSaver.createNewStats(true);
 		}
-		manualGame = new JLabel(
-				"<html><br>WELCOME TO KNOLL GEWINNT VER.0.1 <br>SEE HELP FOR INSTRUCTIONS.<br> @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz<html>");
+		manualGame = new JLabel("<html><br>WELCOME TO KNOLL GEWINNT VER " + VERSION
+				+ "<br>SEE HELP FOR INSTRUCTIONS.<br> @author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz<html>");
 		manualGame.setFont(new Font("Calibri", Font.PLAIN, 20));
 		newGameAction = buttonActionListener();
 
@@ -122,12 +122,9 @@ public class MainFrame extends JFrame {
 		this.getContentPane().add(basePanel, BorderLayout.CENTER);
 		this.getContentPane().add(configPanel, BorderLayout.EAST);
 		this.getContentPane().add(manualGame, BorderLayout.SOUTH);
-		this.setLocationByPlatform(true);
-		this.setMinimumSize(new Dimension(800, 400));
-		this.setResizable(false);
-		this.setVisible(true);
 		pack();
-		eventListener();
+		initEventListener();
+		this.setVisible(true);
 
 		try {
 			audioPlayer = new KnollAudioPlayer();
@@ -138,7 +135,15 @@ public class MainFrame extends JFrame {
 
 	}
 
-	
+	private void initFrame() {
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setTitle("Knoll Gewinnt Ver.0.1");
+		this.setLayout(new BorderLayout());
+		this.setLocationByPlatform(true);
+		this.setMinimumSize(new Dimension(800, 400));
+		this.setResizable(false);
+		
+	}
 
 	/**
 	 * initializes MenuBar including the ActionListener which is needed for enable
@@ -158,16 +163,14 @@ public class MainFrame extends JFrame {
 	 */
 	private void initMenuBar() {
 
-		KnollMenuBar menu = new KnollMenuBar();
-		
+		menu = new KnollMenuBar();
+
 		ActionListener actionMenu = menuActionListener(menu);
 
 		menu.addActionListener(actionMenu);
 		setJMenuBar(menu);
 
 	}
-
-	
 
 	/**
 	 * opens the playersChoice PopUp depending on which mode is currently selected
@@ -212,7 +215,7 @@ public class MainFrame extends JFrame {
 	protected void singlePlayerProfileChoice() throws IOException {
 		readProfilesFromFile();
 		singlePlayerChooser.open(playersMap, profileSelected);// IOException if Profiles.kg corrupted or not existent
-		
+
 	}
 
 	/**
@@ -234,7 +237,7 @@ public class MainFrame extends JFrame {
 	 * @throws IOException
 	 */
 	protected void loadGame() throws Exception {
-		Object [] read = saver.readFile(basePanel);
+		Object[] read = gameSaver.readFile(basePanel);
 		try {
 			resumeGame((int) read[0], (String[]) read[1]);
 			JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
@@ -254,26 +257,13 @@ public class MainFrame extends JFrame {
 	 */
 	protected void saveGame() throws IOException {
 		try {
-			saver.writeFile(this.basePanel, this.selectedMode);
+			gameSaver.writeFile(this.basePanel, this.selectedMode);
 		} catch (Exception e) {
 			new SavingsErrorMessage();
 		}
 	}
 
-	/**
-	 * consoleIntro for Coolness
-	 */
-	static void consoleIntro() {
 
-		System.out.println("***********************************************");
-		System.out.println("*          KNOLL GEWINNT VER. 0.1             *");
-		System.out.println("*                   by...                     *");
-		System.out.println("*TEMPCorp 2018 TimoEliasMoritzPaulC(aspar)orp *");
-		System.out.println("*                initialCommitDate 29.05.2018 *");
-		System.out.println("***********************************************");
-	}
-
-	
 
 	protected void easterEgg() {
 		kCounter = 0;
@@ -302,7 +292,7 @@ public class MainFrame extends JFrame {
 	 * Stops the game with just removing the Key Event Listener.
 	 */
 	protected void stopGame() {
-		this.getToolkit().removeAWTEventListener(awt);
+		this.getToolkit().removeAWTEventListener(keyboardListener);
 		basePanel.removePointer();
 
 	}
@@ -335,7 +325,7 @@ public class MainFrame extends JFrame {
 	 * @throws Exception
 	 */
 
-	private void switchPlayer(){
+	private void switchPlayer() {
 		switch (currentPlayer) {
 		case 1:
 			switch (this.selectedMode) {
@@ -370,7 +360,7 @@ public class MainFrame extends JFrame {
 	 * @throws Exception
 	 *             if the throwCoin() fails.
 	 */
-	private void letKIPlay()  {
+	private void letKIPlay() {
 		basePanel.evaluatePlayablePanels();
 		if (won == false) {
 			basePanel.throwCoin(currentPlayer);
@@ -408,13 +398,13 @@ public class MainFrame extends JFrame {
 		this.player2 = player2;
 		if (player1 == null || player2 == null) {
 			playerset = false;
-		}else {
+		} else {
 			player1.reset();
 			player2.reset();
 			currentPlayer = 1;
 			basePanel.player = 1;
 		}
-			
+
 		configPanel.setPlayers(player1, player2);
 
 		won = false;
@@ -423,9 +413,9 @@ public class MainFrame extends JFrame {
 		this.getContentPane().add(basePanel, BorderLayout.CENTER);
 		pack();
 		this.setVisible(true);
-		this.getToolkit().removeAWTEventListener(awt);
+		this.getToolkit().removeAWTEventListener(keyboardListener);
 		configPanel.setWin(null);
-		eventListener();
+		initEventListener();
 
 	}
 
@@ -475,10 +465,10 @@ public class MainFrame extends JFrame {
 		this.selectedMode = readMode;
 		configPanel.setMode(readMode);
 	}
-	
-	//--------------------------
-	//ACTIONLISTENERS
-	//--------------------------
+
+	// --------------------------
+	// ACTIONLISTENERS
+	// --------------------------
 	/**
 	 * @param menu
 	 * @return
@@ -486,8 +476,6 @@ public class MainFrame extends JFrame {
 	private ActionListener menuActionListener(KnollMenuBar menu) {
 		ActionListener actionMenu = new ActionListener() {
 
-			
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// ---Exit Program---
@@ -496,8 +484,8 @@ public class MainFrame extends JFrame {
 				}
 				// ---Show About Dialog---
 				if (e.getSource() == menu.getMenueItemHelpAbout()) {
-					JOptionPane.showMessageDialog(null,
-							"<html>KNOLL GEWINNT VER.0.1 <br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
+					JOptionPane.showMessageDialog(null, "<html>KNOLL GEWINNT VER. " + VERSION
+							+ "<br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
 							"About", JOptionPane.INFORMATION_MESSAGE);
 				}
 				// ---Show Help Dialog---
@@ -581,23 +569,15 @@ public class MainFrame extends JFrame {
 					}
 
 				}
-				// ---Show BashControl Dialog---
-				if (e.getSource() == menu.getMenueItemFileBash()) {
-					JOptionPane.showInputDialog(null, "", "BashControl", JOptionPane.PLAIN_MESSAGE);
-				}
 
 			}
-
-			/**
-			 * 
-			 */
 
 		};
 		return actionMenu;
 	}
-	
+
 	/**
-	 * @return 
+	 * @return
 	 * 
 	 */
 	private ActionListener buttonActionListener() {
@@ -644,19 +624,19 @@ public class MainFrame extends JFrame {
 		};
 		return newGameAction;
 	}
-	
+
 	/**
 	 * Generates an eventListener to recognize pressed Keys. Generates an
 	 * actionListener to recognize Players selects in Players choice OptionPane
 	 * 
-	 * @param awt
+	 * @param keyboardListener
 	 *            - AWTEventListener to process the KeyEvents.
 	 * @param profileSelected
 	 *            - ActionListener for the select Keys in Players choice OptionPane
 	 */
-	private void eventListener() {
+	private void initEventListener() {
 		// ---eventListener---
-		awt = new AWTEventListener() {
+		keyboardListener = new AWTEventListener() {
 
 			@Override
 			public void eventDispatched(AWTEvent event) {
@@ -667,13 +647,13 @@ public class MainFrame extends JFrame {
 
 					if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("a")
 							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("A")) {
-						basePanel.changePointer(left);
+						basePanel.changePointer(LEFT);
 
 					} else if (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("d")
 							|| KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("D")) {
-						basePanel.changePointer(right);
-					} else if ((KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("s") && won == false)
-							|| (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("S") && won == false)) {
+						basePanel.changePointer(RIGHT);
+					} else if ((KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("s") && !won)
+							|| (KeyEvent.getKeyText(((KeyEvent) event).getKeyCode()).equals("S") && !won)) {
 						try {
 							if (player1 == null || player2 == null)
 								return;
@@ -692,19 +672,17 @@ public class MainFrame extends JFrame {
 								switch (currentPlayer) {
 								case 1:
 									player1.setWin(player1.getSteps());
-									writeProfilesToFile();
 									break;
 								case 2:
 									player2.setWin(player2.getSteps());
-									writeProfilesToFile();
 									break;
 								case 3:
 									player2.setWin(player2.getSteps());
-									writeProfilesToFile();
 									break;
 								}
+								writeProfilesToFile();
 							} catch (IOException e) {
-								e.printStackTrace();
+								profSaver.createNewStats(true);
 							}
 							stopGame();
 
@@ -731,7 +709,7 @@ public class MainFrame extends JFrame {
 			}
 
 		};
-		this.getToolkit().addAWTEventListener(awt, AWTEvent.KEY_EVENT_MASK);
+		this.getToolkit().addAWTEventListener(keyboardListener, AWTEvent.KEY_EVENT_MASK);
 		// ---actionListener for Players choice OptionPanes select Button---
 		profileSelected = new ActionListener() {
 
@@ -769,5 +747,5 @@ public class MainFrame extends JFrame {
 		};
 
 	}
-	
+
 }

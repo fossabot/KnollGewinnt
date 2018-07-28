@@ -30,15 +30,15 @@ public class BasePanel extends JPanel {
 	 * Constructor of Class BasePanel. A BasePanel has the size of the dimension (x,
 	 * y).
 	 * 
-	 * @param x
+	 * @param rows
 	 *            - Dimension size of allPanels
-	 * @param y
+	 * @param coloumns
 	 *            - Dimension size of allPanels
 	 */
-	public BasePanel(int x, int y) {
+	public BasePanel(int rows, int coloumns) {
 		super();
-		this.setLayout(new GridLayout(y, x));
-		initializePanels(x, y);
+		this.setLayout(new GridLayout(coloumns, rows));
+		initializePanels(rows, coloumns);
 		generateStocks();
 
 	}
@@ -306,7 +306,7 @@ public class BasePanel extends JPanel {
 		stocks = new ArrayList<StockPanel>();
 		for (int i = 0; i < playBoard.length; i++) {
 			for (int j = 0; j < playBoard[i].length; j++) {
-				// ---vertikale Stocks---aa
+				// ---vertikale Stocks---
 				if (i + 3 < playBoard.length) {
 					stocks.add(new StockPanel(playBoard[i][j], playBoard[i + 1][j], playBoard[i + 2][j],
 							playBoard[i + 3][j]));
@@ -332,7 +332,7 @@ public class BasePanel extends JPanel {
 	}
 
 	/**
-	 * removes everyPointer for end of the Game
+	 * Removes every pointer for end of the game
 	 */
 	public void removePointer() {
 		for (int i = 0; i < control.length; i++) {

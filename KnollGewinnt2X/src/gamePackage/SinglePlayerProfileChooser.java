@@ -4,15 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-public class SinglePlayerProfileChooser implements InterfaceProfileChooser{
+public class SinglePlayerProfileChooser implements ProfileChooser {
 
-	
 	private JOptionPane selectionPane;
 	static JComboBox<String> playersList;
 	static JButton select;
@@ -20,21 +21,14 @@ public class SinglePlayerProfileChooser implements InterfaceProfileChooser{
 	private ActionListener profileSelected;
 
 	public SinglePlayerProfileChooser() {
-		
+
 	}
-	
+
 	@Override
 	public void open(HashMap<String, KnollPlayer> playersMap, ActionListener profileSelected) {
-		String[] playersStringArray = new String[playersMap.keySet().size() - 1];
-		Iterator<String> i = playersMap.keySet().iterator();
-		int j = 0;
-		while (i.hasNext()) {
-			String next = i.next();
-			if (!(next.equals("KI"))) {
-				playersStringArray[j] = next;
-				j++;
-			}
-		}
+
+		String[] playersStringArray = playersMap.values().stream().filter(player -> !(player.getName().equals("KI")))
+				.map(player -> player.getName()).toArray(String[]::new);
 
 		selectionPane = new JOptionPane("Select your Player Profile", JOptionPane.QUESTION_MESSAGE,
 				JOptionPane.DEFAULT_OPTION, null, new Object[] {}, null);
@@ -46,15 +40,14 @@ public class SinglePlayerProfileChooser implements InterfaceProfileChooser{
 
 		singlePlayerDialog = selectionPane.createDialog(null, "SinglePlayer Profile Choice");
 		singlePlayerDialog.setVisible(true);
-		
+
 	}
 
 	@Override
 	public void dispose() {
-		if(singlePlayerDialog!=null)singlePlayerDialog.dispose();
-		
+		if (singlePlayerDialog != null)
+			singlePlayerDialog.dispose();
+
 	}
-	
-	
 
 }

@@ -26,7 +26,11 @@ public class KnollProfilesHandler {
 	public KnollProfilesHandler() {
 
 	}
-
+/**
+ * kommentieren
+ * @param playersMap
+ * @throws IOException
+ */
 	public void writeFile(HashMap<String, KnollPlayer> playersMap) throws IOException {
 		System.out.println(System.currentTimeMillis() + ": WRITING STATS TO FILE...");
 
@@ -41,8 +45,7 @@ public class KnollProfilesHandler {
 		Iterator<String> i = playersMap.keySet().iterator();
 		while (i.hasNext()) {
 			String next = i.next();
-			bw.write(playersMap.get(next).getName() + "." + playersMap.get(next).getPlayedGames() + "."
-					+ playersMap.get(next).getWins() + "." + playersMap.get(next).getStepsToWin());
+			bw.write(getPlayerEntry(playersMap.get(next)));
 			bw.newLine();
 		}
 		bw.close();
@@ -52,16 +55,19 @@ public class KnollProfilesHandler {
 		System.out.println(System.currentTimeMillis() + ": WRITING STATS TO FILE FINISHED.");
 	}
 
+	private String getPlayerEntry(KnollPlayer player) {
+		return player.getName() + "." + player.getPlayedGames() + "."
+				+ player.getWins() + "." + player.getStepsToWin();
+	}
+	
 	public HashMap<String, KnollPlayer> readFile() throws IOException {
 		System.out.println(System.currentTimeMillis() + ": READING STATS FROM FILE...");
 		URL temp = MainFrame.class.getResource("profiles.kg");
 
-		FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));
-		BufferedReader br = new BufferedReader(fr);
 		int amountOfRegisteredPlayers = 0;
 		ArrayList<KnollPlayer> players = new ArrayList<>();
 
-		try {
+		try(FileReader fr = new FileReader(URLDecoder.decode(temp.getPath()));BufferedReader br = new BufferedReader(fr)) {
 			if (br.readLine().equals("<HEAD>KNOLLGEWINNT PROFILES<HEAD>")) {
 				amountOfRegisteredPlayers = Integer.parseInt((br.readLine().split("'")[1]));
 				for (int i = 0; i < amountOfRegisteredPlayers; i++) {
@@ -69,7 +75,6 @@ public class KnollProfilesHandler {
 					players.add(new KnollPlayer(actualLine[0], Integer.parseInt(actualLine[1]),
 							Integer.parseInt(actualLine[2]), Integer.parseInt(actualLine[3])));
 				}
-				br.close();
 				HashMap<String, KnollPlayer> playerObjects = new HashMap<>();
 				Iterator<KnollPlayer> i = players.iterator();
 				while (i.hasNext()) {
@@ -96,32 +101,26 @@ public class KnollProfilesHandler {
 	public void createNewStats(boolean showMessage) {
 		if (showMessage) {
 			if (dataErrorMessage() == JOptionPane.YES_OPTION) {
-				try {
-					FileWriter fw = new FileWriter("profiles.kg");
-					BufferedWriter bw = new BufferedWriter(fw);
+				try(FileWriter fw = new FileWriter("profiles.kg");
+				BufferedWriter bw = new BufferedWriter(fw)) {
 					bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
 					bw.newLine();
 					bw.write("<INFO> PLAYERS: '" + 1 + "' <INFO>");
 					bw.newLine();
 					bw.write("KI.0.0.0");
-					bw.close();
-					fw.close();
 				} catch (Exception f) {
 					f.printStackTrace();
-					new UnknownErrorMessage();
+					UnknownErrorMessage.ShowError();;
 				}
 			} 
 		}else {
-			try {
-				FileWriter fw = new FileWriter("profiles.kg");
-				BufferedWriter bw = new BufferedWriter(fw);
+			try (FileWriter fw = new FileWriter("profiles.kg");
+				BufferedWriter bw = new BufferedWriter(fw)){
 				bw.write("<HEAD>KNOLLGEWINNT PROFILES<HEAD>");
 				bw.newLine();
 				bw.write("<INFO> PLAYERS: '" + 1 + "' <INFO>");
 				bw.newLine();
 				bw.write("KI.0.0.0");
-				bw.close();
-				fw.close();
 			} catch (Exception f) {
 				f.printStackTrace();
 			}
