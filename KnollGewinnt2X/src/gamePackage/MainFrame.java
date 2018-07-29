@@ -36,6 +36,7 @@ import javax.swing.table.TableRowSorter;
 
 import errorMessages.AudioErrorMessage;
 import errorMessages.SavingsErrorMessage;
+import errorMessages.WrongModeWhileLoadingMessage;
 import handlerPackage.ProfilesHandler;
 import handlerPackage.SavingsHandler;
 import panelPackage.BasePanel;
@@ -44,7 +45,7 @@ import panelPackage.EasterEgg;
 
 public class MainFrame extends JFrame {
 
-	private static final String VERSION = "0.1";
+	private static final String VERSION = "1.0";
 	private static final int LEFT = 1;
 	private static final int RIGHT = 2;
 	private int kCounter;
@@ -130,7 +131,7 @@ public class MainFrame extends JFrame {
 			audioPlayer = new AudioPlayer();
 			audioPlayer.play();
 		} catch (Exception e1) {
-			new AudioErrorMessage();
+			AudioErrorMessage.showError();
 		}
 
 	}
@@ -142,7 +143,7 @@ public class MainFrame extends JFrame {
 		this.setLocationByPlatform(true);
 		this.setMinimumSize(new Dimension(800, 400));
 		this.setResizable(false);
-		
+
 	}
 
 	/**
@@ -239,11 +240,13 @@ public class MainFrame extends JFrame {
 	protected void loadGame() throws Exception {
 		Object[] read = gameSaver.readFile(basePanel);
 		try {
-			resumeGame((int) read[0], (String[]) read[1]);
-			JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
+			if (resumeGame((int) read[0], (String[]) read[1])) {
+				JOptionPane.showMessageDialog(this, "Game succesfully loaded.");
+			}
+			
 
 		} catch (Exception e) {
-			new SavingsErrorMessage();
+			SavingsErrorMessage.showError();
 		}
 
 	}
@@ -259,11 +262,9 @@ public class MainFrame extends JFrame {
 		try {
 			gameSaver.writeFile(this.basePanel, this.selectedMode);
 		} catch (Exception e) {
-			new SavingsErrorMessage();
+			SavingsErrorMessage.showError();
 		}
 	}
-
-
 
 	protected void easterEgg() {
 		kCounter = 0;
@@ -431,7 +432,11 @@ public class MainFrame extends JFrame {
 	 * @throws Exception
 	 *             if the PlayBoard (fill) method fails.
 	 */
-	public void resumeGame(int readMode, String[] rows) throws Exception {
+	public boolean resumeGame(int readMode, String[] rows) throws Exception {
+		if (readMode != this.selectedMode) {
+			WrongModeWhileLoadingMessage.ShowError();
+			return false;
+		}
 		String[] temp = new String[basePanel.getPlayBoard()[0].length];
 		for (int i = 0; i < basePanel.getPlayBoard().length; i++) {
 			temp = rows[i].split("-");
@@ -462,8 +467,8 @@ public class MainFrame extends JFrame {
 
 			}
 		}
-		this.selectedMode = readMode;
-		configPanel.setMode(readMode);
+		
+		return true;
 	}
 
 	// --------------------------
@@ -485,13 +490,13 @@ public class MainFrame extends JFrame {
 				// ---Show About Dialog---
 				if (e.getSource() == menu.getMenueItemHelpAbout()) {
 					JOptionPane.showMessageDialog(null, "<html>KNOLL GEWINNT VER. " + VERSION
-							+ "<br>@since 29.05.2018<br>@version 0.1<br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
+							+ "<br>@since 29.05.2018<br>@version "+VERSION + " <br>@repository github.com/tmbchrt/knollgewinnt<br>@author Caspar Goldmann, Elias Klewar, Moritz Cabral, Timo Büchert, Paul Schwarz  <html>",
 							"About", JOptionPane.INFORMATION_MESSAGE);
 				}
 				// ---Show Help Dialog---
 				if (e.getSource() == menu.getMenueItemHelpHelp()) {
 					JOptionPane.showMessageDialog(null,
-							"<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> <html>",
+							"<html>Press 'A' to move pointer left. Press 'D' to move pointer right.<br>Press 'S' to throw coin.<br>Try to get 4 in a row<br> Hint: Press 'K' a few times...<br><html>",
 							"Help", JOptionPane.INFORMATION_MESSAGE);
 				}
 				// ---Show PlayersProfileChoice Dialog---
@@ -600,7 +605,7 @@ public class MainFrame extends JFrame {
 							saveGame();
 						}
 					} catch (IOException e1) {
-						new SavingsErrorMessage();
+						SavingsErrorMessage.showError();
 					}
 				} else if (e.getSource() == configPanel.load) {
 					try {

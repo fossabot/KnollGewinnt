@@ -50,7 +50,7 @@ public class ProfilesHandler {
 		}
 		bw.close();
 		fw.close();
-		JOptionPane.showMessageDialog(null, "Update succesful!");
+	//	JOptionPane.showMessageDialog(null, "Update succesful!");
 
 		System.out.println(System.currentTimeMillis() + ": WRITING STATS TO FILE FINISHED.");
 	}
@@ -128,8 +128,8 @@ public class ProfilesHandler {
 	}
 
 	private int dataErrorMessage() {
-		StatsErrorMessage error = new StatsErrorMessage();
-		return error.getReply();
+		
+		return StatsErrorMessage.showError();
 
 	}
 }

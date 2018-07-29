@@ -84,7 +84,7 @@ public class SavingsHandler {
 	}
 
 	private void dataErrorMessage() {
-		SavingsErrorMessage error = new SavingsErrorMessage();
+		SavingsErrorMessage.showError();
 	}
 
 }
