@@ -13,9 +13,9 @@ import errorMessages.SavingsErrorMessage;
 import gamePackage.MainFrame;
 import panelPackage.BasePanel;
 
-public class KnollSavingsHandler {
+public class SavingsHandler {
 
-	public KnollSavingsHandler() {
+	public SavingsHandler() {
 	}
 
 	public void writeFile(BasePanel base, int mode) throws Exception {

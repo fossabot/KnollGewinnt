@@ -13,7 +13,7 @@ import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-public class GroundPanel extends JPanel implements KnollPanel{
+public class GroundPanel extends JPanel implements Panel{
 
 	private static final long serialVersionUID = -6043247421499329778L;
 	private boolean filled = false;

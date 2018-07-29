@@ -10,9 +10,9 @@ package panelPackage;
 
 import java.awt.Color;
 
-public interface KnollPanel {
+public interface Panel {
 	boolean filled=false;
 	
 	public void activateBorder(Color color);
-	public void fill(int player, boolean b)throws Exception;
+	public void fill(int player, boolean b);
 }

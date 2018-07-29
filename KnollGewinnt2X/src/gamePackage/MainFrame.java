@@ -36,11 +36,11 @@ import javax.swing.table.TableRowSorter;
 
 import errorMessages.AudioErrorMessage;
 import errorMessages.SavingsErrorMessage;
-import handlerPackage.KnollProfilesHandler;
-import handlerPackage.KnollSavingsHandler;
+import handlerPackage.ProfilesHandler;
+import handlerPackage.SavingsHandler;
 import panelPackage.BasePanel;
 import panelPackage.ConfigPanel;
-import panelPackage.KnollEasterPanel;
+import panelPackage.EasterEgg;
 
 public class MainFrame extends JFrame {
 
@@ -62,12 +62,12 @@ public class MainFrame extends JFrame {
 	private KnollPlayer player2;
 	private ItemListener gameModeListener;
 	private boolean playerset;
-	private KnollAudioPlayer audioPlayer;
-	private KnollSavingsHandler gameSaver;
-	private KnollProfilesHandler profSaver;
+	private AudioPlayer audioPlayer;
+	private SavingsHandler gameSaver;
+	private ProfilesHandler profSaver;
 	private MultiPlayerProfileChooser multiPlayerChooser;
 	private SinglePlayerProfileChooser singlePlayerChooser;
-	KnollMenuBar menu;
+	MenuBar menu;
 
 	public MainFrame() {
 		init();
@@ -92,8 +92,8 @@ public class MainFrame extends JFrame {
 		this.selectedMode = 1;
 		basePanel = new BasePanel(7, 7);
 		initMenuBar();
-		gameSaver = new KnollSavingsHandler();
-		profSaver = new KnollProfilesHandler();
+		gameSaver = new SavingsHandler();
+		profSaver = new ProfilesHandler();
 		singlePlayerChooser = new SinglePlayerProfileChooser();
 		multiPlayerChooser = new MultiPlayerProfileChooser();
 		try {
@@ -127,7 +127,7 @@ public class MainFrame extends JFrame {
 		this.setVisible(true);
 
 		try {
-			audioPlayer = new KnollAudioPlayer();
+			audioPlayer = new AudioPlayer();
 			audioPlayer.play();
 		} catch (Exception e1) {
 			new AudioErrorMessage();
@@ -163,7 +163,7 @@ public class MainFrame extends JFrame {
 	 */
 	private void initMenuBar() {
 
-		menu = new KnollMenuBar();
+		menu = new MenuBar();
 
 		ActionListener actionMenu = menuActionListener(menu);
 
@@ -269,7 +269,7 @@ public class MainFrame extends JFrame {
 		kCounter = 0;
 
 		try {
-			JOptionPane.showMessageDialog(null, new KnollEasterPanel(), "EasterEgg", JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showMessageDialog(null, new EasterEgg(), "EasterEgg", JOptionPane.PLAIN_MESSAGE);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -473,7 +473,7 @@ public class MainFrame extends JFrame {
 	 * @param menu
 	 * @return
 	 */
-	private ActionListener menuActionListener(KnollMenuBar menu) {
+	private ActionListener menuActionListener(MenuBar menu) {
 		ActionListener actionMenu = new ActionListener() {
 
 			@Override

@@ -21,9 +21,9 @@ import errorMessages.UnknownErrorMessage;
 import gamePackage.KnollPlayer;
 import gamePackage.MainFrame;
 
-public class KnollProfilesHandler {
+public class ProfilesHandler {
 
-	public KnollProfilesHandler() {
+	public ProfilesHandler() {
 
 	}
 /**

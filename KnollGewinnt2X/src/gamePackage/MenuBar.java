@@ -14,7 +14,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-public class KnollMenuBar extends JMenuBar {
+public class MenuBar extends JMenuBar {
 
 	
 	JMenuItem menuItemFileExit;
@@ -27,7 +27,7 @@ public class KnollMenuBar extends JMenuBar {
 	JMenuItem menueItemHelpHelp;
 	
 	
-	public KnollMenuBar() {
+	public MenuBar() {
 		super();
 		// ---MenuItems
 		menuItemFileExit = new JMenuItem("Exit");

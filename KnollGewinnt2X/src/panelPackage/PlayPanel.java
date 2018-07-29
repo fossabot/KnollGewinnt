@@ -12,7 +12,7 @@ import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-public class PlayPanel extends JPanel implements KnollPanel {
+public class PlayPanel extends JPanel implements Panel {
 	private static final long serialVersionUID = -1753322270777722411L;
 	private static final int noOwner = -1;
 	private boolean filled;

@@ -17,7 +17,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public class KnollAudioPlayer {
+public class AudioPlayer {
 
 	private File audioFile;
 	private AudioInputStream audioStream;
@@ -28,7 +28,7 @@ public class KnollAudioPlayer {
 	 * Creates a new audioFile and sets up the audioStream. This lets us extract a audio clip which can be played by @method play()
 	 * @throws Exception
 	 */
-	public KnollAudioPlayer() throws Exception{
+	public AudioPlayer() throws Exception{
 		audioFile = new File(URLDecoder.decode(MainFrame.class.getResource("title.wav").getPath()));
 		audioStream = AudioSystem.getAudioInputStream(audioFile);
 		clip = AudioSystem.getClip();

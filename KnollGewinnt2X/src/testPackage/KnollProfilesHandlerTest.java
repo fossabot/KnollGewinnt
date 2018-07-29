@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import handlerPackage.KnollProfilesHandler;
-import handlerPackage.KnollSavingsHandler;
+import handlerPackage.ProfilesHandler;
+import handlerPackage.SavingsHandler;
 
 /**
  * @author 2236367
@@ -18,17 +18,17 @@ class KnollProfilesHandlerTest {
 
 	
 	/**
-	 * Test method for {@link handlerPackage.KnollProfilesHandler#createNewStats()}.
+	 * Test method for {@link handlerPackage.ProfilesHandler#createNewStats()}.
 	 */
 	@Test
 	void testCreateNewStats() {
-		KnollProfilesHandler statsHandler = new KnollProfilesHandler();
+		ProfilesHandler statsHandler = new ProfilesHandler();
 		statsHandler.createNewStats(false);
 		
 	}
 	
 	/**
-	 * Test method for {@link handlerPackage.KnollProfilesHandler#writeFile(java.util.HashMap)}.
+	 * Test method for {@link handlerPackage.ProfilesHandler#writeFile(java.util.HashMap)}.
 	 */
 	@Test
 	void testWriteFile() {
@@ -36,7 +36,7 @@ class KnollProfilesHandlerTest {
 	}
 
 	/**
-	 * Test method for {@link handlerPackage.KnollProfilesHandler#readFile()}.
+	 * Test method for {@link handlerPackage.ProfilesHandler#readFile()}.
 	 */
 	@Test
 	void testReadFile() {
